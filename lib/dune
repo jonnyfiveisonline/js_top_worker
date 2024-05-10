@@ -1,30 +1,34 @@
 ; Worker library
 
-(rule
- (targets worker.ml)
- (deps
-  (:x worker.cppo.ml))
- (action
-  (chdir
-   %{workspace_root}
-   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{x} -o %{targets}))))
-
 (library
  (public_name js_top_worker)
- (modules worker uTop_complete uTop_lexer uTop_token uTop)
+ (modules uTop_complete uTop_lexer uTop_token uTop impl)
  (libraries
+  logs
   js_top_worker-rpc
-  js_of_ocaml-toplevel
   js_of_ocaml-compiler
   astring
-  mime_printer)
+  mime_printer
+  compiler-libs.common
+  compiler-libs.toplevel
+  merlin-lib.kernel
+  merlin-lib.utils
+  merlin-lib.query_protocol
+  merlin-lib.query_commands
+  merlin-lib.ocaml_parsing)
  (preprocess
   (per_module
    ((action
      (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file}))
     uTop_complete
-    uTop)
-   ((pps js_of_ocaml-ppx)
-    worker))))
+    uTop))))
+
+(library
+ (public_name js_top_worker-web)
+ (name js_top_worker_web)
+ (modules worker)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (libraries js_top_worker js_of_ocaml-toplevel logs.browser))
 
 (ocamllex uTop_lexer)

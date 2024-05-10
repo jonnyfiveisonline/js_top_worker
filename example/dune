@@ -11,17 +11,32 @@
  (modes byte)
  (modules worker)
  (link_flags (-linkall))
- (libraries js_top_worker imagelib base64 tyxml uutf))
+ (libraries js_top_worker-web logs.browser))
+
+(executable
+ (name unix_worker)
+ (modes byte)
+ (modules unix_worker)
+ (link_flags (-linkall))
+ (libraries js_top_worker logs logs.fmt rpclib.core))
+
+(executable
+ (name unix_client)
+ (modules unix_client)
+ (libraries js_top_worker_client rpclib.cmdliner))
 
 (rule
  (targets worker.js)
+ (deps stubs.js)
  (action
   (run
    %{bin:js_of_ocaml}
    --toplevel
-   --pretty
+   ; --pretty
+   --no-cmis
    +toplevel.js
    +dynlink.js
+   stubs.js
    %{dep:worker.bc}
    -o
    %{targets})))

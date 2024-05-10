@@ -27,7 +27,6 @@ module W : sig
   type init_libs = Toplevel_api_gen.init_libs
   type err = Toplevel_api_gen.err
   type exec_result = Toplevel_api_gen.exec_result
-  type completion_result = Toplevel_api_gen.completion_result
 
   (** {2 RPC calls}
   
@@ -53,9 +52,5 @@ module W : sig
   (** Execute a phrase using the toplevel. The toplevel must have been
       initialised first. *)
 
-  val complete : rpc -> string -> (completion_result, err) result Lwt.t
-  (** Find completions of the incomplete phrase. Completion occurs at the
-    end of the phrase passed in. If completion is required at a point
-    other than the end of a string, then take the substring before calling
-    this API. *)
+  val compile_js : rpc -> string -> string -> (string, err) result Lwt.t
 end

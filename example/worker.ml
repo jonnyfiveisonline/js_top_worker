@@ -1,2 +1,1 @@
-let _ = ImageUtil.chunk_reader_of_string
-let _ = Js_top_worker.Worker.run ()
+let _ = Js_top_worker_web.Worker.run ()

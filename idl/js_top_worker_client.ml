@@ -20,7 +20,7 @@ type rpc = Rpc.call -> Rpc.response Lwt.t
 
 exception Timeout
 
-let log s = Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string s)
+(* let log s = Js_of_ocaml.Firebug.console##log (Js_of_ocaml.Js.string s) *)
 
 let demux context msg =
   Lwt.async (fun () ->
@@ -29,14 +29,14 @@ let demux context msg =
       | Some (mv, outstanding_execution) ->
           Brr.G.stop_timer outstanding_execution;
           let msg : string = Message.Ev.data (Brr.Ev.as_type msg) in
-          log (Printf.sprintf "Client received: %s" msg);
+          (* log (Printf.sprintf "Client received: %s" msg); *)
           Lwt_mvar.put mv (Ok (Jsonrpc.response_of_string msg)))
 
 let rpc : context -> Rpc.call -> Rpc.response Lwt.t =
  fun context call ->
   let open Lwt in
   let jv = Jsonrpc.string_of_call call in
-  log (Printf.sprintf "Client sending: %s" jv);
+  (* log (Printf.sprintf "Client sending: %s" jv); *)
   let mv = Lwt_mvar.create_empty () in
   let outstanding_execution =
     Brr.G.set_timeout ~ms:context.timeout (fun () ->
@@ -68,7 +68,6 @@ module W : sig
   type init_libs = Toplevel_api_gen.init_libs
   type err = Toplevel_api_gen.err
   type exec_result = Toplevel_api_gen.exec_result
-  type completion_result = Toplevel_api_gen.completion_result
 
   val init :
     rpc ->
@@ -90,19 +89,15 @@ module W : sig
     string ->
     (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) result Lwt.t
 
-  val complete :
-    rpc ->
-    string ->
-    (Toplevel_api_gen.completion_result, Toplevel_api_gen.err) result Lwt.t
+  val compile_js : rpc -> string -> string -> (string, Toplevel_api_gen.err) result Lwt.t
 end = struct
   type init_libs = Toplevel_api_gen.init_libs
   type err = Toplevel_api_gen.err
   type exec_result = Toplevel_api_gen.exec_result
-  type completion_result = Toplevel_api_gen.completion_result
 
   let init rpc a = Wraw.init rpc a |> Rpc_lwt.T.get
   let setup rpc a = Wraw.setup rpc a |> Rpc_lwt.T.get
   let typecheck rpc a = Wraw.typecheck rpc a |> Rpc_lwt.T.get
   let exec rpc a = Wraw.exec rpc a |> Rpc_lwt.T.get
-  let complete rpc a = Wraw.complete rpc a |> Rpc_lwt.T.get
+  let compile_js rpc id s = Wraw.compile_js rpc id s |> Rpc_lwt.T.get
 end

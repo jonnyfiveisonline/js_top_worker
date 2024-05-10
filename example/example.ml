@@ -8,7 +8,15 @@ let log s = Firebug.console##log (Js.string s)
 let initialise s callback =
   let ( let* ) = Lwt_result.bind in
   let rpc = Js_top_worker_client.start s 100000 callback in
-  let* () = W.init rpc Toplevel_api_gen.{ cmas = []; cmi_urls = [] } in
+  let* () =
+    W.init rpc
+      Toplevel_api_gen.
+        {
+          path = "/static/cmis";
+          cmas = [];
+          cmis = { dynamic_cmis = None; static_cmis = [] };
+        }
+  in
   Lwt.return (Ok rpc)
 
 let log_output (o : Toplevel_api_gen.exec_result) =
