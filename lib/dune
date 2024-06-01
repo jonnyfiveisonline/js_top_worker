@@ -7,6 +7,7 @@
   logs
   js_top_worker-rpc
   js_of_ocaml-compiler
+  js_of_ocaml-ppx
   astring
   mime_printer
   compiler-libs.common
@@ -15,7 +16,9 @@
   merlin-lib.utils
   merlin-lib.query_protocol
   merlin-lib.query_commands
-  merlin-lib.ocaml_parsing)
+  merlin-lib.ocaml_parsing
+  findlib
+  findlib.top)
  (preprocess
   (per_module
    ((action

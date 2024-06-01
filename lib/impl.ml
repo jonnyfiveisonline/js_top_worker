@@ -5,6 +5,33 @@ module IdlM = Idl.Make (M)
 
 type captured = { stdout : string; stderr : string }
 
+
+module JsooTopPpx = struct
+  open Js_of_ocaml_compiler.Stdlib
+
+  let ppx_rewriters = ref [fun _ -> Logs.info (fun m -> m "Rewriting..."); Ppx_js.mapper]
+
+  let () = Ast_mapper.register_function := fun _ f -> ppx_rewriters := f :: !ppx_rewriters
+
+  let preprocess_structure str =
+    let open Ast_mapper in
+    List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
+        let mapper = ppx_rewriter [] in
+        mapper.structure mapper str)
+
+  let preprocess_signature str =
+    let open Ast_mapper in
+    List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
+        let mapper = ppx_rewriter [] in
+        mapper.signature mapper str)
+
+  let preprocess_phrase phrase =
+    let open Parsetree in
+    match phrase with
+    | Ptop_def str -> Ptop_def (preprocess_structure str)
+    | Ptop_dir _ as x -> x
+
+end
 module type S = sig
   val capture : (unit -> 'a) -> unit -> captured * 'a
   val create_file : name:string -> content:string -> unit
@@ -59,29 +86,16 @@ module Make (S : S) = struct
       let o, () = exec' s in
       combine o
     in
-    Logs.info (fun m -> m "Setting up toplevel");
     Sys.interactive := false;
-    Logs.info (fun m -> m "Finished this bit 1");
 
     Toploop.input_name := "//toplevel//";
-    Logs.info (fun m -> m "Finished this bit 2");
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
     in
 
     Topdirs.dir_directory path;
 
-    List.iter Topdirs.dir_directory [
-      "/Users/jonathanludlam/devel/learno/_opam/lib/note";
-  "/Users/jonathanludlam/devel/learno/_opam/lib/js_of_ocaml-compiler/runtime";
-"/Users/jonathanludlam/devel/learno/_opam/lib/brr";
-"/Users/jonathanludlam/devel/learno/_opam/lib/note/brr";
-"/Users/jonathanludlam/devel/learno/codemirror3/odoc_notebook/_build/default/mime_printer/.mime_printer.objs/byte"
-    ];
-
-    Logs.info (fun m -> m "Finished this bit 3");
     Toploop.initialize_toplevel_env ();
-    Logs.info (fun m -> m "Finished this bit 4");
 
     List.iter (fun f -> f ()) functions;
     exec' "open Stdlib";
@@ -184,10 +198,13 @@ module Make (S : S) = struct
     reset ();
     List.iter (fun p -> prepend_dir (Dir.create p)) dirs
 
+  let reset_dirs_comp () =
+    let open Load_path in
+    let dirs = get_paths () in
+    reset ();
+    List.iter (fun p -> prepend_dir (Dir.create p)) dirs
+  
   let add_dynamic_cmis dcs =
-    let open Ocaml_typing.Persistent_env.Persistent_signature in
-    let old_loader = !load in
-
     let fetch filename =
       let url = Filename.concat dcs.Toplevel_api_gen.dcs_url filename in
       S.sync_get url
@@ -206,31 +223,48 @@ module Make (S : S) = struct
         | None -> ())
       dcs.dcs_toplevel_modules;
 
-    let new_load ~unit_name =
+    let new_load ~s ~old_loader ~unit_name =
+      Logs.info (fun m -> m "%s Loading: %s" s unit_name);
       let filename = filename_of_module unit_name in
 
       let fs_name = Filename.(concat path filename) in
       (* Check if it's already been downloaded. This will be the
          case for all toplevel cmis. Also check whether we're supposed
          to handle this cmi *)
+      (if Sys.file_exists fs_name then
+       Logs.info (fun m -> m "Found: %s" fs_name));
       (if
          (not (Sys.file_exists fs_name))
          && List.exists
               (fun prefix -> String.starts_with ~prefix filename)
               dcs.dcs_file_prefixes
-       then
+       then (
+         Logs.info (fun m -> m "Fetching %s\n%!" filename);
          match fetch filename with
          | Some x ->
              S.create_file ~name:fs_name ~content:x;
              (* At this point we need to tell merlin that the dir contents
                  have changed *)
-             reset_dirs ()
+             if s = "merl" then reset_dirs () else reset_dirs_comp ()
          | None ->
              Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
-               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename));
+               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename)));
       old_loader ~unit_name
     in
-    load := new_load
+    let furl = "file://" in
+    let l = String.length furl in
+    if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then begin
+      let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
+      Topdirs.dir_directory path
+    end else begin
+      let open Persistent_env.Persistent_signature in
+      let old_loader = !load in
+      load := (new_load ~s:"comp" ~old_loader);
+
+      let open Ocaml_typing.Persistent_env.Persistent_signature in
+      let old_loader = !load in
+      load := (new_load ~s:"merl" ~old_loader)
+    end
 
   let init (init_libs : Toplevel_api_gen.init_libs) =
     try
@@ -246,7 +280,7 @@ module Make (S : S) = struct
           let name = Filename.(concat init_libs.path filename) in
           S.create_file ~name ~content:sc_content)
         init_libs.cmis.static_cmis;
-      Option.iter add_dynamic_cmis init_libs.cmis.dynamic_cmis;
+      List.iter add_dynamic_cmis init_libs.cmis.dynamic_cmis;
 
       (*import_scripts
           (List.map (fun cma -> cma.Toplevel_api_gen.url) init_libs.cmas);
@@ -360,31 +394,38 @@ module Make (S : S) = struct
     in
     Array.of_list (split 0 0)
 
-  let compile_js id prog =
-    let open Js_of_ocaml_compiler in
-    let open Js_of_ocaml_compiler.Stdlib in
+  let compile_js (id : string option) prog =
     try
-      let str = Printf.sprintf "let _ = Mime_printer.id := \"%s\"\n%s" id prog in
-      let l = Lexing.from_string str in
+
+      let l = Lexing.from_string prog in
       let phr = Parse.toplevel_phrase l in
       Typecore.reset_delayed_checks ();
       Env.reset_cache_toplevel ();
       let oldenv = !Toploop.toplevel_env in
       (* let oldenv = Compmisc.initial_env() in *)
+      let phr = JsooTopPpx.preprocess_phrase phr in
       match phr with
       | Ptop_def sstr ->
+          Logs.info (fun m -> m "Typing...");
           let str, sg, sn, _shape, newenv =
             try Typemod.type_toplevel_phrase oldenv sstr
             with Env.Error e ->
               Env.report_error Format.err_formatter e;
-              exit 1
+              (* exit 1 *)
+              let err = Format.asprintf "%a" Env.report_error e in
+              failwith ("Error: " ^ err)
           in
+          Logs.info (fun m -> m "simplify...");
           let sg' = Typemod.Signature_names.simplify newenv sn sg in
           ignore (Includemod.signatures ~mark:Mark_positive oldenv sg sg');
           Typecore.force_delayed_checks ();
+          Logs.info (fun m -> m "Translmod...");
           let lam = Translmod.transl_toplevel_definition str in
+          Logs.info (fun m -> m "Simplif...");
           let slam = Simplif.simplify_lambda lam in
+          Logs.info (fun m -> m "Bytegen...");
           let init_code, fun_code = Bytegen.compile_phrase slam in
+          Logs.info (fun m -> m "Emitcode...");
           let code, reloc, _events = Emitcode.to_memory init_code fun_code in
           Toploop.toplevel_env := newenv;
           (* let prims = split_primitives (Symtable.data_primitive_names ()) in *)
@@ -404,7 +445,8 @@ module Make (S : S) = struct
                 cu_debugsize = 0;
               }
           in
-          let fmt = Pretty_print.to_buffer b in
+      
+          let fmt = Js_of_ocaml_compiler.Pretty_print.to_buffer b in
           (* Symtable.patch_object code reloc;
              Symtable.check_global_initialized reloc;
              Symtable.update_global_table(); *)
@@ -413,10 +455,16 @@ module Make (S : S) = struct
 
           (* let code = String.init (Misc.LongString.length code) ~f:(fun i -> Misc.LongString.get code i) in *)
           close_out oc;
-          Driver.configure fmt;
+          (* Js_of_ocaml_compiler.Config.Flag.enable "pretty"; *)
+          Js_of_ocaml_compiler.Driver.configure fmt;
           let ic = open_in "/tmp/test.cmo" in
-          let p = Parse_bytecode.from_cmo cmo ic in
-          Driver.f' ~standalone:false ~wrap_with_fun:(`Named id) ~linkall:false
+          let p = Js_of_ocaml_compiler.Parse_bytecode.from_cmo cmo ic in
+          let wrap_with_fun =
+            match id with
+            | Some id -> `Named id
+            | None -> `Iife
+          in
+          Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun ~linkall:false
             fmt p.debug p.code;
           Format.(pp_print_flush std_formatter ());
           Format.(pp_print_flush err_formatter ());
@@ -539,9 +587,34 @@ module Make (S : S) = struct
 
   let complete_prefix source position =
     let source = Merlin_kernel.Msource.make source in
+    let map_kind : [`Value|`Constructor|`Variant|`Label|
+    `Module|`Modtype|`Type|`MethodCall|`Keyword] -> Toplevel_api_gen.kind_ty = function
+      | `Value -> Value
+      | `Constructor -> Constructor
+      | `Variant -> Variant
+      | `Label -> Label
+      | `Module -> Module
+      | `Modtype -> Modtype
+      | `Type -> Type
+      | `MethodCall -> MethodCall
+      | `Keyword -> Keyword in
+    let position =
+      match position with
+      | Toplevel_api_gen.Start -> `Start
+      | Offset x -> `Offset x
+      | Logical (x, y) -> `Logical (x, y)
+      | End -> `End in
     match Completion.at_pos source position with
     | Some (from, to_, compl) ->
-        let entries = compl.entries in
+        let entries =
+          List.map (fun (entry : Query_protocol.Compl.entry) ->
+            {
+              Toplevel_api_gen.name = entry.name;
+            kind = map_kind entry.kind;
+            desc = entry.desc;
+            info = entry.info;
+            deprecated = entry.deprecated;
+            }    ) compl.entries in
         IdlM.ErrM.return { Toplevel_api_gen.from; to_; entries }
     | None ->
         IdlM.ErrM.return { Toplevel_api_gen.from = 0; to_ = 0; entries = [] }
@@ -577,8 +650,17 @@ module Make (S : S) = struct
     IdlM.ErrM.return errors
 
   let type_enclosing source position =
+    let position =
+      match position with
+      | Toplevel_api_gen.Start -> `Start
+      | Offset x -> `Offset x
+      | Logical (x, y) -> `Logical (x, y)
+      | End -> `End in
     let source = Merlin_kernel.Msource.make source in
     let query = Query_protocol.Type_enclosing (None, position, None) in
     let enclosing = wdispatch source query in
+    let map_index_or_string = function | `Index i -> Toplevel_api_gen.Index i | `String s -> String s in
+    let map_tail_position = function | `No -> Toplevel_api_gen.No | `Tail_position -> Tail_position | `Tail_call -> Tail_call in
+    let enclosing = List.map (fun (x,y,z) -> (x,map_index_or_string y,map_tail_position z)) enclosing in
     IdlM.ErrM.return enclosing
 end

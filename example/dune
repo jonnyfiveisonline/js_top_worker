@@ -15,7 +15,9 @@
 
 (executable
  (name unix_worker)
+ (public_name unix_worker)
  (modes byte)
+ (package js_top_worker-unix)
  (modules unix_worker)
  (link_flags (-linkall))
  (libraries js_top_worker logs logs.fmt rpclib.core))

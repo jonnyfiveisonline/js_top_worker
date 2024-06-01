@@ -52,5 +52,5 @@ module W : sig
   (** Execute a phrase using the toplevel. The toplevel must have been
       initialised first. *)
 
-  val compile_js : rpc -> string -> string -> (string, err) result Lwt.t
+  val compile_js : rpc -> string option -> string -> (string, err) result Lwt.t
 end

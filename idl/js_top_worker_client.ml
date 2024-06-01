@@ -89,7 +89,7 @@ module W : sig
     string ->
     (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) result Lwt.t
 
-  val compile_js : rpc -> string -> string -> (string, Toplevel_api_gen.err) result Lwt.t
+  val compile_js : rpc -> string option -> string -> (string, Toplevel_api_gen.err) result Lwt.t
 end = struct
   type init_libs = Toplevel_api_gen.init_libs
   type err = Toplevel_api_gen.err

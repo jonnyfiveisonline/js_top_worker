@@ -469,7 +469,7 @@ and static_cmi = {
   sc_content: string }
 and cmis = {
   static_cmis: static_cmi list ;
-  dynamic_cmis: dynamic_cmis option }[@@deriving rpcty]
+  dynamic_cmis: dynamic_cmis list }[@@deriving rpcty]
 include
   struct
     let _ = fun (_ : dynamic_cmis) -> ()
@@ -614,7 +614,7 @@ include
     and cmis_dynamic_cmis : (_, cmis) Rpc.Types.field =
       {
         Rpc.Types.fname = "dynamic_cmis";
-        Rpc.Types.field = (Rpc.Types.Option typ_of_dynamic_cmis);
+        Rpc.Types.field = (Rpc.Types.List typ_of_dynamic_cmis);
         Rpc.Types.fdefault = None;
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
@@ -633,7 +633,7 @@ include
              (fun getter ->
                 let open Rresult.R in
                   (getter.Rpc.Types.field_get "dynamic_cmis"
-                     (Rpc.Types.Option typ_of_dynamic_cmis))
+                     (Rpc.Types.List typ_of_dynamic_cmis))
                     >>=
                     (fun cmis_dynamic_cmis ->
                        (getter.Rpc.Types.field_get "static_cmis"
@@ -805,180 +805,263 @@ include
     and _ = error_list
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
 type kind_ty =
-  [ `Constructor  | `Keyword  | `Label  | `MethodCall  | `Modtype  | 
-    `Module 
-  | `Type  | `Value  | `Variant ]
+  | Constructor 
+  | Keyword 
+  | Label 
+  | MethodCall 
+  | Modtype 
+  | Module 
+  | Type 
+  | Value 
+  | Variant [@@deriving rpcty]
 include
   struct
-    open Rpc.Types
     let _ = fun (_ : kind_ty) -> ()
     let rec typ_of_kind_ty =
-      let mk tname tpreview treview =
-        BoxedTag
-          {
-            tname;
-            tcontents = Unit;
-            tversion = None;
-            tdescription = [];
-            tpreview;
-            treview
-          } in
-      Variant
+      Rpc.Types.Variant
         ({
-           vname = "kind";
-           variants =
-             [mk "Constructor"
-                (function | `Constructor -> Some () | _ -> None)
-                (function | () -> `Constructor);
-             mk "Keyword" (function | `Keyword -> Some () | _ -> None)
-               (function | () -> `Keyword);
-             mk "Label" (function | `Label -> Some () | _ -> None)
-               (function | () -> `Label);
-             mk "MethodCall" (function | `MethodCall -> Some () | _ -> None)
-               (function | () -> `MethodCall);
-             mk "Modtype" (function | `Modtype -> Some () | _ -> None)
-               (function | () -> `Modtype);
-             mk "Module" (function | `Module -> Some () | _ -> None)
-               (function | () -> `Module);
-             mk "Type" (function | `Type -> Some () | _ -> None)
-               (function | () -> `Type);
-             mk "Value" (function | `Value -> Some () | _ -> None)
-               (function | () -> `Value);
-             mk "Variant" (function | `Variant -> Some () | _ -> None)
-               (function | () -> `Variant)];
-           vdefault = None;
-           vversion = None;
-           vconstructor =
+           Rpc.Types.vname = "kind_ty";
+           Rpc.Types.variants =
+             [BoxedTag
+                {
+                  Rpc.Types.tname = "Constructor";
+                  Rpc.Types.tcontents = Unit;
+                  Rpc.Types.tversion = None;
+                  Rpc.Types.tdescription = [];
+                  Rpc.Types.tpreview =
+                    ((function | Constructor -> Some () | _ -> None));
+                  Rpc.Types.treview = ((function | () -> Constructor))
+                };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Keyword";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Keyword -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Keyword))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Label";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Label -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Label))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "MethodCall";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | MethodCall -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> MethodCall))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Modtype";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Modtype -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Modtype))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Module";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Module -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Module))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Type";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Type -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Type))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Value";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Value -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Value))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Variant";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Variant -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Variant))
+               }];
+           Rpc.Types.vdefault = None;
+           Rpc.Types.vversion = None;
+           Rpc.Types.vconstructor =
              (fun s' ->
                 fun t ->
                   let s = String.lowercase_ascii s' in
                   match s with
                   | "constructor" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Constructor)
+                        (function | () -> Rresult.R.ok Constructor)
                   | "keyword" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Keyword)
+                        (function | () -> Rresult.R.ok Keyword)
                   | "label" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Label)
+                        (function | () -> Rresult.R.ok Label)
                   | "methodcall" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `MethodCall)
+                        (function | () -> Rresult.R.ok MethodCall)
                   | "modtype" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Modtype)
+                        (function | () -> Rresult.R.ok Modtype)
                   | "module" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Module)
+                        (function | () -> Rresult.R.ok Module)
                   | "type" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Type)
+                        (function | () -> Rresult.R.ok Type)
                   | "value" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Value)
+                        (function | () -> Rresult.R.ok Value)
                   | "variant" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Variant)
+                        (function | () -> Rresult.R.ok Variant)
                   | _ ->
                       Rresult.R.error_msg
                         (Printf.sprintf "Unknown tag '%s'" s))
-         } : kind_ty variant)
-    and kind_ty = { name = "kind_ty"; description = []; ty = typ_of_kind_ty }
+         } : kind_ty Rpc.Types.variant)
+    and kind_ty =
+      {
+        Rpc.Types.name = "kind_ty";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_kind_ty
+      }
     let _ = typ_of_kind_ty
     and _ = kind_ty
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
-type query_protocol_compl_entry = Query_protocol.Compl.entry
+type query_protocol_compl_entry =
+  {
+  name: string ;
+  kind: kind_ty ;
+  desc: string ;
+  info: string ;
+  deprecated: bool }[@@deriving rpcty]
 include
   struct
-    open Rpc.Types
     let _ = fun (_ : query_protocol_compl_entry) -> ()
     let rec query_protocol_compl_entry_name :
-      (_, query_protocol_compl_entry) field =
+      (_, query_protocol_compl_entry) Rpc.Types.field =
       {
-        fname = "name";
-        field = typ_of_source;
-        fdefault = None;
-        fdescription = [];
-        fversion = None;
-        fget = (fun _r -> _r.name);
-        fset = (fun v -> fun _s -> { _s with name = v })
+        Rpc.Types.fname = "name";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.name);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with name = v })
       }
     and query_protocol_compl_entry_kind :
-      (_, query_protocol_compl_entry) field =
+      (_, query_protocol_compl_entry) Rpc.Types.field =
       {
-        fname = "kind";
-        field = typ_of_kind_ty;
-        fdefault = None;
-        fdescription = [];
-        fversion = None;
-        fget = (fun _r -> _r.kind);
-        fset = (fun v -> fun _s -> { _s with kind = v })
+        Rpc.Types.fname = "kind";
+        Rpc.Types.field = typ_of_kind_ty;
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.kind);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with kind = v })
       }
     and query_protocol_compl_entry_desc :
-      (_, query_protocol_compl_entry) field =
+      (_, query_protocol_compl_entry) Rpc.Types.field =
       {
-        fname = "desc";
-        field = typ_of_source;
-        fdefault = None;
-        fdescription = [];
-        fversion = None;
-        fget = (fun _r -> _r.desc);
-        fset = (fun v -> fun _s -> { _s with desc = v })
+        Rpc.Types.fname = "desc";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.desc);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with desc = v })
       }
     and query_protocol_compl_entry_info :
-      (_, query_protocol_compl_entry) field =
+      (_, query_protocol_compl_entry) Rpc.Types.field =
       {
-        fname = "info";
-        field = typ_of_source;
-        fdefault = None;
-        fdescription = [];
-        fversion = None;
-        fget = (fun _r -> _r.info);
-        fset = (fun v -> fun _s -> { _s with info = v })
+        Rpc.Types.fname = "info";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.info);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with info = v })
       }
     and query_protocol_compl_entry_deprecated :
-      (_, query_protocol_compl_entry) field =
+      (_, query_protocol_compl_entry) Rpc.Types.field =
       {
-        fname = "deprecated";
-        field = (let open Rpc.Types in Basic Bool);
-        fdefault = None;
-        fdescription = [];
-        fversion = None;
-        fget = (fun _r -> _r.deprecated);
-        fset = (fun v -> fun _s -> { _s with deprecated = v })
+        Rpc.Types.fname = "deprecated";
+        Rpc.Types.field = (let open Rpc.Types in Basic Bool);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.deprecated);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with deprecated = v })
       }
     and typ_of_query_protocol_compl_entry =
-      Struct
+      Rpc.Types.Struct
         ({
-           fields =
-             [BoxedField query_protocol_compl_entry_name;
-             BoxedField query_protocol_compl_entry_kind;
-             BoxedField query_protocol_compl_entry_desc;
-             BoxedField query_protocol_compl_entry_info;
-             BoxedField query_protocol_compl_entry_deprecated];
-           sname = "query_protocol_compl_entry";
-           version = None;
-           constructor =
+           Rpc.Types.fields =
+             [Rpc.Types.BoxedField query_protocol_compl_entry_name;
+             Rpc.Types.BoxedField query_protocol_compl_entry_kind;
+             Rpc.Types.BoxedField query_protocol_compl_entry_desc;
+             Rpc.Types.BoxedField query_protocol_compl_entry_info;
+             Rpc.Types.BoxedField query_protocol_compl_entry_deprecated];
+           Rpc.Types.sname = "query_protocol_compl_entry";
+           Rpc.Types.version = None;
+           Rpc.Types.constructor =
              (fun getter ->
                 let open Rresult.R in
-                  (getter.field_get "deprecated"
+                  (getter.Rpc.Types.field_get "deprecated"
                      (let open Rpc.Types in Basic Bool))
                     >>=
                     (fun query_protocol_compl_entry_deprecated ->
-                       (getter.field_get "info" typ_of_source) >>=
+                       (getter.Rpc.Types.field_get "info"
+                          (let open Rpc.Types in Basic String))
+                         >>=
                          (fun query_protocol_compl_entry_info ->
-                            (getter.field_get "desc" typ_of_source) >>=
+                            (getter.Rpc.Types.field_get "desc"
+                               (let open Rpc.Types in Basic String))
+                              >>=
                               (fun query_protocol_compl_entry_desc ->
-                                 (getter.field_get "kind" typ_of_kind_ty) >>=
+                                 (getter.Rpc.Types.field_get "kind"
+                                    typ_of_kind_ty)
+                                   >>=
                                    (fun query_protocol_compl_entry_kind ->
-                                      (getter.field_get "name" typ_of_source)
+                                      (getter.Rpc.Types.field_get "name"
+                                         (let open Rpc.Types in Basic String))
                                         >>=
                                         (fun query_protocol_compl_entry_name
                                            ->
                                            return
                                              {
-                                               Query_protocol.Compl.name =
+                                               name =
                                                  query_protocol_compl_entry_name;
                                                kind =
                                                  query_protocol_compl_entry_kind;
@@ -989,12 +1072,12 @@ include
                                                deprecated =
                                                  query_protocol_compl_entry_deprecated
                                              }))))))
-         } : query_protocol_compl_entry structure)
+         } : query_protocol_compl_entry Rpc.Types.structure)
     and query_protocol_compl_entry =
       {
-        name = "query_protocol_compl_entry";
-        description = [];
-        ty = typ_of_query_protocol_compl_entry
+        Rpc.Types.name = "query_protocol_compl_entry";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_query_protocol_compl_entry
       }
     let _ = query_protocol_compl_entry_name
     and _ = query_protocol_compl_entry_kind
@@ -1003,95 +1086,6 @@ include
     and _ = query_protocol_compl_entry_deprecated
     and _ = typ_of_query_protocol_compl_entry
     and _ = query_protocol_compl_entry
-  end[@@ocaml.doc "@inline"][@@merlin.hide ]
-include
-  struct
-    open Rpc.Types
-    let _ = fun (_ : Merlin_kernel.Msource.position) -> ()
-    let rec typ_of_msource_position =
-      Variant
-        ({
-           vname = "msource_position";
-           variants =
-             [BoxedTag
-                {
-                  tname = "Start";
-                  tcontents = Unit;
-                  tversion = None;
-                  tdescription = [];
-                  tpreview = ((function | `Start -> Some () | _ -> None));
-                  treview = ((function | () -> `Start))
-                };
-             BoxedTag
-               {
-                 tname = "Offset";
-                 tcontents = ((let open Rpc.Types in Basic Int));
-                 tversion = None;
-                 tdescription = [];
-                 tpreview = ((function | `Offset a0 -> Some a0 | _ -> None));
-                 treview = ((function | a0 -> `Offset a0))
-               };
-             BoxedTag
-               {
-                 tname = "Logical";
-                 tcontents =
-                   (Tuple
-                      (((let open Rpc.Types in Basic Int)),
-                        ((let open Rpc.Types in Basic Int))));
-                 tversion = None;
-                 tdescription = [];
-                 tpreview =
-                   ((function
-                     | `Logical (a0, a1) -> Some (a0, a1)
-                     | _ -> None));
-                 treview = ((function | (a0, a1) -> `Logical (a0, a1)))
-               };
-             BoxedTag
-               {
-                 tname = "End";
-                 tcontents = Unit;
-                 tversion = None;
-                 tdescription = [];
-                 tpreview = ((function | `End -> Some () | _ -> None));
-                 treview = ((function | () -> `End))
-               }];
-           vdefault = None;
-           vversion = None;
-           vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "start" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Start)
-                  | "offset" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic Int))
-                        (function | a0 -> Rresult.R.ok (`Offset a0))
-                  | "logical" ->
-                      Rresult.R.bind
-                        (t.tget
-                           (Tuple
-                              ((let open Rpc.Types in Basic Int),
-                                (let open Rpc.Types in Basic Int))))
-                        (function
-                         | (a0, a1) -> Rresult.R.ok (`Logical (a0, a1)))
-                  | "end" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `End)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
-         } : Merlin_kernel.Msource.position variant)
-    and msource_position =
-      {
-        name = "msource_position";
-        description = [];
-        ty = typ_of_msource_position
-      }
-    let _ = typ_of_msource_position
-    and _ = msource_position
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
 type completions =
   {
@@ -1174,104 +1168,206 @@ include
     and _ = typ_of_completions
     and _ = completions
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
-type is_tail_position = [ `No  | `Tail_position  | `Tail_call ]
+type msource_position =
+  | Start 
+  | Offset of int 
+  | Logical of int * int 
+  | End [@@deriving rpcty]
 include
   struct
-    open Rpc.Types
-    let _ = fun (_ : is_tail_position) -> ()
-    let rec typ_of_is_tail_position =
-      Variant
+    let _ = fun (_ : msource_position) -> ()
+    let rec typ_of_msource_position =
+      Rpc.Types.Variant
         ({
-           vname = "is_tail_position";
-           variants =
+           Rpc.Types.vname = "msource_position";
+           Rpc.Types.variants =
              [BoxedTag
                 {
-                  tname = "No";
-                  tcontents = Unit;
-                  tversion = None;
-                  tdescription = [];
-                  tpreview = ((function | `No -> Some () | _ -> None));
-                  treview = ((function | () -> `No))
+                  Rpc.Types.tname = "Start";
+                  Rpc.Types.tcontents = Unit;
+                  Rpc.Types.tversion = None;
+                  Rpc.Types.tdescription = [];
+                  Rpc.Types.tpreview =
+                    ((function | Start -> Some () | _ -> None));
+                  Rpc.Types.treview = ((function | () -> Start))
                 };
              BoxedTag
                {
-                 tname = "Tail_position";
-                 tcontents = Unit;
-                 tversion = None;
-                 tdescription = [];
-                 tpreview =
-                   ((function | `Tail_position -> Some () | _ -> None));
-                 treview = ((function | () -> `Tail_position))
+                 Rpc.Types.tname = "Offset";
+                 Rpc.Types.tcontents = ((let open Rpc.Types in Basic Int));
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Offset a0 -> Some a0 | _ -> None));
+                 Rpc.Types.treview = ((function | a0 -> Offset a0))
                };
              BoxedTag
                {
-                 tname = "Tail_call";
-                 tcontents = Unit;
-                 tversion = None;
-                 tdescription = [];
-                 tpreview = ((function | `Tail_call -> Some () | _ -> None));
-                 treview = ((function | () -> `Tail_call))
+                 Rpc.Types.tname = "Logical";
+                 Rpc.Types.tcontents =
+                   (Tuple
+                      (((let open Rpc.Types in Basic Int)),
+                        ((let open Rpc.Types in Basic Int))));
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Logical (a0, a1) -> Some (a0, a1) | _ -> None));
+                 Rpc.Types.treview =
+                   ((function | (a0, a1) -> Logical (a0, a1)))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "End";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | End -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> End))
                }];
-           vdefault = None;
-           vversion = None;
-           vconstructor =
+           Rpc.Types.vdefault = None;
+           Rpc.Types.vversion = None;
+           Rpc.Types.vconstructor =
+             (fun s' ->
+                fun t ->
+                  let s = String.lowercase_ascii s' in
+                  match s with
+                  | "start" ->
+                      Rresult.R.bind (t.tget Unit)
+                        (function | () -> Rresult.R.ok Start)
+                  | "offset" ->
+                      Rresult.R.bind
+                        (t.tget (let open Rpc.Types in Basic Int))
+                        (function | a0 -> Rresult.R.ok (Offset a0))
+                  | "logical" ->
+                      Rresult.R.bind
+                        (t.tget
+                           (Tuple
+                              ((let open Rpc.Types in Basic Int),
+                                (let open Rpc.Types in Basic Int))))
+                        (function
+                         | (a0, a1) -> Rresult.R.ok (Logical (a0, a1)))
+                  | "end" ->
+                      Rresult.R.bind (t.tget Unit)
+                        (function | () -> Rresult.R.ok End)
+                  | _ ->
+                      Rresult.R.error_msg
+                        (Printf.sprintf "Unknown tag '%s'" s))
+         } : msource_position Rpc.Types.variant)
+    and msource_position =
+      {
+        Rpc.Types.name = "msource_position";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_msource_position
+      }
+    let _ = typ_of_msource_position
+    and _ = msource_position
+  end[@@ocaml.doc "@inline"][@@merlin.hide ]
+type is_tail_position =
+  | No 
+  | Tail_position 
+  | Tail_call [@@deriving rpcty]
+include
+  struct
+    let _ = fun (_ : is_tail_position) -> ()
+    let rec typ_of_is_tail_position =
+      Rpc.Types.Variant
+        ({
+           Rpc.Types.vname = "is_tail_position";
+           Rpc.Types.variants =
+             [BoxedTag
+                {
+                  Rpc.Types.tname = "No";
+                  Rpc.Types.tcontents = Unit;
+                  Rpc.Types.tversion = None;
+                  Rpc.Types.tdescription = [];
+                  Rpc.Types.tpreview =
+                    ((function | No -> Some () | _ -> None));
+                  Rpc.Types.treview = ((function | () -> No))
+                };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Tail_position";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Tail_position -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Tail_position))
+               };
+             BoxedTag
+               {
+                 Rpc.Types.tname = "Tail_call";
+                 Rpc.Types.tcontents = Unit;
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | Tail_call -> Some () | _ -> None));
+                 Rpc.Types.treview = ((function | () -> Tail_call))
+               }];
+           Rpc.Types.vdefault = None;
+           Rpc.Types.vversion = None;
+           Rpc.Types.vconstructor =
              (fun s' ->
                 fun t ->
                   let s = String.lowercase_ascii s' in
                   match s with
                   | "no" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `No)
+                        (function | () -> Rresult.R.ok No)
                   | "tail_position" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Tail_position)
+                        (function | () -> Rresult.R.ok Tail_position)
                   | "tail_call" ->
                       Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok `Tail_call)
+                        (function | () -> Rresult.R.ok Tail_call)
                   | _ ->
                       Rresult.R.error_msg
                         (Printf.sprintf "Unknown tag '%s'" s))
-         } : is_tail_position variant)
+         } : is_tail_position Rpc.Types.variant)
     and is_tail_position =
       {
-        name = "is_tail_position";
-        description = [];
-        ty = typ_of_is_tail_position
+        Rpc.Types.name = "is_tail_position";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_is_tail_position
       }
     let _ = typ_of_is_tail_position
     and _ = is_tail_position
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
-type index_or_string = [ `Index of int  | `String of string ]
+type index_or_string =
+  | Index of int 
+  | String of string [@@deriving rpcty]
 include
   struct
-    open Rpc.Types
     let _ = fun (_ : index_or_string) -> ()
     let rec typ_of_index_or_string =
-      Variant
+      Rpc.Types.Variant
         ({
-           vname = "index_or_string";
-           variants =
+           Rpc.Types.vname = "index_or_string";
+           Rpc.Types.variants =
              [BoxedTag
                 {
-                  tname = "Index";
-                  tcontents = ((let open Rpc.Types in Basic Int));
-                  tversion = None;
-                  tdescription = [];
-                  tpreview = ((function | `Index a0 -> Some a0 | _ -> None));
-                  treview = ((function | a0 -> `Index a0))
+                  Rpc.Types.tname = "Index";
+                  Rpc.Types.tcontents = ((let open Rpc.Types in Basic Int));
+                  Rpc.Types.tversion = None;
+                  Rpc.Types.tdescription = [];
+                  Rpc.Types.tpreview =
+                    ((function | Index a0 -> Some a0 | _ -> None));
+                  Rpc.Types.treview = ((function | a0 -> Index a0))
                 };
              BoxedTag
                {
-                 tname = "String";
-                 tcontents = ((let open Rpc.Types in Basic String));
-                 tversion = None;
-                 tdescription = [];
-                 tpreview = ((function | `String a0 -> Some a0 | _ -> None));
-                 treview = ((function | a0 -> `String a0))
+                 Rpc.Types.tname = "String";
+                 Rpc.Types.tcontents = ((let open Rpc.Types in Basic String));
+                 Rpc.Types.tversion = None;
+                 Rpc.Types.tdescription = [];
+                 Rpc.Types.tpreview =
+                   ((function | String a0 -> Some a0 | _ -> None));
+                 Rpc.Types.treview = ((function | a0 -> String a0))
                }];
-           vdefault = None;
-           vversion = None;
-           vconstructor =
+           Rpc.Types.vdefault = None;
+           Rpc.Types.vversion = None;
+           Rpc.Types.vconstructor =
              (fun s' ->
                 fun t ->
                   let s = String.lowercase_ascii s' in
@@ -1279,20 +1375,20 @@ include
                   | "index" ->
                       Rresult.R.bind
                         (t.tget (let open Rpc.Types in Basic Int))
-                        (function | a0 -> Rresult.R.ok (`Index a0))
+                        (function | a0 -> Rresult.R.ok (Index a0))
                   | "string" ->
                       Rresult.R.bind
                         (t.tget (let open Rpc.Types in Basic String))
-                        (function | a0 -> Rresult.R.ok (`String a0))
+                        (function | a0 -> Rresult.R.ok (String a0))
                   | _ ->
                       Rresult.R.error_msg
                         (Printf.sprintf "Unknown tag '%s'" s))
-         } : index_or_string variant)
+         } : index_or_string Rpc.Types.variant)
     and index_or_string =
       {
-        name = "index_or_string";
-        description = [];
-        ty = typ_of_index_or_string
+        Rpc.Types.name = "index_or_string";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_index_or_string
       }
     let _ = typ_of_index_or_string
     and _ = index_or_string
@@ -1909,6 +2005,21 @@ include
     let _ = typ_of_err
     and _ = err
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
+type opt_id = string option[@@deriving rpcty]
+include
+  struct
+    let _ = fun (_ : opt_id) -> ()
+    let rec typ_of_opt_id =
+      Rpc.Types.Option (let open Rpc.Types in Basic String)
+    and opt_id =
+      {
+        Rpc.Types.name = "opt_id";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_opt_id
+      }
+    let _ = typ_of_opt_id
+    and _ = opt_id
+  end[@@ocaml.doc "@inline"][@@merlin.hide ]
 module E =
   (Idl.Error.Make)(struct
                      type t = err
@@ -1932,7 +2043,7 @@ module Make(R:RPC) =
     let implementation = implement description
     let unit_p = Param.mk Types.unit
     let phrase_p = Param.mk Types.string
-    let id_p = Param.mk Types.string
+    let id_p = Param.mk opt_id
     let typecheck_result_p = Param.mk exec_result
     let exec_result_p = Param.mk exec_result
     let source_p = Param.mk source
