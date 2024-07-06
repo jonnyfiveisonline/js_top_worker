@@ -9,12 +9,13 @@ type captured = { stdout : string; stderr : string }
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
 
-  let ppx_rewriters = ref [fun _ -> Logs.info (fun m -> m "Rewriting..."); Ppx_js.mapper]
+  let ppx_rewriters = ref [fun _ -> Ppx_js.mapper]
 
   let () = Ast_mapper.register_function := fun _ f -> ppx_rewriters := f :: !ppx_rewriters
 
   let preprocess_structure str =
     let open Ast_mapper in
+    Printf.eprintf "Rewriting...\n%!"; 
     List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
         let mapper = ppx_rewriter [] in
         mapper.structure mapper str)
@@ -36,6 +37,9 @@ module type S = sig
   val capture : (unit -> 'a) -> unit -> captured * 'a
   val create_file : name:string -> content:string -> unit
   val sync_get : string -> string option
+
+  val import_scripts : string list -> unit
+  val init_function : string -> (unit -> unit )
 end
 
 module Make (S : S) = struct
@@ -282,17 +286,17 @@ module Make (S : S) = struct
         init_libs.cmis.static_cmis;
       List.iter add_dynamic_cmis init_libs.cmis.dynamic_cmis;
 
-      (*import_scripts
+      S.import_scripts
           (List.map (fun cma -> cma.Toplevel_api_gen.url) init_libs.cmas);
-        functions :=
-          Some
-            (List.map
-               (fun func_name ->
-                 Logs.info (fun m -> m "Function: %s" func_name);
-                 let func = Js.Unsafe.js_expr func_name in
-                 fun () ->
-                   Js.Unsafe.fun_call func [| Js.Unsafe.inject Dom_html.window |])
-               (List.map (fun cma -> cma.Toplevel_api_gen.fn) init_libs.cmas)); *)
+      functions :=
+        Some
+          (List.map
+              (fun func_name ->
+                Logs.info (fun m -> m "Function: %s" func_name);
+                S.init_function func_name)
+            (List.map (fun cma -> cma.Toplevel_api_gen.fn) init_libs.cmas));
+(* 
+                 *)
       functions := Some [];
       Logs.info (fun m -> m "init() finished");
 

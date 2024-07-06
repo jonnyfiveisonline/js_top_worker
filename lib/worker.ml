@@ -76,6 +76,14 @@ module S : Impl.S = struct
 
   let sync_get = sync_get
   let create_file = Js_of_ocaml.Sys_js.create_file
+
+  let import_scripts = Js_of_ocaml.Worker.import_scripts
+
+  let init_function func_name =
+    let open Js_of_ocaml in
+    let func = Js.Unsafe.js_expr func_name in
+    fun () ->
+      Js.Unsafe.fun_call func [| Js.Unsafe.inject Dom_html.window |]
 end
 
 module M = Impl.Make (S)
