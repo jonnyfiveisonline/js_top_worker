@@ -8,6 +8,7 @@ bug-reports: "https://github.com/jonludlam/js_top_worker/issues"
 depends: [
   "ocaml" {>= "4.04"}
   "dune" {>= "2.9.1"}
+  "mime_printer"
   "rresult"
 ]
 build : [
