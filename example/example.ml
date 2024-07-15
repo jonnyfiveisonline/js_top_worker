@@ -14,7 +14,7 @@ let initialise s callback =
         {
           path = "/static/cmis";
           cmas = [];
-          cmis = { dynamic_cmis = None; static_cmis = [] };
+          cmis = { dynamic_cmis = []; static_cmis = [] };
         }
   in
   Lwt.return (Ok rpc)
