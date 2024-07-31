@@ -468,7 +468,7 @@ module Make (S : S) = struct
             | Some id -> `Named id
             | None -> `Iife
           in
-          Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun ~linkall:false
+          Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun ~link:`No
             fmt p.debug p.code;
           Format.(pp_print_flush std_formatter ());
           Format.(pp_print_flush err_formatter ());
