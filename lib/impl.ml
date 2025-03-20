@@ -405,6 +405,8 @@ module Make (S : S) = struct
       let phr = Parse.toplevel_phrase l in
       Typecore.reset_delayed_checks ();
       Env.reset_cache_toplevel ();
+      Js_of_ocaml_compiler.Config.set_target `JavaScript;
+      Js_of_ocaml_compiler.Config.set_effects_backend `Cps;
       let oldenv = !Toploop.toplevel_env in
       (* let oldenv = Compmisc.initial_env() in *)
       let phr = JsooTopPpx.preprocess_phrase phr in

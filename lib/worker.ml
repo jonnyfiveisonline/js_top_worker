@@ -6,7 +6,7 @@ let optbind : 'a option -> ('a -> 'b option) -> 'b option =
 
 let log fmt =
   Format.kasprintf
-    (fun s -> Js_of_ocaml.(Firebug.console##log (Js.string s)))
+    (fun s -> Js_of_ocaml.(Console.console##log (Js.string s)))
     fmt
 
 let sync_get url =
@@ -20,7 +20,7 @@ let sync_get url =
       Js.Opt.case
         (File.CoerceTo.arrayBuffer x##.response)
         (fun () ->
-          Firebug.console##log (Js.string "Failed to receive file");
+          Console.console##log (Js.string "Failed to receive file");
           None)
         (fun b -> Some (Typed_array.String.of_arrayBuffer b))
   | _ -> None
@@ -93,7 +93,7 @@ let run () =
   let open Js_of_ocaml in
   let open M in
   try
-    Firebug.console##log (Js.string "Starting worker...");
+    Console.console##log (Js.string "Starting worker...");
 
     Logs.set_reporter (Logs_browser.console_reporter ());
     Logs.set_level (Some Logs.Info);
@@ -107,6 +107,6 @@ let run () =
     Server.compile_js compile_js;
     let rpc_fn = Impl.IdlM.server Server.implementation in
     Js_of_ocaml.Worker.set_onmessage (fun x -> ignore (server rpc_fn x));
-    Firebug.console##log (Js.string "All finished")
+    Console.console##log (Js.string "All finished")
   with e ->
-    Firebug.console##log (Js.string ("Exception: " ^ Printexc.to_string e))
+    Console.console##log (Js.string ("Exception: " ^ Printexc.to_string e))
