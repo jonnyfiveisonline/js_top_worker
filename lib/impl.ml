@@ -137,6 +137,9 @@ module Make (S : S) = struct
     | _ -> None
 
   let execute printval ?pp_code ?highlight_location pp_answer s =
+    let s =
+      let l = String.length s in
+      if String.sub s (l-2) 2 = ";;" then s else s ^ ";;" in
     let lb = Lexing.from_function (refill_lexbuf s (ref 0) pp_code) in
     (try
        while true do
