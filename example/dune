@@ -7,11 +7,19 @@
  (libraries js_top_worker_client lwt js_of_ocaml))
 
 (executable
+ (name example2)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (modes js)
+ (modules example2)
+ (libraries js_top_worker_client lwt js_of_ocaml))
+
+(executable
  (name worker)
  (modes byte)
  (modules worker)
  (link_flags (-linkall))
- (libraries js_top_worker-web logs.browser))
+ (libraries js_top_worker-web logs.browser mime_printer tyxml))
 
 (executable
  (name unix_worker)
@@ -28,6 +36,12 @@
  (libraries js_top_worker_client rpclib.cmdliner))
 
 (rule
+ (targets
+  (dir cmis))
+ (action
+  (system "mkdir -p cmis; cp %{ocaml_where}/*.cmi cmis")))
+
+(rule
  (targets worker.js)
  (deps stubs.js)
  (action
@@ -42,3 +56,32 @@
    %{dep:worker.bc}
    -o
    %{targets})))
+
+(rule
+ (targets worker_nocmis.js)
+ (deps stubs.js)
+ (action
+  (run
+   %{bin:js_of_ocaml}
+   --toplevel
+   ; --pretty
+   --no-cmis
+   +toplevel.js
+   +dynlink.js
+   stubs.js
+   %{dep:worker.bc}
+   -o
+   %{targets})))
+
+(alias
+ (name default)
+ (deps
+  worker.js
+  worker_nocmis.js
+  index.html
+  example.bc.js
+  example2.bc.js
+  index2.html
+  cmis
+  server.py
+  (alias_rec all)))

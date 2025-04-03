@@ -310,13 +310,27 @@ module Make (S : S) = struct
 
   let setup () =
     try
-      Logs.info (fun m -> m "setup()");
+      Logs.info (fun m -> m "setup() ...");
 
       let o =
-        match !functions with
-        | Some l -> setup l ()
-        | None -> failwith "Error: toplevel has not been initialised"
-      in
+
+      (try
+          match !functions with
+          | Some l -> setup l ()
+          | None -> failwith "Error: toplevel has not been initialised"
+      with
+      | Persistent_env.Error e ->
+          Persistent_env.report_error Format.err_formatter e;
+          let err = Format.asprintf "%a" Persistent_env.report_error e in
+          failwith ("Error: " ^ err)
+      | Env.Error e ->
+          Env.report_error Format.err_formatter e;
+          let err = Format.asprintf "%a" Env.report_error e in
+          failwith ("Error: " ^ err))
+        in
+      
+      Logs.info (fun m -> m "setup() finished");
+
       IdlM.ErrM.return
         Toplevel_api_gen.
           {
@@ -484,6 +498,32 @@ module Make (S : S) = struct
       | _ -> IdlM.ErrM.return_err (Toplevel_api_gen.InternalError "Parse error")
     with e -> IdlM.ErrM.return ("Exception: %s" ^ Printexc.to_string e)
 
+  let handle_toplevel stripped =
+    if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' ' then begin
+      Printf.eprintf "Warning, ignoring toplevel block without a leading '# '.\n";
+      IdlM.ErrM.return { Toplevel_api_gen.script=stripped; mime_vals=[] }
+    end else begin
+      let s = String.sub stripped 2 (String.length stripped - 2) in
+      let list = Ocamltop.parse_toplevel s in
+      let buf = Buffer.create 1024 in
+      let mime_vals = List.fold_left (fun acc (phr, _output) ->
+        let new_output = execute phr |> IdlM.T.get |> M.run |> Result.get_ok in
+        Printf.bprintf buf "# %s\n" phr;
+        let r = (Option.to_list new_output.stdout) @ (Option.to_list new_output.stderr) @ (Option.to_list new_output.caml_ppf) in
+        let r = List.concat_map (fun l -> Astring.String.cuts ~sep:"\n" l) r in
+        List.iter (fun x -> Printf.bprintf buf "  %s\n" x) r;
+        let mime_vals = new_output.mime_vals in
+        acc @ mime_vals
+        ) [] list in
+      let content_txt = Buffer.contents buf in
+      let content_txt = String.sub content_txt 0 (String.length content_txt - 1) in
+      let result = { Toplevel_api_gen.script=content_txt; mime_vals } in
+      IdlM.ErrM.return result
+    end
+    
+  let exec_toplevel (phrase : string) =
+    handle_toplevel phrase
+
   let config () =
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
@@ -629,34 +669,38 @@ module Make (S : S) = struct
         IdlM.ErrM.return { Toplevel_api_gen.from = 0; to_ = 0; entries = [] }
 
   let query_errors source =
-    let source = Merlin_kernel.Msource.make source in
-    let query =
-      Query_protocol.Errors { lexing = true; parsing = true; typing = true }
-    in
-    let errors =
-      wdispatch source query
-      |> StdLabels.List.map
-           ~f:(fun
-               (Ocaml_parsing.Location.{ kind; main = _; sub; source } as error)
-             ->
-             let of_sub sub =
-               Ocaml_parsing.Location.print_sub_msg Format.str_formatter sub;
-               String.trim (Format.flush_str_formatter ())
-             in
-             let loc = Ocaml_parsing.Location.loc_of_report error in
-             let main =
-               Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main error
-               |> String.trim
-             in
-             {
-               Toplevel_api_gen.kind;
-               loc;
-               main;
-               sub = StdLabels.List.map ~f:of_sub sub;
-               source;
-             })
-    in
-    IdlM.ErrM.return errors
+    try
+      let source = Merlin_kernel.Msource.make source in
+      let query =
+        Query_protocol.Errors { lexing = true; parsing = true; typing = true }
+      in
+      let errors =
+        wdispatch source query
+        |> StdLabels.List.map
+            ~f:(fun
+                (Ocaml_parsing.Location.{ kind; main = _; sub; source } as error)
+              ->
+              let of_sub sub =
+                Ocaml_parsing.Location.print_sub_msg Format.str_formatter sub;
+                String.trim (Format.flush_str_formatter ())
+              in
+              let loc = Ocaml_parsing.Location.loc_of_report error in
+              let main =
+                Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main error
+                |> String.trim
+              in
+              {
+                Toplevel_api_gen.kind;
+                loc;
+                main;
+                sub = StdLabels.List.map ~f:of_sub sub;
+                source;
+              })
+      in
+      IdlM.ErrM.return errors
+    with e ->
+      IdlM.ErrM.return_err
+        (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
   let type_enclosing source position =
     let position =

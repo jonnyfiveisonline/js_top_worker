@@ -105,6 +105,7 @@ let run () =
     Server.query_errors query_errors;
     Server.type_enclosing type_enclosing;
     Server.compile_js compile_js;
+    Server.exec_toplevel exec_toplevel;
     let rpc_fn = Impl.IdlM.server Server.implementation in
     Js_of_ocaml.Worker.set_onmessage (fun x -> ignore (server rpc_fn x));
     Console.console##log (Js.string "All finished")

@@ -166,6 +166,13 @@ type exec_result = {
 [@@deriving rpcty]
 (** Represents the result of executing a toplevel phrase *)
 
+type exec_toplevel_result = {
+  script : string;
+  mime_vals : mime_val list;
+}
+[@@deriving rpcty]
+(** Represents the result of executing a toplevel script *)
+
 type cma = {
   url : string;  (** URL where the cma is available *)
   fn : string;  (** Name of the 'wrapping' function *)
@@ -213,6 +220,14 @@ module Make (R : RPC) = struct
   let error_list_p = Param.mk error_list
   let typed_enclosings_p = Param.mk typed_enclosings_list
 
+  let toplevel_script_p = Param.mk ~description:[
+    "A toplevel script is a sequence of toplevel phrases interspersed with";
+    "The output from the toplevel. Each phase must be preceded by '# ', and";
+    "the output from the toplevel is indented by 2 spaces."
+  ] Types.string
+
+  let exec_toplevel_result_p = Param.mk exec_toplevel_result
+
   let init_libs =
     Param.mk ~name:"init_libs"
       ~description:
@@ -249,6 +264,14 @@ module Make (R : RPC) = struct
         "Initialised first.";
       ]
       (phrase_p @-> returning exec_result_p err)
+
+  let exec_toplevel =
+    declare "exec_toplevel"
+      [
+        "Execute a toplevel script. The toplevel must have been";
+        "Initialised first. Returns the updated toplevel script.";
+      ]
+      (toplevel_script_p @-> returning exec_toplevel_result_p err)
 
   let compile_js =
     declare "compile_js"

@@ -1823,6 +1823,72 @@ include
     and _ = typ_of_exec_result
     and _ = exec_result
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
+type exec_toplevel_result = {
+  script: string ;
+  mime_vals: mime_val list }[@@deriving rpcty][@@ocaml.doc
+                                                " Represents the result of executing a toplevel script "]
+include
+  struct
+    let _ = fun (_ : exec_toplevel_result) -> ()
+    let rec exec_toplevel_result_script :
+      (_, exec_toplevel_result) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "script";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.script);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with script = v })
+      }
+    and exec_toplevel_result_mime_vals :
+      (_, exec_toplevel_result) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "mime_vals";
+        Rpc.Types.field = (Rpc.Types.List typ_of_mime_val);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.mime_vals);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with mime_vals = v })
+      }
+    and typ_of_exec_toplevel_result =
+      Rpc.Types.Struct
+        ({
+           Rpc.Types.fields =
+             [Rpc.Types.BoxedField exec_toplevel_result_script;
+             Rpc.Types.BoxedField exec_toplevel_result_mime_vals];
+           Rpc.Types.sname = "exec_toplevel_result";
+           Rpc.Types.version = None;
+           Rpc.Types.constructor =
+             (fun getter ->
+                let open Rresult.R in
+                  (getter.Rpc.Types.field_get "mime_vals"
+                     (Rpc.Types.List typ_of_mime_val))
+                    >>=
+                    (fun exec_toplevel_result_mime_vals ->
+                       (getter.Rpc.Types.field_get "script"
+                          (let open Rpc.Types in Basic String))
+                         >>=
+                         (fun exec_toplevel_result_script ->
+                            return
+                              {
+                                script = exec_toplevel_result_script;
+                                mime_vals = exec_toplevel_result_mime_vals
+                              })))
+         } : exec_toplevel_result Rpc.Types.structure)
+    and exec_toplevel_result =
+      {
+        Rpc.Types.name = "exec_toplevel_result";
+        Rpc.Types.description =
+          ["Represents the result of executing a toplevel script"];
+        Rpc.Types.ty = typ_of_exec_toplevel_result
+      }
+    let _ = exec_toplevel_result_script
+    and _ = exec_toplevel_result_mime_vals
+    and _ = typ_of_exec_toplevel_result
+    and _ = exec_toplevel_result
+  end[@@ocaml.doc "@inline"][@@merlin.hide ]
 type cma =
   {
   url: string [@ocaml.doc " URL where the cma is available "];
@@ -2051,6 +2117,13 @@ module Make(R:RPC) =
     let completions_p = Param.mk completions
     let error_list_p = Param.mk error_list
     let typed_enclosings_p = Param.mk typed_enclosings_list
+    let toplevel_script_p =
+      Param.mk
+        ~description:["A toplevel script is a sequence of toplevel phrases interspersed with";
+                     "The output from the toplevel. Each phase must be preceded by '# ', and";
+                     "the output from the toplevel is indented by 2 spaces."]
+        Types.string
+    let exec_toplevel_result_p = Param.mk exec_toplevel_result
     let init_libs =
       Param.mk ~name:"init_libs"
         ~description:["Libraries to load during the initialisation of the toplevel. ";
@@ -2075,6 +2148,11 @@ module Make(R:RPC) =
       declare "exec"
         ["Execute a phrase using the toplevel. The toplevel must have been";
         "Initialised first."] (phrase_p @-> (returning exec_result_p err))
+    let exec_toplevel =
+      declare "exec_toplevel"
+        ["Execute a toplevel script. The toplevel must have been";
+        "Initialised first. Returns the updated toplevel script."]
+        (toplevel_script_p @-> (returning exec_toplevel_result_p err))
     let compile_js =
       declare "compile_js"
         ["Compile a phrase to javascript. The toplevel must have been";

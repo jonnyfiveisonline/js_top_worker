@@ -80,7 +80,8 @@ module W = struct
   let exec rpc a = Wraw.exec rpc a |> Rpc_fut.T.get
   let compile_js rpc id s = Wraw.compile_js rpc id s |> Rpc_fut.T.get
   let query_errors rpc doc = Wraw.query_errors rpc doc |> Rpc_fut.T.get
-
+  let exec_toplevel rpc doc = Wraw.exec_toplevel rpc doc |> Rpc_fut.T.get
+  
   let complete_prefix rpc doc pos =
     Wraw.complete_prefix rpc doc pos |> Rpc_fut.T.get
 
