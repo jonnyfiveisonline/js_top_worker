@@ -8,7 +8,6 @@
   js_top_worker-rpc
   js_of_ocaml-compiler
   js_of_ocaml-ppx
-  js_of_ocaml
   astring
   mime_printer
   compiler-libs.common
