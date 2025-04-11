@@ -1948,10 +1948,14 @@ include
     and _ = typ_of_cma
     and _ = cma
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
-type init_libs = {
+type init_libs =
+  {
   path: string ;
   cmis: cmis ;
-  cmas: cma list }[@@deriving rpcty]
+  cmas: cma list ;
+  findlib_metas: string list ;
+  findlib_requires: string list ;
+  stdlib_dcs: string }[@@deriving rpcty]
 include
   struct
     let _ = fun (_ : init_libs) -> ()
@@ -1985,34 +1989,93 @@ include
         Rpc.Types.fget = (fun _r -> _r.cmas);
         Rpc.Types.fset = (fun v -> fun _s -> { _s with cmas = v })
       }
+    and init_libs_findlib_metas : (_, init_libs) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "findlib_metas";
+        Rpc.Types.field =
+          (Rpc.Types.List (let open Rpc.Types in Basic String));
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.findlib_metas);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with findlib_metas = v })
+      }
+    and init_libs_findlib_requires : (_, init_libs) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "findlib_requires";
+        Rpc.Types.field =
+          (Rpc.Types.List (let open Rpc.Types in Basic String));
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.findlib_requires);
+        Rpc.Types.fset =
+          (fun v -> fun _s -> { _s with findlib_requires = v })
+      }
+    and init_libs_stdlib_dcs : (_, init_libs) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "stdlib_dcs";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.stdlib_dcs);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with stdlib_dcs = v })
+      }
     and typ_of_init_libs =
       Rpc.Types.Struct
         ({
            Rpc.Types.fields =
              [Rpc.Types.BoxedField init_libs_path;
              Rpc.Types.BoxedField init_libs_cmis;
-             Rpc.Types.BoxedField init_libs_cmas];
+             Rpc.Types.BoxedField init_libs_cmas;
+             Rpc.Types.BoxedField init_libs_findlib_metas;
+             Rpc.Types.BoxedField init_libs_findlib_requires;
+             Rpc.Types.BoxedField init_libs_stdlib_dcs];
            Rpc.Types.sname = "init_libs";
            Rpc.Types.version = None;
            Rpc.Types.constructor =
              (fun getter ->
                 let open Rresult.R in
-                  (getter.Rpc.Types.field_get "cmas"
-                     (Rpc.Types.List typ_of_cma))
+                  (getter.Rpc.Types.field_get "stdlib_dcs"
+                     (let open Rpc.Types in Basic String))
                     >>=
-                    (fun init_libs_cmas ->
-                       (getter.Rpc.Types.field_get "cmis" typ_of_cmis) >>=
-                         (fun init_libs_cmis ->
-                            (getter.Rpc.Types.field_get "path"
-                               (let open Rpc.Types in Basic String))
+                    (fun init_libs_stdlib_dcs ->
+                       (getter.Rpc.Types.field_get "findlib_requires"
+                          (Rpc.Types.List
+                             (let open Rpc.Types in Basic String)))
+                         >>=
+                         (fun init_libs_findlib_requires ->
+                            (getter.Rpc.Types.field_get "findlib_metas"
+                               (Rpc.Types.List
+                                  (let open Rpc.Types in Basic String)))
                               >>=
-                              (fun init_libs_path ->
-                                 return
-                                   {
-                                     path = init_libs_path;
-                                     cmis = init_libs_cmis;
-                                     cmas = init_libs_cmas
-                                   }))))
+                              (fun init_libs_findlib_metas ->
+                                 (getter.Rpc.Types.field_get "cmas"
+                                    (Rpc.Types.List typ_of_cma))
+                                   >>=
+                                   (fun init_libs_cmas ->
+                                      (getter.Rpc.Types.field_get "cmis"
+                                         typ_of_cmis)
+                                        >>=
+                                        (fun init_libs_cmis ->
+                                           (getter.Rpc.Types.field_get "path"
+                                              (let open Rpc.Types in
+                                                 Basic String))
+                                             >>=
+                                             (fun init_libs_path ->
+                                                return
+                                                  {
+                                                    path = init_libs_path;
+                                                    cmis = init_libs_cmis;
+                                                    cmas = init_libs_cmas;
+                                                    findlib_metas =
+                                                      init_libs_findlib_metas;
+                                                    findlib_requires =
+                                                      init_libs_findlib_requires;
+                                                    stdlib_dcs =
+                                                      init_libs_stdlib_dcs
+                                                  })))))))
          } : init_libs Rpc.Types.structure)
     and init_libs =
       {
@@ -2023,6 +2086,9 @@ include
     let _ = init_libs_path
     and _ = init_libs_cmis
     and _ = init_libs_cmas
+    and _ = init_libs_findlib_metas
+    and _ = init_libs_findlib_requires
+    and _ = init_libs_stdlib_dcs
     and _ = typ_of_init_libs
     and _ = init_libs
   end[@@ocaml.doc "@inline"][@@merlin.hide ]

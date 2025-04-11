@@ -1,30 +1,6 @@
 open Js_top_worker_rpc
 open Js_top_worker
 
-let optbind : 'a option -> ('a -> 'b option) -> 'b option =
- fun x fn -> match x with None -> None | Some a -> fn a
-
-let log fmt =
-  Format.kasprintf
-    (fun s -> Js_of_ocaml.(Console.console##log (Js.string s)))
-    fmt
-
-let sync_get url =
-  let open Js_of_ocaml in
-  let x = XmlHttpRequest.create () in
-  x##.responseType := Js.string "arraybuffer";
-  x##_open (Js.string "GET") (Js.string url) Js._false;
-  x##send Js.null;
-  match x##.status with
-  | 200 ->
-      Js.Opt.case
-        (File.CoerceTo.arrayBuffer x##.response)
-        (fun () ->
-          Console.console##log (Js.string "Failed to receive file");
-          None)
-        (fun b -> Some (Typed_array.String.of_arrayBuffer b))
-  | _ -> None
-
 module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 
 (* OCamlorg toplevel in a web worker
@@ -34,11 +10,11 @@ module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
    thread" keeping the page responsive. *)
 
 let server process e =
-  log "Worker received: %s" e;
+  Jslib.log "Worker received: %s" e;
   let _, id, call = Jsonrpc.version_id_and_call_of_string e in
   Impl.M.bind (process call) (fun response ->
       let rtxt = Jsonrpc.string_of_response ~id response in
-      log "Worker sending: %s" rtxt;
+      Jslib.log "Worker sending: %s" rtxt;
       Js_of_ocaml.Worker.post_message rtxt;
       Impl.M.return ())
 
@@ -57,6 +33,8 @@ let loc = function
   | _ -> None
 
 module S : Impl.S = struct
+  type findlib_t = Findlibish.t
+
   let capture : (unit -> 'a) -> unit -> Impl.captured * 'a =
    fun f () ->
     let stdout_buff = Buffer.create 1024 in
@@ -74,10 +52,19 @@ module S : Impl.S = struct
     in
     (captured, x)
 
-  let sync_get = sync_get
+  let sync_get = Jslib.sync_get
   let create_file = Js_of_ocaml.Sys_js.create_file
 
+  let get_stdlib_dcs uri =
+    Findlibish.fetch_dynamic_cmis uri |> Result.to_list
+
   let import_scripts = Js_of_ocaml.Worker.import_scripts
+
+  let findlib_init = Findlibish.init
+
+  let require v = function
+    | [] -> []
+    | packages -> Findlibish.require v packages
 
   let init_function func_name =
     let open Js_of_ocaml in

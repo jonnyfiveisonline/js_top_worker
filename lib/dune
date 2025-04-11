@@ -8,6 +8,7 @@
   js_top_worker-rpc
   js_of_ocaml-compiler
   js_of_ocaml-ppx
+  js_of_ocaml
   astring
   mime_printer
   compiler-libs.common
@@ -31,9 +32,9 @@
 (library
  (public_name js_top_worker-web)
  (name js_top_worker_web)
- (modules worker)
+ (modules worker findlibish jslib)
  (preprocess
   (pps js_of_ocaml-ppx))
- (libraries js_top_worker js_of_ocaml-toplevel logs.browser))
+ (libraries js_top_worker js_of_ocaml-toplevel logs.browser uri angstrom findlib fpath))
 
 (ocamllex uTop_lexer)

@@ -34,17 +34,26 @@ module JsooTopPpx = struct
 
 end
 module type S = sig
+  type findlib_t
   val capture : (unit -> 'a) -> unit -> captured * 'a
   val create_file : name:string -> content:string -> unit
   val sync_get : string -> string option
 
   val import_scripts : string list -> unit
   val init_function : string -> (unit -> unit )
+
+  val get_stdlib_dcs : string -> Toplevel_api_gen.dynamic_cmis list
+
+  val findlib_init : string list -> findlib_t
+
+  val require : findlib_t -> string list -> Toplevel_api_gen.dynamic_cmis list
 end
 
 module Make (S : S) = struct
   let functions : (unit -> unit) list option ref = ref None
+  let requires : string list ref = ref []
   let path : string option ref = ref None
+  let findlib_v : S.findlib_t option ref = ref None
 
   let refill_lexbuf s p ppf buffer len =
     if !p = String.length s then 0
@@ -278,6 +287,11 @@ module Make (S : S) = struct
       Logs.info (fun m -> m "init()");
       path := Some init_libs.path;
 
+      findlib_v := Some (S.findlib_init init_libs.findlib_metas);
+
+      (match S.get_stdlib_dcs init_libs.stdlib_dcs with
+      |[dcs] -> add_dynamic_cmis dcs
+      | _ -> ());
       Clflags.no_check_prims := true;
       List.iter
         (fun { Toplevel_api_gen.sc_name; sc_content } ->
@@ -291,6 +305,8 @@ module Make (S : S) = struct
 
       S.import_scripts
           (List.map (fun cma -> cma.Toplevel_api_gen.url) init_libs.cmas);
+
+      requires := init_libs.findlib_requires;
       functions :=
         Some
           (List.map
@@ -328,7 +344,13 @@ module Make (S : S) = struct
           let err = Format.asprintf "%a" Env.report_error e in
           failwith ("Error: " ^ err))
         in
-      
+    
+      let dcs = (match !findlib_v with
+      | Some v -> 
+          S.require v !requires
+      | None -> []) in
+      List.iter add_dynamic_cmis dcs;
+
       Logs.info (fun m -> m "setup() finished");
 
       IdlM.ErrM.return

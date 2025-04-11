@@ -92,9 +92,21 @@ let serve_requests rpcfn path =
         binary_handler rpcfn this_connection |> M.run)
   done
 
+let handle_findlib_error = function
+  | Failure msg ->
+      Printf.fprintf stderr "%s" msg
+  | Fl_package_base.No_such_package(pkg, reason) ->
+      Printf.fprintf stderr "No such package: %s%s\n" pkg (if reason <> "" then " - " ^ reason else "")
+  | Fl_package_base.Package_loop pkg ->
+      Printf.fprintf stderr "Package requires itself: %s\n" pkg
+  | exn ->
+      raise exn
+
 module Server = Js_top_worker_rpc.Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 
 module S : Impl.S = struct
+  type findlib_t = unit
+
   let capture = capture
   let sync_get _ = None
   let create_file ~name:_ ~content:_ = failwith "Not implemented"
@@ -102,6 +114,18 @@ module S : Impl.S = struct
   let import_scripts urls = if List.length urls > 0 then failwith "Not implemented" else ()
 
   let init_function _ () = failwith "Not implemented"
+
+  let findlib_init _ = ()
+
+  let get_stdlib_dcs _uri =
+    []
+
+  let require () packages =
+    try
+      let eff_packages = Findlib.package_deep_ancestors !Topfind.predicates packages in
+      Topfind.load eff_packages; []
+    with exn ->
+      handle_findlib_error exn; []
 end
 
 module U = Impl.Make (S)
@@ -110,7 +134,7 @@ let start_server () =
   let open U in
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Logs.Info);
-  let pid = Unix.getpid () in
+  (* let pid = Unix.getpid () in *)
   Server.exec execute;
   Server.setup setup;
   Server.init init;
@@ -119,6 +143,7 @@ let start_server () =
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
   Server.compile_js compile_js;
+  Server.exec_toplevel exec_toplevel;
   let rpc_fn = IdlM.server Server.implementation in
   let process x =
     let open M in
@@ -126,6 +151,6 @@ let start_server () =
     >>= fun response -> Jsonrpc.string_of_response response |> return
   in
   serve_requests process
-    (Js_top_worker_rpc.Toplevel_api_gen.sockpath ^ string_of_int pid)
+    (Js_top_worker_rpc.Toplevel_api_gen.sockpath)
 
 let _ = start_server ()

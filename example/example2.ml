@@ -19,6 +19,9 @@ let initialise s callback =
           path = "/static/cmis";
           cmas = [];
           cmis = { dynamic_cmis = [dcs]; static_cmis = [] };
+          stdlib_dcs = "/lib/ocaml/dynamic_cmis.json";
+          findlib_metas = [];
+          findlib_requires = [];
         }
   in
   Lwt.return (Ok rpc)

@@ -15,6 +15,9 @@ let initialise s callback =
           path = "/static/cmis";
           cmas = [];
           cmis = { dynamic_cmis = []; static_cmis = [] };
+          stdlib_dcs = "/lib/ocaml/dynamic_cmis.json";
+          findlib_metas = ["/lib/astring/META"];
+          findlib_requires = ["astring"];
         }
   in
   Lwt.return (Ok rpc)
@@ -42,6 +45,6 @@ let _ =
   let* rpc = initialise "worker.js" (fun _ -> log "Timeout") in
   let* o = W.setup rpc () in
   log_output o;
-  let* o = W.exec rpc "2*2;;" in
+  let* o = W.exec rpc "Astring.String.fields \"foo bar baz\";;" in
   log_output o;
   Lwt.return (Ok ())
