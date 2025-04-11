@@ -44,7 +44,7 @@ module type S = sig
 
   val get_stdlib_dcs : string -> Toplevel_api_gen.dynamic_cmis list
 
-  val findlib_init : string list -> findlib_t
+  val findlib_init : string -> findlib_t
 
   val require : findlib_t -> string list -> Toplevel_api_gen.dynamic_cmis list
 end
@@ -287,7 +287,7 @@ module Make (S : S) = struct
       Logs.info (fun m -> m "init()");
       path := Some init_libs.path;
 
-      findlib_v := Some (S.findlib_init init_libs.findlib_metas);
+      findlib_v := Some (S.findlib_init init_libs.findlib_index);
 
       (match S.get_stdlib_dcs init_libs.stdlib_dcs with
       |[dcs] -> add_dynamic_cmis dcs

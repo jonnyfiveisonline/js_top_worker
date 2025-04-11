@@ -1953,7 +1953,7 @@ type init_libs =
   path: string ;
   cmis: cmis ;
   cmas: cma list ;
-  findlib_metas: string list ;
+  findlib_index: string ;
   findlib_requires: string list ;
   stdlib_dcs: string }[@@deriving rpcty]
 include
@@ -1989,16 +1989,15 @@ include
         Rpc.Types.fget = (fun _r -> _r.cmas);
         Rpc.Types.fset = (fun v -> fun _s -> { _s with cmas = v })
       }
-    and init_libs_findlib_metas : (_, init_libs) Rpc.Types.field =
+    and init_libs_findlib_index : (_, init_libs) Rpc.Types.field =
       {
-        Rpc.Types.fname = "findlib_metas";
-        Rpc.Types.field =
-          (Rpc.Types.List (let open Rpc.Types in Basic String));
+        Rpc.Types.fname = "findlib_index";
+        Rpc.Types.field = (let open Rpc.Types in Basic String);
         Rpc.Types.fdefault = None;
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
-        Rpc.Types.fget = (fun _r -> _r.findlib_metas);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with findlib_metas = v })
+        Rpc.Types.fget = (fun _r -> _r.findlib_index);
+        Rpc.Types.fset = (fun v -> fun _s -> { _s with findlib_index = v })
       }
     and init_libs_findlib_requires : (_, init_libs) Rpc.Types.field =
       {
@@ -2029,7 +2028,7 @@ include
              [Rpc.Types.BoxedField init_libs_path;
              Rpc.Types.BoxedField init_libs_cmis;
              Rpc.Types.BoxedField init_libs_cmas;
-             Rpc.Types.BoxedField init_libs_findlib_metas;
+             Rpc.Types.BoxedField init_libs_findlib_index;
              Rpc.Types.BoxedField init_libs_findlib_requires;
              Rpc.Types.BoxedField init_libs_stdlib_dcs];
            Rpc.Types.sname = "init_libs";
@@ -2046,11 +2045,10 @@ include
                              (let open Rpc.Types in Basic String)))
                          >>=
                          (fun init_libs_findlib_requires ->
-                            (getter.Rpc.Types.field_get "findlib_metas"
-                               (Rpc.Types.List
-                                  (let open Rpc.Types in Basic String)))
+                            (getter.Rpc.Types.field_get "findlib_index"
+                               (let open Rpc.Types in Basic String))
                               >>=
-                              (fun init_libs_findlib_metas ->
+                              (fun init_libs_findlib_index ->
                                  (getter.Rpc.Types.field_get "cmas"
                                     (Rpc.Types.List typ_of_cma))
                                    >>=
@@ -2069,8 +2067,8 @@ include
                                                     path = init_libs_path;
                                                     cmis = init_libs_cmis;
                                                     cmas = init_libs_cmas;
-                                                    findlib_metas =
-                                                      init_libs_findlib_metas;
+                                                    findlib_index =
+                                                      init_libs_findlib_index;
                                                     findlib_requires =
                                                       init_libs_findlib_requires;
                                                     stdlib_dcs =
@@ -2086,7 +2084,7 @@ include
     let _ = init_libs_path
     and _ = init_libs_cmis
     and _ = init_libs_cmas
-    and _ = init_libs_findlib_metas
+    and _ = init_libs_findlib_index
     and _ = init_libs_findlib_requires
     and _ = init_libs_stdlib_dcs
     and _ = typ_of_init_libs

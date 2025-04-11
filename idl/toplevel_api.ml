@@ -179,7 +179,7 @@ type cma = {
 }
 [@@deriving rpcty]
 
-type init_libs = { path : string; cmis : cmis; cmas : cma list; findlib_metas : string list; findlib_requires : string list; stdlib_dcs : string } [@@deriving rpcty]
+type init_libs = { path : string; cmis : cmis; cmas : cma list; findlib_index : string; findlib_requires : string list; stdlib_dcs : string } [@@deriving rpcty]
 type err = InternalError of string [@@deriving rpcty]
 
 type opt_id = string option [@@deriving rpcty]

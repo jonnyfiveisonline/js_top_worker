@@ -24,3 +24,5 @@ cat > lib/astring/dynamic_cmis.json << EOF
 }
 EOF
 
+find lib -name "META" > lib/findlib_index
+

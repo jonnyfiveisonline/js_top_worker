@@ -45,7 +45,13 @@ let fetch_dynamic_cmis url =
     let rpc = Jsonrpc.of_string json in
     Rpcmarshal.unmarshal Js_top_worker_rpc.Toplevel_api_gen.typ_of_dynamic_cmis rpc
 
-let init findlib_metas : t =
+let init findlib_index : t =
+  let findlib_metas = 
+    match Jslib.sync_get findlib_index with
+    | None -> []
+    | Some txt ->
+      Astring.String.fields ~empty:false txt
+  in
   let metas = List.filter_map (fun x ->
     match Jslib.sync_get x with
     | Some meta -> Some (x, meta)

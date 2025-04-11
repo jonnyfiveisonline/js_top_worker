@@ -20,7 +20,7 @@ let initialise s callback =
           cmas = [];
           cmis = { dynamic_cmis = [dcs]; static_cmis = [] };
           stdlib_dcs = "/lib/ocaml/dynamic_cmis.json";
-          findlib_metas = [];
+          findlib_index = "/lib/findlib_index";
           findlib_requires = [];
         }
   in
