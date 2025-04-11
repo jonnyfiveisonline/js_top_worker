@@ -235,7 +235,7 @@ module Make (S : S) = struct
         match fetch (filename_of_module name) with
         | Some content ->
             let name = Filename.(concat path filename) in
-            S.create_file ~name ~content
+            (try S.create_file ~name ~content with _ -> ())
         | None -> ())
       dcs.dcs_toplevel_modules;
 
