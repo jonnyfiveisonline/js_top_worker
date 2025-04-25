@@ -93,14 +93,13 @@ let serve_requests rpcfn path =
   done
 
 let handle_findlib_error = function
-  | Failure msg ->
-      Printf.fprintf stderr "%s" msg
-  | Fl_package_base.No_such_package(pkg, reason) ->
-      Printf.fprintf stderr "No such package: %s%s\n" pkg (if reason <> "" then " - " ^ reason else "")
+  | Failure msg -> Printf.fprintf stderr "%s" msg
+  | Fl_package_base.No_such_package (pkg, reason) ->
+      Printf.fprintf stderr "No such package: %s%s\n" pkg
+        (if reason <> "" then " - " ^ reason else "")
   | Fl_package_base.Package_loop pkg ->
       Printf.fprintf stderr "Package requires itself: %s\n" pkg
-  | exn ->
-      raise exn
+  | exn -> raise exn
 
 module Server = Js_top_worker_rpc.Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 
@@ -111,21 +110,23 @@ module S : Impl.S = struct
   let sync_get _ = None
   let create_file ~name:_ ~content:_ = failwith "Not implemented"
 
-  let import_scripts urls = if List.length urls > 0 then failwith "Not implemented" else ()
+  let import_scripts urls =
+    if List.length urls > 0 then failwith "Not implemented" else ()
 
   let init_function _ () = failwith "Not implemented"
-
   let findlib_init _ = ()
-
-  let get_stdlib_dcs _uri =
-    []
+  let get_stdlib_dcs _uri = []
 
   let require () packages =
     try
-      let eff_packages = Findlib.package_deep_ancestors !Topfind.predicates packages in
-      Topfind.load eff_packages; []
+      let eff_packages =
+        Findlib.package_deep_ancestors !Topfind.predicates packages
+      in
+      Topfind.load eff_packages;
+      []
     with exn ->
-      handle_findlib_error exn; []
+      handle_findlib_error exn;
+      []
 end
 
 module U = Impl.Make (S)
@@ -150,7 +151,6 @@ let start_server () =
     rpc_fn (Jsonrpc.call_of_string (Bytes.unsafe_to_string x))
     >>= fun response -> Jsonrpc.string_of_response response |> return
   in
-  serve_requests process
-    (Js_top_worker_rpc.Toplevel_api_gen.sockpath)
+  serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath
 
 let _ = start_server ()

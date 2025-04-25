@@ -5,17 +5,18 @@ module IdlM = Idl.Make (M)
 
 type captured = { stdout : string; stderr : string }
 
-
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
 
-  let ppx_rewriters = ref [fun _ -> Ppx_js.mapper]
+  let ppx_rewriters = ref [ (fun _ -> Ppx_js.mapper) ]
 
-  let () = Ast_mapper.register_function := fun _ f -> ppx_rewriters := f :: !ppx_rewriters
+  let () =
+    Ast_mapper.register_function :=
+      fun _ f -> ppx_rewriters := f :: !ppx_rewriters
 
   let preprocess_structure str =
     let open Ast_mapper in
-    Printf.eprintf "Rewriting...\n%!"; 
+    Printf.eprintf "Rewriting...\n%!";
     List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
         let mapper = ppx_rewriter [] in
         mapper.structure mapper str)
@@ -31,21 +32,18 @@ module JsooTopPpx = struct
     match phrase with
     | Ptop_def str -> Ptop_def (preprocess_structure str)
     | Ptop_dir _ as x -> x
-
 end
+
 module type S = sig
   type findlib_t
+
   val capture : (unit -> 'a) -> unit -> captured * 'a
   val create_file : name:string -> content:string -> unit
   val sync_get : string -> string option
-
   val import_scripts : string list -> unit
-  val init_function : string -> (unit -> unit )
-
+  val init_function : string -> unit -> unit
   val get_stdlib_dcs : string -> Toplevel_api_gen.dynamic_cmis list
-
   val findlib_init : string -> findlib_t
-
   val require : findlib_t -> string list -> Toplevel_api_gen.dynamic_cmis list
 end
 
@@ -148,7 +146,8 @@ module Make (S : S) = struct
   let execute printval ?pp_code ?highlight_location pp_answer s =
     let s =
       let l = String.length s in
-      if String.sub s (l-2) 2 = ";;" then s else s ^ ";;" in
+      if String.sub s (l - 2) 2 = ";;" then s else s ^ ";;"
+    in
     let lb = Lexing.from_function (refill_lexbuf s (ref 0) pp_code) in
     (try
        while true do
@@ -219,7 +218,7 @@ module Make (S : S) = struct
     let dirs = get_paths () in
     reset ();
     List.iter (fun p -> prepend_dir (Dir.create p)) dirs
-  
+
   let add_dynamic_cmis dcs =
     let fetch filename =
       let url = Filename.concat dcs.Toplevel_api_gen.dcs_url filename in
@@ -233,9 +232,9 @@ module Make (S : S) = struct
       (fun name ->
         let filename = filename_of_module name in
         match fetch (filename_of_module name) with
-        | Some content ->
+        | Some content -> (
             let name = Filename.(concat path filename) in
-            (try S.create_file ~name ~content with _ -> ())
+            try S.create_file ~name ~content with _ -> ())
         | None -> ())
       dcs.dcs_toplevel_modules;
 
@@ -247,40 +246,38 @@ module Make (S : S) = struct
       (* Check if it's already been downloaded. This will be the
          case for all toplevel cmis. Also check whether we're supposed
          to handle this cmi *)
-      (if Sys.file_exists fs_name then
-       Logs.info (fun m -> m "Found: %s" fs_name));
-      (if
-         (not (Sys.file_exists fs_name))
-         && List.exists
-              (fun prefix -> String.starts_with ~prefix filename)
-              dcs.dcs_file_prefixes
-       then (
-         Logs.info (fun m -> m "Fetching %s\n%!" filename);
-         match fetch filename with
-         | Some x ->
-             S.create_file ~name:fs_name ~content:x;
-             (* At this point we need to tell merlin that the dir contents
+      if Sys.file_exists fs_name then Logs.info (fun m -> m "Found: %s" fs_name);
+      if
+        (not (Sys.file_exists fs_name))
+        && List.exists
+             (fun prefix -> String.starts_with ~prefix filename)
+             dcs.dcs_file_prefixes
+      then (
+        Logs.info (fun m -> m "Fetching %s\n%!" filename);
+        match fetch filename with
+        | Some x ->
+            S.create_file ~name:fs_name ~content:x;
+            (* At this point we need to tell merlin that the dir contents
                  have changed *)
-             if s = "merl" then reset_dirs () else reset_dirs_comp ()
-         | None ->
-             Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
-               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename)));
+            if s = "merl" then reset_dirs () else reset_dirs_comp ()
+        | None ->
+            Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
+              (Filename.concat dcs.Toplevel_api_gen.dcs_url filename));
       old_loader ~unit_name
     in
     let furl = "file://" in
     let l = String.length furl in
-    if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then begin
+    if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then
       let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
       Topdirs.dir_directory path
-    end else begin
+    else
       let open Persistent_env.Persistent_signature in
       let old_loader = !load in
-      load := (new_load ~s:"comp" ~old_loader);
+      load := new_load ~s:"comp" ~old_loader;
 
       let open Ocaml_typing.Persistent_env.Persistent_signature in
       let old_loader = !load in
-      load := (new_load ~s:"merl" ~old_loader)
-    end
+      load := new_load ~s:"merl" ~old_loader
 
   let init (init_libs : Toplevel_api_gen.init_libs) =
     try
@@ -290,7 +287,7 @@ module Make (S : S) = struct
       findlib_v := Some (S.findlib_init init_libs.findlib_index);
 
       (match S.get_stdlib_dcs init_libs.stdlib_dcs with
-      |[dcs] -> add_dynamic_cmis dcs
+      | [ dcs ] -> add_dynamic_cmis dcs
       | _ -> ());
       Clflags.no_check_prims := true;
       List.iter
@@ -304,18 +301,17 @@ module Make (S : S) = struct
       List.iter add_dynamic_cmis init_libs.cmis.dynamic_cmis;
 
       S.import_scripts
-          (List.map (fun cma -> cma.Toplevel_api_gen.url) init_libs.cmas);
+        (List.map (fun cma -> cma.Toplevel_api_gen.url) init_libs.cmas);
 
       requires := init_libs.findlib_requires;
       functions :=
         Some
           (List.map
-              (fun func_name ->
-                Logs.info (fun m -> m "Function: %s" func_name);
-                S.init_function func_name)
-            (List.map (fun cma -> cma.Toplevel_api_gen.fn) init_libs.cmas));
-(* 
-                 *)
+             (fun func_name ->
+               Logs.info (fun m -> m "Function: %s" func_name);
+               S.init_function func_name)
+             (List.map (fun cma -> cma.Toplevel_api_gen.fn) init_libs.cmas));
+      (* *)
       functions := Some [];
       Logs.info (fun m -> m "init() finished");
 
@@ -329,26 +325,24 @@ module Make (S : S) = struct
       Logs.info (fun m -> m "setup() ...");
 
       let o =
-
-      (try
+        try
           match !functions with
           | Some l -> setup l ()
           | None -> failwith "Error: toplevel has not been initialised"
-      with
-      | Persistent_env.Error e ->
-          Persistent_env.report_error Format.err_formatter e;
-          let err = Format.asprintf "%a" Persistent_env.report_error e in
-          failwith ("Error: " ^ err)
-      | Env.Error e ->
-          Env.report_error Format.err_formatter e;
-          let err = Format.asprintf "%a" Env.report_error e in
-          failwith ("Error: " ^ err))
-        in
-    
-      let dcs = (match !findlib_v with
-      | Some v -> 
-          S.require v !requires
-      | None -> []) in
+        with
+        | Persistent_env.Error e ->
+            Persistent_env.report_error Format.err_formatter e;
+            let err = Format.asprintf "%a" Persistent_env.report_error e in
+            failwith ("Error: " ^ err)
+        | Env.Error e ->
+            Env.report_error Format.err_formatter e;
+            let err = Format.asprintf "%a" Env.report_error e in
+            failwith ("Error: " ^ err)
+      in
+
+      let dcs =
+        match !findlib_v with Some v -> S.require v !requires | None -> []
+      in
       List.iter add_dynamic_cmis dcs;
 
       Logs.info (fun m -> m "setup() finished");
@@ -439,7 +433,6 @@ module Make (S : S) = struct
 
   let compile_js (id : string option) prog =
     try
-
       let l = Lexing.from_string prog in
       let phr = Parse.toplevel_phrase l in
       Typecore.reset_delayed_checks ();
@@ -490,7 +483,7 @@ module Make (S : S) = struct
                 cu_debugsize = 0;
               }
           in
-      
+
           let fmt = Js_of_ocaml_compiler.Pretty_print.to_buffer b in
           (* Symtable.patch_object code reloc;
              Symtable.check_global_initialized reloc;
@@ -505,12 +498,10 @@ module Make (S : S) = struct
           let ic = open_in "/tmp/test.cmo" in
           let p = Js_of_ocaml_compiler.Parse_bytecode.from_cmo cmo ic in
           let wrap_with_fun =
-            match id with
-            | Some id -> `Named id
-            | None -> `Iife
+            match id with Some id -> `Named id | None -> `Iife
           in
-          Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun ~link:`No
-            fmt p.debug p.code;
+          Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun
+            ~link:`No fmt p.debug p.code;
           Format.(pp_print_flush std_formatter ());
           Format.(pp_print_flush err_formatter ());
           flush stdout;
@@ -521,30 +512,43 @@ module Make (S : S) = struct
     with e -> IdlM.ErrM.return ("Exception: %s" ^ Printexc.to_string e)
 
   let handle_toplevel stripped =
-    if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' ' then begin
-      Printf.eprintf "Warning, ignoring toplevel block without a leading '# '.\n";
-      IdlM.ErrM.return { Toplevel_api_gen.script=stripped; mime_vals=[] }
-    end else begin
+    if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' '
+    then (
+      Printf.eprintf
+        "Warning, ignoring toplevel block without a leading '# '.\n";
+      IdlM.ErrM.return { Toplevel_api_gen.script = stripped; mime_vals = [] })
+    else
       let s = String.sub stripped 2 (String.length stripped - 2) in
       let list = Ocamltop.parse_toplevel s in
       let buf = Buffer.create 1024 in
-      let mime_vals = List.fold_left (fun acc (phr, _output) ->
-        let new_output = execute phr |> IdlM.T.get |> M.run |> Result.get_ok in
-        Printf.bprintf buf "# %s\n" phr;
-        let r = (Option.to_list new_output.stdout) @ (Option.to_list new_output.stderr) @ (Option.to_list new_output.caml_ppf) in
-        let r = List.concat_map (fun l -> Astring.String.cuts ~sep:"\n" l) r in
-        List.iter (fun x -> Printf.bprintf buf "  %s\n" x) r;
-        let mime_vals = new_output.mime_vals in
-        acc @ mime_vals
-        ) [] list in
+      let mime_vals =
+        List.fold_left
+          (fun acc (phr, _output) ->
+            let new_output =
+              execute phr |> IdlM.T.get |> M.run |> Result.get_ok
+            in
+            Printf.bprintf buf "# %s\n" phr;
+            let r =
+              Option.to_list new_output.stdout
+              @ Option.to_list new_output.stderr
+              @ Option.to_list new_output.caml_ppf
+            in
+            let r =
+              List.concat_map (fun l -> Astring.String.cuts ~sep:"\n" l) r
+            in
+            List.iter (fun x -> Printf.bprintf buf "  %s\n" x) r;
+            let mime_vals = new_output.mime_vals in
+            acc @ mime_vals)
+          [] list
+      in
       let content_txt = Buffer.contents buf in
-      let content_txt = String.sub content_txt 0 (String.length content_txt - 1) in
-      let result = { Toplevel_api_gen.script=content_txt; mime_vals } in
+      let content_txt =
+        String.sub content_txt 0 (String.length content_txt - 1)
+      in
+      let result = { Toplevel_api_gen.script = content_txt; mime_vals } in
       IdlM.ErrM.return result
-    end
-    
-  let exec_toplevel (phrase : string) =
-    handle_toplevel phrase
+
+  let exec_toplevel (phrase : string) = handle_toplevel phrase
 
   let config () =
     let path =
@@ -658,8 +662,17 @@ module Make (S : S) = struct
 
   let complete_prefix source position =
     let source = Merlin_kernel.Msource.make source in
-    let map_kind : [`Value|`Constructor|`Variant|`Label|
-    `Module|`Modtype|`Type|`MethodCall|`Keyword] -> Toplevel_api_gen.kind_ty = function
+    let map_kind :
+        [ `Value
+        | `Constructor
+        | `Variant
+        | `Label
+        | `Module
+        | `Modtype
+        | `Type
+        | `MethodCall
+        | `Keyword ] ->
+        Toplevel_api_gen.kind_ty = function
       | `Value -> Value
       | `Constructor -> Constructor
       | `Variant -> Variant
@@ -668,24 +681,29 @@ module Make (S : S) = struct
       | `Modtype -> Modtype
       | `Type -> Type
       | `MethodCall -> MethodCall
-      | `Keyword -> Keyword in
+      | `Keyword -> Keyword
+    in
     let position =
       match position with
       | Toplevel_api_gen.Start -> `Start
       | Offset x -> `Offset x
       | Logical (x, y) -> `Logical (x, y)
-      | End -> `End in
+      | End -> `End
+    in
     match Completion.at_pos source position with
     | Some (from, to_, compl) ->
         let entries =
-          List.map (fun (entry : Query_protocol.Compl.entry) ->
-            {
-              Toplevel_api_gen.name = entry.name;
-            kind = map_kind entry.kind;
-            desc = entry.desc;
-            info = entry.info;
-            deprecated = entry.deprecated;
-            }    ) compl.entries in
+          List.map
+            (fun (entry : Query_protocol.Compl.entry) ->
+              {
+                Toplevel_api_gen.name = entry.name;
+                kind = map_kind entry.kind;
+                desc = entry.desc;
+                info = entry.info;
+                deprecated = entry.deprecated;
+              })
+            compl.entries
+        in
         IdlM.ErrM.return { Toplevel_api_gen.from; to_; entries }
     | None ->
         IdlM.ErrM.return { Toplevel_api_gen.from = 0; to_ = 0; entries = [] }
@@ -699,25 +717,27 @@ module Make (S : S) = struct
       let errors =
         wdispatch source query
         |> StdLabels.List.map
-            ~f:(fun
-                (Ocaml_parsing.Location.{ kind; main = _; sub; source } as error)
-              ->
-              let of_sub sub =
-                Ocaml_parsing.Location.print_sub_msg Format.str_formatter sub;
-                String.trim (Format.flush_str_formatter ())
-              in
-              let loc = Ocaml_parsing.Location.loc_of_report error in
-              let main =
-                Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main error
-                |> String.trim
-              in
-              {
-                Toplevel_api_gen.kind;
-                loc;
-                main;
-                sub = StdLabels.List.map ~f:of_sub sub;
-                source;
-              })
+             ~f:(fun
+                 (Ocaml_parsing.Location.{ kind; main = _; sub; source } as
+                  error)
+               ->
+               let of_sub sub =
+                 Ocaml_parsing.Location.print_sub_msg Format.str_formatter sub;
+                 String.trim (Format.flush_str_formatter ())
+               in
+               let loc = Ocaml_parsing.Location.loc_of_report error in
+               let main =
+                 Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main
+                   error
+                 |> String.trim
+               in
+               {
+                 Toplevel_api_gen.kind;
+                 loc;
+                 main;
+                 sub = StdLabels.List.map ~f:of_sub sub;
+                 source;
+               })
       in
       IdlM.ErrM.return errors
     with e ->
@@ -730,12 +750,24 @@ module Make (S : S) = struct
       | Toplevel_api_gen.Start -> `Start
       | Offset x -> `Offset x
       | Logical (x, y) -> `Logical (x, y)
-      | End -> `End in
+      | End -> `End
+    in
     let source = Merlin_kernel.Msource.make source in
     let query = Query_protocol.Type_enclosing (None, position, None) in
     let enclosing = wdispatch source query in
-    let map_index_or_string = function | `Index i -> Toplevel_api_gen.Index i | `String s -> String s in
-    let map_tail_position = function | `No -> Toplevel_api_gen.No | `Tail_position -> Tail_position | `Tail_call -> Tail_call in
-    let enclosing = List.map (fun (x,y,z) -> (x,map_index_or_string y,map_tail_position z)) enclosing in
+    let map_index_or_string = function
+      | `Index i -> Toplevel_api_gen.Index i
+      | `String s -> String s
+    in
+    let map_tail_position = function
+      | `No -> Toplevel_api_gen.No
+      | `Tail_position -> Tail_position
+      | `Tail_call -> Tail_call
+    in
+    let enclosing =
+      List.map
+        (fun (x, y, z) -> (x, map_index_or_string y, map_tail_position z))
+        enclosing
+    in
     IdlM.ErrM.return enclosing
 end

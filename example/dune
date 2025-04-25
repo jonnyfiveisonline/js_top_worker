@@ -28,7 +28,7 @@
  (package js_top_worker-unix)
  (modules unix_worker)
  (link_flags (-linkall))
- (libraries js_top_worker logs logs.fmt rpclib.core))
+ (libraries js_top_worker logs logs.fmt rpclib.core findlib.top))
 
 (executable
  (name unix_client)

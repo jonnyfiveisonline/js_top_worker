@@ -17,7 +17,7 @@ let initialise s callback =
           cmis = { dynamic_cmis = []; static_cmis = [] };
           stdlib_dcs = "/lib/ocaml/dynamic_cmis.json";
           findlib_index = "/lib/findlib_index";
-          findlib_requires = ["astring"];
+          findlib_requires = [ "astring" ];
         }
   in
   Lwt.return (Ok rpc)

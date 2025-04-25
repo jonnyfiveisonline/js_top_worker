@@ -18,4 +18,3 @@ let sync_get url =
           None)
         (fun b -> Some (Typed_array.String.of_arrayBuffer b))
   | _ -> None
-

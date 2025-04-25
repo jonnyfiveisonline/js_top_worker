@@ -18,7 +18,8 @@
   merlin-lib.query_commands
   merlin-lib.ocaml_parsing
   findlib
-  findlib.top)
+  findlib.top
+  )
  (preprocess
   (per_module
    ((action
@@ -34,6 +35,14 @@
  (modules worker findlibish jslib)
  (preprocess
   (pps js_of_ocaml-ppx))
- (libraries js_top_worker js_of_ocaml-toplevel logs.browser uri angstrom findlib fpath))
+ (libraries
+  js_top_worker
+  js_of_ocaml-ppx
+  js_of_ocaml-toplevel
+  logs.browser
+  uri
+  angstrom
+  findlib
+  fpath))
 
 (ocamllex uTop_lexer)

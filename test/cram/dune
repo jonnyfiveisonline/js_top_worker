@@ -1,0 +1,3 @@
+(cram
+(deps %{bin:unix_worker} %{bin:unix_client})
+)

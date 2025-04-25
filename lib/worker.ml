@@ -1,6 +1,5 @@
 open Js_top_worker_rpc
 open Js_top_worker
-
 module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 
 (* OCamlorg toplevel in a web worker
@@ -54,12 +53,8 @@ module S : Impl.S = struct
 
   let sync_get = Jslib.sync_get
   let create_file = Js_of_ocaml.Sys_js.create_file
-
-  let get_stdlib_dcs uri =
-    Findlibish.fetch_dynamic_cmis uri |> Result.to_list
-
+  let get_stdlib_dcs uri = Findlibish.fetch_dynamic_cmis uri |> Result.to_list
   let import_scripts = Js_of_ocaml.Worker.import_scripts
-
   let findlib_init = Findlibish.init
 
   let require v = function
@@ -69,8 +64,7 @@ module S : Impl.S = struct
   let init_function func_name =
     let open Js_of_ocaml in
     let func = Js.Unsafe.js_expr func_name in
-    fun () ->
-      Js.Unsafe.fun_call func [| Js.Unsafe.inject Dom_html.window |]
+    fun () -> Js.Unsafe.fun_call func [| Js.Unsafe.inject Dom_html.window |]
 end
 
 module M = Impl.Make (S)

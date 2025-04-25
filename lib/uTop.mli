@@ -21,8 +21,8 @@ val add_keyword : string -> unit
 (** {6 Parsing} *)
 
 type location = int * int
-(** Type of a string-location. It is composed of a start and stop
-        offsets (in bytes). *)
+(** Type of a string-location. It is composed of a start and stop offsets (in
+    bytes). *)
 
 type lines = { start : int; stop : int }
 (** Type for a range of lines in a buffer from start to stop. *)
@@ -57,7 +57,8 @@ val parse_toplevel_phrase :
 
 val parse_toplevel_phrase_default :
   string -> bool -> Parsetree.toplevel_phrase result
-(** The default parser for toplevel phrases. It uses the standard ocaml parser. *)
+(** The default parser for toplevel phrases. It uses the standard ocaml parser.
+*)
 
 val parse_default : (Lexing.lexbuf -> 'a) -> string -> bool -> 'a result
 (** The default parser. It uses the standard ocaml parser. *)
@@ -67,9 +68,8 @@ val input_name : string
     toplevel. *)
 
 val lexbuf_of_string : bool ref -> string -> Lexing.lexbuf
-(** [lexbuf_of_string eof str] is the same as [Lexing.from_string
-      str]
-    except that if the lexer reach the end of [str] then [eof] is set to [true]. *)
+(** [lexbuf_of_string eof str] is the same as [Lexing.from_string str] except
+    that if the lexer reach the end of [str] then [eof] is set to [true]. *)
 
 (** {6 Helpers} *)
 
@@ -78,18 +78,16 @@ val get_message : (Format.formatter -> 'a -> unit) -> 'a -> string
     prints as a string. *)
 
 val get_ocaml_error_message : exn -> location * string * lines option
-(** [get_ocaml_error_message exn] returns the location and error
-      message for the exception [exn] which must be an exception from
-      the compiler. *)
+(** [get_ocaml_error_message exn] returns the location and error message for the
+    exception [exn] which must be an exception from the compiler. *)
 
 val check_phrase :
   Parsetree.toplevel_phrase ->
   (location list * string * lines option list) option
-(** [check_phrase phrase] checks that [phrase] can be executed
-      without typing or compilation errors. It returns [None] if
-      [phrase] is OK and an error message otherwise.
-      If the result is [None] it is guaranteed that
-      [Toploop.execute_phrase] won't raise any exception. *)
+(** [check_phrase phrase] checks that [phrase] can be executed without typing or
+    compilation errors. It returns [None] if [phrase] is OK and an error message
+    otherwise. If the result is [None] it is guaranteed that
+    [Toploop.execute_phrase] won't raise any exception. *)
 
 val collect_formatters : Buffer.t -> Format.formatter list -> (unit -> 'a) -> 'a
 (** [collect_formatters buf pps f] executes [f] and redirect everything it

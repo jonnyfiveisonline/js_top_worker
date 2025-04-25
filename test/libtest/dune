@@ -1,0 +1,4 @@
+(executable
+ (name parse_test)
+ (modes byte)
+ (libraries js_top_worker fmt))
