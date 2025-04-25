@@ -43,6 +43,7 @@
   uri
   angstrom
   findlib
-  fpath))
+  fpath
+  rpclib.json))
 
 (ocamllex uTop_lexer)
