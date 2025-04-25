@@ -4,17 +4,16 @@
  (modules toplevel_api_gen)
  (libraries
   rresult
-  yojson
   mime_printer
   merlin-lib.query_protocol
   rpclib
-  rpclib.json))
+  ))
 
 (library
  (name js_top_worker_client)
  (public_name js_top_worker-client)
  (modules js_top_worker_client)
- (libraries js_top_worker-rpc lwt brr)
+ (libraries js_top_worker-rpc lwt brr rpclib.json)
  (preprocess
   (pps js_of_ocaml-ppx)))
 
@@ -22,7 +21,7 @@
  (name js_top_worker_client_fut)
  (public_name js_top_worker-client_fut)
  (modules js_top_worker_client_fut)
- (libraries js_top_worker-rpc brr)
+ (libraries js_top_worker-rpc rpclib.json brr)
  (preprocess
   (pps js_of_ocaml-ppx)))
 
