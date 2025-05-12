@@ -166,8 +166,12 @@ type exec_result = {
 [@@deriving rpcty]
 (** Represents the result of executing a toplevel phrase *)
 
+type script_parts = (int * int) list (* Input length and output length *)
+[@@deriving rpcty]
+
 type exec_toplevel_result = {
   script : string;
+  parts : script_parts;
   mime_vals : mime_val list;
 }
 [@@deriving rpcty]
@@ -183,6 +187,9 @@ type init_libs = { path : string; cmis : cmis; cmas : cma list; findlib_index : 
 type err = InternalError of string [@@deriving rpcty]
 
 type opt_id = string option [@@deriving rpcty]
+
+type dependencies = string list [@@deriving rpcty]
+(** The ids of the cells that are dependencies *)
 
 module E = Idl.Error.Make (struct
   type t = err
@@ -210,6 +217,7 @@ module Make (R : RPC) = struct
   let unit_p = Param.mk Types.unit
   let phrase_p = Param.mk Types.string
   let id_p = Param.mk opt_id
+  let dependencies_p = Param.mk dependencies
   let typecheck_result_p = Param.mk exec_result
   let exec_result_p = Param.mk exec_result
 
@@ -219,6 +227,7 @@ module Make (R : RPC) = struct
   let completions_p = Param.mk completions
   let error_list_p = Param.mk error_list
   let typed_enclosings_p = Param.mk typed_enclosings_list
+  let is_toplevel_p = Param.mk ~name:"is_toplevel" Types.bool
 
   let toplevel_script_p = Param.mk ~description:[
     "A toplevel script is a sequence of toplevel phrases interspersed with";
@@ -286,19 +295,19 @@ module Make (R : RPC) = struct
       [ 
         "Complete a prefix"
       ]
-      (source_p @-> position_p @-> returning completions_p err)
+      (id_p @-> dependencies_p @-> source_p @-> position_p @-> returning completions_p err)
   
   let query_errors =
     declare "query_errors"
       [
         "Query the errors in the given source"
       ]
-      (source_p @-> returning error_list_p err)
+      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> returning error_list_p err)
 
   let type_enclosing =
     declare "type_enclosing"
       [
         "Get the type of the enclosing expression"
       ]
-      (source_p @-> position_p @-> returning typed_enclosings_p err)
+      (id_p @-> dependencies_p @-> source_p @-> position_p @-> returning typed_enclosings_p err)
 end

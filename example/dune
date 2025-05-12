@@ -15,6 +15,14 @@
  (libraries js_top_worker_client lwt js_of_ocaml))
 
 (executable
+ (name example3)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (modes js)
+ (modules example3)
+ (libraries js_top_worker_client lwt js_of_ocaml))
+
+(executable
  (name worker)
  (modes byte)
  (modules worker)
@@ -28,7 +36,7 @@
  (package js_top_worker-unix)
  (modules unix_worker)
  (link_flags (-linkall))
- (libraries js_top_worker logs logs.fmt rpclib.core findlib.top))
+ (libraries js_top_worker logs logs.fmt rpclib.core rpclib.json findlib.top))
 
 (executable
  (name unix_client)
@@ -75,11 +83,12 @@
   (run
    %{bin:js_of_ocaml}
    --toplevel
-   ; --pretty
+   --pretty
    --no-cmis
-   --effects=cps
+   ;  --effects=double-translation
    +toplevel.js
    +dynlink.js
+   +bigstringaf/runtime.js
    stubs.js
    %{dep:worker.bc}
    -o
@@ -93,7 +102,9 @@
   index.html
   example.bc.js
   example2.bc.js
+  example3.bc.js
   index2.html
+  index3.html
   cmis
   server.py
   (alias_rec all)))

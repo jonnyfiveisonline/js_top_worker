@@ -174,6 +174,29 @@ let mkloc loc =
   (loc.Location.loc_start.Lexing.pos_cnum,
    loc.Location.loc_end.Lexing.pos_cnum)
 
+   let inline_code =
+      Misc.Style.inline_code
+let invalid_package_error_to_string err =
+ let invalid ppf ipt = match ipt with
+    | Syntaxerr.Parameterized_types ->
+      Format.fprintf ppf "parametrized types are not supported"
+    | Constrained_types ->
+      Format.fprintf ppf "constrained types are not supported"
+    | Private_types ->
+      Format.fprintf ppf  "private types are not supported"
+    | Not_with_type ->
+      Format.fprintf ppf "only %a constraints are supported"
+        inline_code "with type t ="
+    | Neither_identifier_nor_with_type ->
+        Format.fprintf ppf
+          "only module type identifier and %a constraints are supported"
+          inline_code "with type"
+  in
+  let buf = Buffer.create 128 in
+  let fmt = Format.formatter_of_buffer buf in
+  Format.fprintf fmt "Invalid package type: %a%!" invalid err;
+  Buffer.contents buf
+
 let parse_default parse str eos_is_error =
   let eof = ref false in
   let lexbuf = lexbuf_of_string eof str in
@@ -218,7 +241,7 @@ let parse_default parse str eos_is_error =
                  Printf.sprintf "Error: broken invariant in parsetree: %s" s)
       | Syntaxerr.Invalid_package_type (loc, s) ->
           Error ([mkloc loc],
-                 Printf.sprintf "Invalid package type: %s" s)
+                 Printf.sprintf "Invalid package type: %s" (invalid_package_error_to_string s))
 #if OCAML_VERSION >= (5, 0, 0)
       | Syntaxerr.Removed_string_set loc ->
           Error ([mkloc loc],
@@ -255,6 +278,15 @@ let with_loc loc str = {
   Location.loc = loc;
 }
 
+ let fun_ ~loc p e =
+  let open Parsetree in
+  let   open Ast_helper in
+   let args = [{
+     pparam_loc=loc;
+     pparam_desc=Pparam_val (Nolabel, None, p);
+   }] in
+   (Exp.function_ args None (Pfunction_body e))
+
 (* Check that the given phrase can be evaluated without typing/compile
    errors. *)
 let check_phrase phrase =
@@ -275,22 +307,20 @@ let check_phrase phrase =
         let env = !Toploop.toplevel_env in
         (* Construct "let _ () = let module _ = struct <items> end in ()" in order to test
            the typing and compilation of [items] without evaluating them. *)
-        let unit = with_loc loc (Longident.Lident "()") in
+        let unit =
+          let (%.) a b = Longident.Ldot (a, b) in
+          with_loc loc (Lident "Stdlib" %. "Unit" %. "()")
+        in
         let top_def =
           let open Ast_helper in
           with_default_loc loc
             (fun () ->
-               Str.eval
-                 (Exp.fun_ Nolabel None (Pat.construct unit None)
-                   (Exp.letmodule (with_loc loc
-                        #if OCAML_VERSION >= (4, 10, 0)
-                        (Some "_")
-                        #else
-                          "_"
-                        #endif
-                        )
+              let punit = (Pat.construct unit None) in
+              let body = (Exp.letmodule ~loc:loc
+                      (with_loc loc (Some "_"))
                       (Mod.structure (item :: items))
-                      (Exp.construct unit None))))
+                      (Exp.construct unit None)) in
+              Str.eval (fun_ ~loc punit body))
         in
         let check_phrase = Ptop_def [top_def] in
         try
@@ -347,11 +377,14 @@ let () =
    | Compiler-libs re-exports                                        |
    +-----------------------------------------------------------------+ *)
 
-let get_load_path () = Load_path.get_paths ()
+let get_load_path () =
+    let {Load_path.visible; hidden} = Load_path.get_paths () in
+  visible @ hidden
+
 
 #if OCAML_VERSION >= (5, 0, 0)
-let set_load_path path =
-  Load_path.init path ~auto_include:Load_path.no_auto_include
+let set_load_path visible =
+  Load_path.init ~auto_include:Load_path.no_auto_include ~visible ~hidden:[]
 #else
 let set_load_path path = Load_path.init path
 #endif

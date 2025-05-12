@@ -16,10 +16,10 @@ let parse_toplevel s =
     let _phr = !Toploop.parse_toplevel_phrase lexbuf in
     let new_pos = Lexing.lexeme_end lexbuf in
     let phr = String.sub s pos (new_pos - pos) in
-    let cont, is_legacy, output = Toplexer.entry lexbuf in
+    let (junk, (cont, is_legacy, output)) = Toplexer.entry lexbuf in
     if is_legacy then
       Logs.warn (fun m -> m "Warning: Legacy toplevel output detected");
     let new_pos = Lexing.lexeme_end lexbuf in
-    if cont then (phr, output) :: loop new_pos else [ (phr, output) ]
+    if cont then (phr, junk, output) :: loop new_pos else [ (phr, junk, output) ]
   in
   loop 0

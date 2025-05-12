@@ -5,6 +5,8 @@ module IdlM = Idl.Make (M)
 
 type captured = { stdout : string; stderr : string }
 
+let modname_of_id id = "Cell__" ^ id
+
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
 
@@ -206,18 +208,22 @@ module Make (S : S) = struct
   let filename_of_module unit_name =
     Printf.sprintf "%s.cmi" (String.uncapitalize_ascii unit_name)
 
+  let get_dirs () =
+    let {Load_path.visible; hidden} = Load_path.get_paths () in
+    visible @ hidden
+
   let reset_dirs () =
     Ocaml_utils.Directory_content_cache.clear ();
     let open Ocaml_utils.Load_path in
-    let dirs = get_paths () in
+    let dirs = get_dirs () in
     reset ();
-    List.iter (fun p -> prepend_dir (Dir.create p)) dirs
+    List.iter (fun p -> prepend_dir (Dir.create ~hidden:false p)) dirs
 
   let reset_dirs_comp () =
     let open Load_path in
-    let dirs = get_paths () in
+    let dirs = get_dirs () in
     reset ();
-    List.iter (fun p -> prepend_dir (Dir.create p)) dirs
+    List.iter (fun p -> prepend_dir (Dir.create ~hidden:false p)) dirs
 
   let add_dynamic_cmis dcs =
     let fetch filename =
@@ -238,7 +244,7 @@ module Make (S : S) = struct
         | None -> ())
       dcs.dcs_toplevel_modules;
 
-    let new_load ~s ~old_loader ~unit_name =
+    let new_load ~s ~old_loader ~allow_hidden ~unit_name =
       Logs.info (fun m -> m "%s Loading: %s" s unit_name);
       let filename = filename_of_module unit_name in
 
@@ -263,7 +269,7 @@ module Make (S : S) = struct
         | None ->
             Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename));
-      old_loader ~unit_name
+      old_loader ~allow_hidden ~unit_name
     in
     let furl = "file://" in
     let l = String.length furl in
@@ -462,21 +468,21 @@ module Make (S : S) = struct
           Logs.info (fun m -> m "Simplif...");
           let slam = Simplif.simplify_lambda lam in
           Logs.info (fun m -> m "Bytegen...");
-          let init_code, fun_code = Bytegen.compile_phrase slam in
+          let code, _can_free = Bytegen.compile_phrase slam in
           Logs.info (fun m -> m "Emitcode...");
-          let code, reloc, _events = Emitcode.to_memory init_code fun_code in
+          let code, reloc, _events = Emitcode.to_memory code in
           Toploop.toplevel_env := newenv;
           (* let prims = split_primitives (Symtable.data_primitive_names ()) in *)
           let b = Buffer.create 100 in
           let cmo =
             Cmo_format.
               {
-                cu_name = "test";
+                cu_name = Compunit "test";
                 cu_pos = 0;
-                cu_codesize = Misc.LongString.length code;
+                cu_codesize = Bigarray.Array1.dim code;
                 cu_reloc = reloc;
                 cu_imports = [];
-                cu_required_globals = [];
+                cu_required_compunits = [];
                 cu_primitives = [];
                 cu_force_link = false;
                 cu_debug = 0;
@@ -489,7 +495,7 @@ module Make (S : S) = struct
              Symtable.check_global_initialized reloc;
              Symtable.update_global_table(); *)
           let oc = open_out "/tmp/test.cmo" in
-          Misc.LongString.output oc code 0 (Misc.LongString.length code);
+          Emitcode.marshal_to_channel_with_possibly_32bit_compat ~filename:"/tmp/test.cmo" ~kind:"bytecode unit" oc cmo;
 
           (* let code = String.init (Misc.LongString.length code) ~f:(fun i -> Misc.LongString.get code i) in *)
           close_out oc;
@@ -516,14 +522,14 @@ module Make (S : S) = struct
     then (
       Printf.eprintf
         "Warning, ignoring toplevel block without a leading '# '.\n";
-      IdlM.ErrM.return { Toplevel_api_gen.script = stripped; mime_vals = [] })
+      IdlM.ErrM.return { Toplevel_api_gen.script = stripped; mime_vals = []; parts=[] })
     else
       let s = String.sub stripped 2 (String.length stripped - 2) in
       let list = Ocamltop.parse_toplevel s in
       let buf = Buffer.create 1024 in
       let mime_vals =
         List.fold_left
-          (fun acc (phr, _output) ->
+          (fun acc (phr, _junk, _output) ->
             let new_output =
               execute phr |> IdlM.T.get |> M.run |> Result.get_ok
             in
@@ -545,7 +551,7 @@ module Make (S : S) = struct
       let content_txt =
         String.sub content_txt 0 (String.length content_txt - 1)
       in
-      let result = { Toplevel_api_gen.script = content_txt; mime_vals } in
+      let result = { Toplevel_api_gen.script = content_txt; mime_vals; parts=[] } in
       IdlM.ErrM.return result
 
   let exec_toplevel (phrase : string) = handle_toplevel phrase
@@ -660,7 +666,8 @@ module Make (S : S) = struct
         Some (from, to_, wdispatch source query)
   end
 
-  let complete_prefix source position =
+
+  let complete_prefix _id _deps source position =
     let source = Merlin_kernel.Msource.make source in
     let map_kind :
         [ `Value
@@ -708,9 +715,68 @@ module Make (S : S) = struct
     | None ->
         IdlM.ErrM.return { Toplevel_api_gen.from = 0; to_ = 0; entries = [] }
 
-  let query_errors source =
+  let add_cmi id deps source =
+    Logs.info (fun m -> m "add_cmi");
+    let dep_modules = List.map modname_of_id deps in
+    let loc = Location.none in
+    let env = Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib") ~open_implicit_modules:dep_modules in
+    let path =
+      match !path with Some p -> p | None -> failwith "Path not set"
+    in
+    let prefix = Printf.sprintf "%s/%s" path (modname_of_id id) in
+    let filename = Printf.sprintf "%s.ml" prefix in
+    Logs.info (fun m -> m "prefix: %s\n%!" prefix);
+    let oc = open_out filename in
+    Printf.fprintf oc "%s" source;
+    close_out oc;
+    let unit_info = Unit_info.make ~source_file:filename prefix in
     try
-      let source = Merlin_kernel.Msource.make source in
+      Logs.info (fun m -> m "Parsing...\n%!");
+      let lexbuf = Lexing.from_string source in
+      let ast = Parse.implementation lexbuf in
+      Logs.info (fun m -> m "got ast\n%!");
+      let _ = Typemod.type_implementation unit_info env ast in
+      Logs.info (fun m -> m "typed\n%!");
+      let b = Sys.file_exists (prefix ^ ".cmi") in
+      Logs.info (fun m -> m "b: %b\n%!" b);
+      (* reset_dirs () *) ()
+    with exn ->
+      let s = Printexc.to_string exn in
+      Logs.err (fun m -> m "Error in add_cmi: %s" s);
+      let ppf = Format.err_formatter in
+      let _ = Location.report_exception ppf exn in
+      ()
+  
+  let mangle_toplevel orig_source =
+    if String.length orig_source < 2 || orig_source.[0] <> '#' || orig_source.[1] <> ' '
+    then (Logs.err (fun m -> m "Warning, ignoring toplevel block without a leading '# '.\n%!"); orig_source)
+    else begin
+      try
+        let s = String.sub orig_source 2 (String.length orig_source - 2) in
+        let list = Ocamltop.parse_toplevel s in
+        let buff = Buffer.create 100 in
+        List.iter (fun (phr, junk, output) ->
+        Printf.bprintf buff "  %s%s\n" phr (String.make (String.length junk) ' ');
+        List.iter (fun x ->
+          Printf.bprintf buff "  %s\n" (String.make (String.length x) ' ')) output) list;
+        Buffer.contents buff
+      with e ->
+        Logs.err (fun m -> m "Error in mangle_toplevel: %s" (Printexc.to_string e));
+        let ppf = Format.err_formatter in
+        let _ = Location.report_exception ppf e in
+        orig_source
+      end
+
+  let query_errors id deps is_toplevel orig_source =
+    try
+      Logs.info (fun m -> m "About to mangle toplevel");
+      let src = if is_toplevel then mangle_toplevel orig_source else orig_source in
+      Logs.info (fun m -> m "src: %s" src);
+      let id = Option.get id in
+      let line1 = List.map (fun id ->
+        Printf.sprintf "open %s" (modname_of_id id)) deps |> String.concat " " in
+      let line1 = line1 ^ "\n" in
+      let source = Merlin_kernel.Msource.make (line1 ^ src) in
       let query =
         Query_protocol.Errors { lexing = true; parsing = true; typing = true }
       in
@@ -726,6 +792,16 @@ module Make (S : S) = struct
                  String.trim (Format.flush_str_formatter ())
                in
                let loc = Ocaml_parsing.Location.loc_of_report error in
+               let map_pos pos =
+                  Lexing.{ pos with
+                    pos_bol = pos.pos_bol - String.length line1;
+                    pos_lnum = pos.pos_lnum - 1;
+                    pos_cnum = pos.pos_cnum - String.length line1;
+                  } in
+               let loc = { loc with
+                 Ocaml_utils.Warnings.loc_start = map_pos loc.loc_start;
+                  Ocaml_utils.Warnings.loc_end = map_pos loc.loc_end;
+                } in
                let main =
                  Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main
                    error
@@ -739,12 +815,16 @@ module Make (S : S) = struct
                  source;
                })
       in
+      if List.length errors = 0 then
+        add_cmi id deps src;
+      Logs.info (fun m -> m "Got to end");
       IdlM.ErrM.return errors
     with e ->
+      Logs.info (fun m -> m "Error: %s" (Printexc.to_string e));
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
-  let type_enclosing source position =
+  let type_enclosing _id _deps source position =
     let position =
       match position with
       | Toplevel_api_gen.Start -> `Start

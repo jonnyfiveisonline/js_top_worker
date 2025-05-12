@@ -131,6 +131,22 @@ end
 
 module U = Impl.Make (S)
 
+(* let test () =
+  let _x = Compmisc.initial_env in
+  let oc = open_out "/tmp/unix_worker.ml" in
+  Printf.fprintf oc "let x=1;;\n";
+  close_out oc;
+  let unit_info = Unit_info.make ~source_file:"/tmp/unix_worker.ml" "/tmp/unix_worker" in
+  try
+    let _ast = Pparse.parse_implementation ~tool_name:"worker" "/tmp/unix_worker.ml" in
+    let _ = Typemod.type_implementation unit_info (Compmisc.initial_env ()) _ast in
+    ()
+  with exn ->
+    Printf.eprintf "error: %s\n%!" (Printexc.to_string exn);
+    let ppf = Format.err_formatter in
+    let _ = Location.report_exception ppf exn in
+    () *)
+
 let start_server () =
   let open U in
   Logs.set_reporter (Logs_fmt.reporter ());

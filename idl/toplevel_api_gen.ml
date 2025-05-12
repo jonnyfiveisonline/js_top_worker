@@ -2,7 +2,8 @@
   {
     tool_name = "ppx_driver";
     include_dirs = [];
-    load_path = [];
+    hidden_include_dirs = [];
+    load_path = ([], []);
     open_modules = [];
     for_package = None;
     debug = false;
@@ -39,7 +40,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.pos_fname);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with pos_fname = v })
+        Rpc.Types.fset = (fun v _s -> { _s with pos_fname = v })
       }
     and lexing_position_pos_lnum : (_, lexing_position) Rpc.Types.field =
       {
@@ -49,7 +50,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.pos_lnum);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with pos_lnum = v })
+        Rpc.Types.fset = (fun v _s -> { _s with pos_lnum = v })
       }
     and lexing_position_pos_bol : (_, lexing_position) Rpc.Types.field =
       {
@@ -59,7 +60,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.pos_bol);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with pos_bol = v })
+        Rpc.Types.fset = (fun v _s -> { _s with pos_bol = v })
       }
     and lexing_position_pos_cnum : (_, lexing_position) Rpc.Types.field =
       {
@@ -69,7 +70,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.pos_cnum);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with pos_cnum = v })
+        Rpc.Types.fset = (fun v _s -> { _s with pos_cnum = v })
       }
     and typ_of_lexing_position =
       Rpc.Types.Struct
@@ -138,7 +139,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.loc_start);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with loc_start = v })
+        Rpc.Types.fset = (fun v _s -> { _s with loc_start = v })
       }
     and location_loc_end : (_, location) Rpc.Types.field =
       {
@@ -148,7 +149,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.loc_end);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with loc_end = v })
+        Rpc.Types.fset = (fun v _s -> { _s with loc_end = v })
       }
     and location_loc_ghost : (_, location) Rpc.Types.field =
       {
@@ -158,7 +159,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.loc_ghost);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with loc_ghost = v })
+        Rpc.Types.fset = (fun v _s -> { _s with loc_ghost = v })
       }
     and typ_of_location =
       Rpc.Types.Struct
@@ -292,34 +293,32 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "lexer" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Lexer)
-                  | "parser" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Parser)
-                  | "typer" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Typer)
-                  | "warning" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Warning)
-                  | "unknown" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Unknown)
-                  | "env" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Env)
-                  | "config" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Config)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "lexer" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Lexer)
+                | "parser" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Parser)
+                | "typer" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Typer)
+                | "warning" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Warning)
+                | "unknown" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Unknown)
+                | "env" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Env)
+                | "config" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Config)
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : location_error_source Rpc.Types.variant)
     and location_error_source =
       {
@@ -403,34 +402,32 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "report_error" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Report_error)
-                  | "report_warning" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function | a0 -> Rresult.R.ok (Report_warning a0))
-                  | "report_warning_as_error" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function
-                         | a0 -> Rresult.R.ok (Report_warning_as_error a0))
-                  | "report_alert" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function | a0 -> Rresult.R.ok (Report_alert a0))
-                  | "report_alert_as_error" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function
-                         | a0 -> Rresult.R.ok (Report_alert_as_error a0))
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "report_error" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Report_error)
+                | "report_warning" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function | a0 -> Rresult.R.ok (Report_warning a0))
+                | "report_warning_as_error" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function
+                       | a0 -> Rresult.R.ok (Report_warning_as_error a0))
+                | "report_alert" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function | a0 -> Rresult.R.ok (Report_alert a0))
+                | "report_alert_as_error" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function
+                       | a0 -> Rresult.R.ok (Report_alert_as_error a0))
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : location_report_kind Rpc.Types.variant)
     and location_report_kind =
       {
@@ -483,7 +480,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.dcs_url);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with dcs_url = v })
+        Rpc.Types.fset = (fun v _s -> { _s with dcs_url = v })
       }
     and dynamic_cmis_dcs_toplevel_modules : (_, dynamic_cmis) Rpc.Types.field
       =
@@ -495,8 +492,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.dcs_toplevel_modules);
-        Rpc.Types.fset =
-          (fun v -> fun _s -> { _s with dcs_toplevel_modules = v })
+        Rpc.Types.fset = (fun v _s -> { _s with dcs_toplevel_modules = v })
       }
     and dynamic_cmis_dcs_file_prefixes : (_, dynamic_cmis) Rpc.Types.field =
       {
@@ -507,8 +503,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.dcs_file_prefixes);
-        Rpc.Types.fset =
-          (fun v -> fun _s -> { _s with dcs_file_prefixes = v })
+        Rpc.Types.fset = (fun v _s -> { _s with dcs_file_prefixes = v })
       }
     and typ_of_dynamic_cmis =
       Rpc.Types.Struct
@@ -558,7 +553,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.sc_name);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with sc_name = v })
+        Rpc.Types.fset = (fun v _s -> { _s with sc_name = v })
       }
     and static_cmi_sc_content : (_, static_cmi) Rpc.Types.field =
       {
@@ -568,7 +563,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.sc_content);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with sc_content = v })
+        Rpc.Types.fset = (fun v _s -> { _s with sc_content = v })
       }
     and typ_of_static_cmi =
       Rpc.Types.Struct
@@ -609,7 +604,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.static_cmis);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with static_cmis = v })
+        Rpc.Types.fset = (fun v _s -> { _s with static_cmis = v })
       }
     and cmis_dynamic_cmis : (_, cmis) Rpc.Types.field =
       {
@@ -619,7 +614,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.dynamic_cmis);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with dynamic_cmis = v })
+        Rpc.Types.fset = (fun v _s -> { _s with dynamic_cmis = v })
       }
     and typ_of_cmis =
       Rpc.Types.Struct
@@ -689,7 +684,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.kind);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with kind = v })
+        Rpc.Types.fset = (fun v _s -> { _s with kind = v })
       }
     and error_loc : (_, error) Rpc.Types.field =
       {
@@ -699,7 +694,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.loc);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with loc = v })
+        Rpc.Types.fset = (fun v _s -> { _s with loc = v })
       }
     and error_main : (_, error) Rpc.Types.field =
       {
@@ -709,7 +704,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.main);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with main = v })
+        Rpc.Types.fset = (fun v _s -> { _s with main = v })
       }
     and error_sub : (_, error) Rpc.Types.field =
       {
@@ -720,7 +715,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.sub);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with sub = v })
+        Rpc.Types.fset = (fun v _s -> { _s with sub = v })
       }
     and error_source : (_, error) Rpc.Types.field =
       {
@@ -730,7 +725,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.source);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with source = v })
+        Rpc.Types.fset = (fun v _s -> { _s with source = v })
       }
     and typ_of_error =
       Rpc.Types.Struct
@@ -915,40 +910,38 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "constructor" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Constructor)
-                  | "keyword" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Keyword)
-                  | "label" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Label)
-                  | "methodcall" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok MethodCall)
-                  | "modtype" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Modtype)
-                  | "module" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Module)
-                  | "type" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Type)
-                  | "value" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Value)
-                  | "variant" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Variant)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "constructor" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Constructor)
+                | "keyword" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Keyword)
+                | "label" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Label)
+                | "methodcall" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok MethodCall)
+                | "modtype" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Modtype)
+                | "module" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Module)
+                | "type" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Type)
+                | "value" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Value)
+                | "variant" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Variant)
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : kind_ty Rpc.Types.variant)
     and kind_ty =
       {
@@ -978,7 +971,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.name);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with name = v })
+        Rpc.Types.fset = (fun v _s -> { _s with name = v })
       }
     and query_protocol_compl_entry_kind :
       (_, query_protocol_compl_entry) Rpc.Types.field =
@@ -989,7 +982,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.kind);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with kind = v })
+        Rpc.Types.fset = (fun v _s -> { _s with kind = v })
       }
     and query_protocol_compl_entry_desc :
       (_, query_protocol_compl_entry) Rpc.Types.field =
@@ -1000,7 +993,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.desc);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with desc = v })
+        Rpc.Types.fset = (fun v _s -> { _s with desc = v })
       }
     and query_protocol_compl_entry_info :
       (_, query_protocol_compl_entry) Rpc.Types.field =
@@ -1011,7 +1004,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.info);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with info = v })
+        Rpc.Types.fset = (fun v _s -> { _s with info = v })
       }
     and query_protocol_compl_entry_deprecated :
       (_, query_protocol_compl_entry) Rpc.Types.field =
@@ -1022,7 +1015,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.deprecated);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with deprecated = v })
+        Rpc.Types.fset = (fun v _s -> { _s with deprecated = v })
       }
     and typ_of_query_protocol_compl_entry =
       Rpc.Types.Struct
@@ -1103,7 +1096,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.from);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with from = v })
+        Rpc.Types.fset = (fun v _s -> { _s with from = v })
       }
     and completions_to_ : (_, completions) Rpc.Types.field =
       {
@@ -1113,7 +1106,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.to_);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with to_ = v })
+        Rpc.Types.fset = (fun v _s -> { _s with to_ = v })
       }
     and completions_entries : (_, completions) Rpc.Types.field =
       {
@@ -1123,7 +1116,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.entries);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with entries = v })
+        Rpc.Types.fset = (fun v _s -> { _s with entries = v })
       }
     and typ_of_completions =
       Rpc.Types.Struct
@@ -1228,31 +1221,27 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "start" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Start)
-                  | "offset" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic Int))
-                        (function | a0 -> Rresult.R.ok (Offset a0))
-                  | "logical" ->
-                      Rresult.R.bind
-                        (t.tget
-                           (Tuple
-                              ((let open Rpc.Types in Basic Int),
-                                (let open Rpc.Types in Basic Int))))
-                        (function
-                         | (a0, a1) -> Rresult.R.ok (Logical (a0, a1)))
-                  | "end" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok End)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "start" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Start)
+                | "offset" ->
+                    Rresult.R.bind (t.tget (let open Rpc.Types in Basic Int))
+                      (function | a0 -> Rresult.R.ok (Offset a0))
+                | "logical" ->
+                    Rresult.R.bind
+                      (t.tget
+                         (Tuple
+                            ((let open Rpc.Types in Basic Int),
+                              (let open Rpc.Types in Basic Int))))
+                      (function | (a0, a1) -> Rresult.R.ok (Logical (a0, a1)))
+                | "end" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok End)
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : msource_position Rpc.Types.variant)
     and msource_position =
       {
@@ -1308,22 +1297,20 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "no" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok No)
-                  | "tail_position" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Tail_position)
-                  | "tail_call" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Tail_call)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "no" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok No)
+                | "tail_position" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Tail_position)
+                | "tail_call" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Tail_call)
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : is_tail_position Rpc.Types.variant)
     and is_tail_position =
       {
@@ -1368,21 +1355,18 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "index" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic Int))
-                        (function | a0 -> Rresult.R.ok (Index a0))
-                  | "string" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function | a0 -> Rresult.R.ok (String a0))
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "index" ->
+                    Rresult.R.bind (t.tget (let open Rpc.Types in Basic Int))
+                      (function | a0 -> Rresult.R.ok (Index a0))
+                | "string" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function | a0 -> Rresult.R.ok (String a0))
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : index_or_string Rpc.Types.variant)
     and index_or_string =
       {
@@ -1450,7 +1434,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.line1);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with line1 = v })
+        Rpc.Types.fset = (fun v _s -> { _s with line1 = v })
       }
     and highlight_line2 : (_, highlight) Rpc.Types.field =
       {
@@ -1460,7 +1444,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.line2);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with line2 = v })
+        Rpc.Types.fset = (fun v _s -> { _s with line2 = v })
       }
     and highlight_col1 : (_, highlight) Rpc.Types.field =
       {
@@ -1470,7 +1454,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.col1);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with col1 = v })
+        Rpc.Types.fset = (fun v _s -> { _s with col1 = v })
       }
     and highlight_col2 : (_, highlight) Rpc.Types.field =
       {
@@ -1480,7 +1464,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.col2);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with col2 = v })
+        Rpc.Types.fset = (fun v _s -> { _s with col2 = v })
       }
     and typ_of_highlight =
       Rpc.Types.Struct
@@ -1566,19 +1550,17 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "noencoding" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Noencoding)
-                  | "base64" ->
-                      Rresult.R.bind (t.tget Unit)
-                        (function | () -> Rresult.R.ok Base64)
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "noencoding" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Noencoding)
+                | "base64" ->
+                    Rresult.R.bind (t.tget Unit)
+                      (function | () -> Rresult.R.ok Base64)
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : encoding Rpc.Types.variant)
     and encoding =
       {
@@ -1605,7 +1587,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.mime_type);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with mime_type = v })
+        Rpc.Types.fset = (fun v _s -> { _s with mime_type = v })
       }
     and mime_val_encoding : (_, mime_val) Rpc.Types.field =
       {
@@ -1615,7 +1597,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.encoding);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with encoding = v })
+        Rpc.Types.fset = (fun v _s -> { _s with encoding = v })
       }
     and mime_val_data : (_, mime_val) Rpc.Types.field =
       {
@@ -1625,7 +1607,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.data);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with data = v })
+        Rpc.Types.fset = (fun v _s -> { _s with data = v })
       }
     and typ_of_mime_val =
       Rpc.Types.Struct
@@ -1690,7 +1672,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.stdout);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with stdout = v })
+        Rpc.Types.fset = (fun v _s -> { _s with stdout = v })
       }
     and exec_result_stderr : (_, exec_result) Rpc.Types.field =
       {
@@ -1701,7 +1683,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.stderr);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with stderr = v })
+        Rpc.Types.fset = (fun v _s -> { _s with stderr = v })
       }
     and exec_result_sharp_ppf : (_, exec_result) Rpc.Types.field =
       {
@@ -1712,7 +1694,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.sharp_ppf);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with sharp_ppf = v })
+        Rpc.Types.fset = (fun v _s -> { _s with sharp_ppf = v })
       }
     and exec_result_caml_ppf : (_, exec_result) Rpc.Types.field =
       {
@@ -1723,7 +1705,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.caml_ppf);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with caml_ppf = v })
+        Rpc.Types.fset = (fun v _s -> { _s with caml_ppf = v })
       }
     and exec_result_highlight : (_, exec_result) Rpc.Types.field =
       {
@@ -1733,7 +1715,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.highlight);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with highlight = v })
+        Rpc.Types.fset = (fun v _s -> { _s with highlight = v })
       }
     and exec_result_mime_vals : (_, exec_result) Rpc.Types.field =
       {
@@ -1743,7 +1725,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.mime_vals);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with mime_vals = v })
+        Rpc.Types.fset = (fun v _s -> { _s with mime_vals = v })
       }
     and typ_of_exec_result =
       Rpc.Types.Struct
@@ -1823,8 +1805,28 @@ include
     and _ = typ_of_exec_result
     and _ = exec_result
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
-type exec_toplevel_result = {
+type script_parts = (int * int) list[@@deriving rpcty]
+include
+  struct
+    let _ = fun (_ : script_parts) -> ()
+    let rec typ_of_script_parts =
+      Rpc.Types.List
+        (Rpc.Types.Tuple
+           ((let open Rpc.Types in Basic Int),
+             (let open Rpc.Types in Basic Int)))
+    and script_parts =
+      {
+        Rpc.Types.name = "script_parts";
+        Rpc.Types.description = [];
+        Rpc.Types.ty = typ_of_script_parts
+      }
+    let _ = typ_of_script_parts
+    and _ = script_parts
+  end[@@ocaml.doc "@inline"][@@merlin.hide ]
+type exec_toplevel_result =
+  {
   script: string ;
+  parts: script_parts ;
   mime_vals: mime_val list }[@@deriving rpcty][@@ocaml.doc
                                                 " Represents the result of executing a toplevel script "]
 include
@@ -1839,7 +1841,18 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.script);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with script = v })
+        Rpc.Types.fset = (fun v _s -> { _s with script = v })
+      }
+    and exec_toplevel_result_parts :
+      (_, exec_toplevel_result) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "parts";
+        Rpc.Types.field = typ_of_script_parts;
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription = [];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.parts);
+        Rpc.Types.fset = (fun v _s -> { _s with parts = v })
       }
     and exec_toplevel_result_mime_vals :
       (_, exec_toplevel_result) Rpc.Types.field =
@@ -1850,13 +1863,14 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.mime_vals);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with mime_vals = v })
+        Rpc.Types.fset = (fun v _s -> { _s with mime_vals = v })
       }
     and typ_of_exec_toplevel_result =
       Rpc.Types.Struct
         ({
            Rpc.Types.fields =
              [Rpc.Types.BoxedField exec_toplevel_result_script;
+             Rpc.Types.BoxedField exec_toplevel_result_parts;
              Rpc.Types.BoxedField exec_toplevel_result_mime_vals];
            Rpc.Types.sname = "exec_toplevel_result";
            Rpc.Types.version = None;
@@ -1867,15 +1881,21 @@ include
                      (Rpc.Types.List typ_of_mime_val))
                     >>=
                     (fun exec_toplevel_result_mime_vals ->
-                       (getter.Rpc.Types.field_get "script"
-                          (let open Rpc.Types in Basic String))
+                       (getter.Rpc.Types.field_get "parts"
+                          typ_of_script_parts)
                          >>=
-                         (fun exec_toplevel_result_script ->
-                            return
-                              {
-                                script = exec_toplevel_result_script;
-                                mime_vals = exec_toplevel_result_mime_vals
-                              })))
+                         (fun exec_toplevel_result_parts ->
+                            (getter.Rpc.Types.field_get "script"
+                               (let open Rpc.Types in Basic String))
+                              >>=
+                              (fun exec_toplevel_result_script ->
+                                 return
+                                   {
+                                     script = exec_toplevel_result_script;
+                                     parts = exec_toplevel_result_parts;
+                                     mime_vals =
+                                       exec_toplevel_result_mime_vals
+                                   }))))
          } : exec_toplevel_result Rpc.Types.structure)
     and exec_toplevel_result =
       {
@@ -1885,6 +1905,7 @@ include
         Rpc.Types.ty = typ_of_exec_toplevel_result
       }
     let _ = exec_toplevel_result_script
+    and _ = exec_toplevel_result_parts
     and _ = exec_toplevel_result_mime_vals
     and _ = typ_of_exec_toplevel_result
     and _ = exec_toplevel_result
@@ -1905,7 +1926,7 @@ include
         Rpc.Types.fdescription = ["URL where the cma is available"];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.url);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with url = v })
+        Rpc.Types.fset = (fun v _s -> { _s with url = v })
       }
     and cma_fn : (_, cma) Rpc.Types.field =
       {
@@ -1915,7 +1936,7 @@ include
         Rpc.Types.fdescription = ["Name of the 'wrapping' function"];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.fn);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with fn = v })
+        Rpc.Types.fset = (fun v _s -> { _s with fn = v })
       }
     and typ_of_cma =
       Rpc.Types.Struct
@@ -1967,7 +1988,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.path);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with path = v })
+        Rpc.Types.fset = (fun v _s -> { _s with path = v })
       }
     and init_libs_cmis : (_, init_libs) Rpc.Types.field =
       {
@@ -1977,7 +1998,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.cmis);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with cmis = v })
+        Rpc.Types.fset = (fun v _s -> { _s with cmis = v })
       }
     and init_libs_cmas : (_, init_libs) Rpc.Types.field =
       {
@@ -1987,7 +2008,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.cmas);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with cmas = v })
+        Rpc.Types.fset = (fun v _s -> { _s with cmas = v })
       }
     and init_libs_findlib_index : (_, init_libs) Rpc.Types.field =
       {
@@ -1997,7 +2018,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.findlib_index);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with findlib_index = v })
+        Rpc.Types.fset = (fun v _s -> { _s with findlib_index = v })
       }
     and init_libs_findlib_requires : (_, init_libs) Rpc.Types.field =
       {
@@ -2008,8 +2029,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.findlib_requires);
-        Rpc.Types.fset =
-          (fun v -> fun _s -> { _s with findlib_requires = v })
+        Rpc.Types.fset = (fun v _s -> { _s with findlib_requires = v })
       }
     and init_libs_stdlib_dcs : (_, init_libs) Rpc.Types.field =
       {
@@ -2019,7 +2039,7 @@ include
         Rpc.Types.fdescription = [];
         Rpc.Types.fversion = None;
         Rpc.Types.fget = (fun _r -> _r.stdlib_dcs);
-        Rpc.Types.fset = (fun v -> fun _s -> { _s with stdlib_dcs = v })
+        Rpc.Types.fset = (fun v _s -> { _s with stdlib_dcs = v })
       }
     and typ_of_init_libs =
       Rpc.Types.Struct
@@ -2114,17 +2134,15 @@ include
            Rpc.Types.vdefault = None;
            Rpc.Types.vversion = None;
            Rpc.Types.vconstructor =
-             (fun s' ->
-                fun t ->
-                  let s = String.lowercase_ascii s' in
-                  match s with
-                  | "internalerror" ->
-                      Rresult.R.bind
-                        (t.tget (let open Rpc.Types in Basic String))
-                        (function | a0 -> Rresult.R.ok (InternalError a0))
-                  | _ ->
-                      Rresult.R.error_msg
-                        (Printf.sprintf "Unknown tag '%s'" s))
+             (fun s' t ->
+                let s = String.lowercase_ascii s' in
+                match s with
+                | "internalerror" ->
+                    Rresult.R.bind
+                      (t.tget (let open Rpc.Types in Basic String))
+                      (function | a0 -> Rresult.R.ok (InternalError a0))
+                | _ ->
+                    Rresult.R.error_msg (Printf.sprintf "Unknown tag '%s'" s))
          } : err Rpc.Types.variant)
     and err =
       {
@@ -2150,6 +2168,23 @@ include
     let _ = typ_of_opt_id
     and _ = opt_id
   end[@@ocaml.doc "@inline"][@@merlin.hide ]
+type dependencies = string list[@@deriving rpcty][@@ocaml.doc
+                                                   " The ids of the cells that are dependencies "]
+include
+  struct
+    let _ = fun (_ : dependencies) -> ()
+    let rec typ_of_dependencies =
+      Rpc.Types.List (let open Rpc.Types in Basic String)
+    and dependencies =
+      {
+        Rpc.Types.name = "dependencies";
+        Rpc.Types.description =
+          ["The ids of the cells that are dependencies"];
+        Rpc.Types.ty = typ_of_dependencies
+      }
+    let _ = typ_of_dependencies
+    and _ = dependencies
+  end[@@ocaml.doc "@inline"][@@merlin.hide ]
 module E =
   (Idl.Error.Make)(struct
                      type t = err
@@ -2174,6 +2209,7 @@ module Make(R:RPC) =
     let unit_p = Param.mk Types.unit
     let phrase_p = Param.mk Types.string
     let id_p = Param.mk opt_id
+    let dependencies_p = Param.mk dependencies
     let typecheck_result_p = Param.mk exec_result
     let exec_result_p = Param.mk exec_result
     let source_p = Param.mk source
@@ -2181,6 +2217,7 @@ module Make(R:RPC) =
     let completions_p = Param.mk completions
     let error_list_p = Param.mk error_list
     let typed_enclosings_p = Param.mk typed_enclosings_list
+    let is_toplevel_p = Param.mk ~name:"is_toplevel" Types.bool
     let toplevel_script_p =
       Param.mk
         ~description:["A toplevel script is a sequence of toplevel phrases interspersed with";
@@ -2224,11 +2261,18 @@ module Make(R:RPC) =
         (id_p @-> (phrase_p @-> (returning phrase_p err)))
     let complete_prefix =
       declare "complete_prefix" ["Complete a prefix"]
-        (source_p @-> (position_p @-> (returning completions_p err)))
+        (id_p @->
+           (dependencies_p @->
+              (source_p @-> (position_p @-> (returning completions_p err)))))
     let query_errors =
       declare "query_errors" ["Query the errors in the given source"]
-        (source_p @-> (returning error_list_p err))
+        (id_p @->
+           (dependencies_p @->
+              (is_toplevel_p @-> (source_p @-> (returning error_list_p err)))))
     let type_enclosing =
       declare "type_enclosing" ["Get the type of the enclosing expression"]
-        (source_p @-> (position_p @-> (returning typed_enclosings_p err)))
+        (id_p @->
+           (dependencies_p @->
+              (source_p @->
+                 (position_p @-> (returning typed_enclosings_p err)))))
   end

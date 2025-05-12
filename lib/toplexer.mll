@@ -1,10 +1,13 @@
 { }
 
 rule entry = parse
-    | (_ # '\n')* "\n" {
-        line_prefix [] lexbuf
+    | ((_ # '\n')* as junk) "\n" {
+        (junk, line_prefix [] lexbuf)
     }
-    | _ | eof { false, false, [] }
+    | ((_ # '\n')* as junk) {
+        (junk, (false, false, []))
+    }
+    | eof { ("", (false, false, [])) }
 
 and line_prefix acc = parse
     | "  " {

@@ -380,7 +380,7 @@ let visible_modules () =
           with Sys_error _ ->
             acc)
 #if OCAML_VERSION >= (4, 08, 0)
-        String_set.empty @@ Load_path.get_paths ()
+        String_set.empty @@  UTop_compat.get_load_path ()
 #else
         String_set.empty !Config.load_path
 #endif
@@ -399,8 +399,12 @@ let add_fields_of_type decl acc =
         acc
     | Type_record (fields, _) ->
         List.fold_left (fun acc field -> add (field_name field) acc) acc fields
+#if OCAML_VERSION >= (5, 2, 0)
+    | Type_abstract _ ->
+#else 
     | Type_abstract ->
-        acc
+#endif
+      acc
     | Type_open ->
         acc
 
@@ -414,7 +418,11 @@ let add_names_of_type decl acc =
         List.fold_left (fun acc cstr -> add (constructor_name cstr) acc) acc constructors
     | Type_record (fields, _) ->
         List.fold_left (fun acc field -> add (field_name field) acc) acc fields
+#if OCAML_VERSION >= (5, 2, 0)
+    | Type_abstract _ ->
+#else 
     | Type_abstract ->
+#endif
         acc
     | Type_open ->
         acc
@@ -951,7 +959,7 @@ let complete ~phrase_terminator ~input =
               String_map.empty
               (Filename.current_dir_name ::
 #if OCAML_VERSION >= (4, 08, 0)
-                (Load_path.get_paths ())
+                (UTop_compat.get_load_path ())
 #else
                 !Config.load_path
 #endif
@@ -986,7 +994,7 @@ let complete ~phrase_terminator ~input =
               String_map.empty
               (Filename.current_dir_name ::
 #if OCAML_VERSION >= (4, 08, 0)
-                (Load_path.get_paths ())
+                UTop_compat.get_load_path ()
 #else
                 !Config.load_path
 #endif

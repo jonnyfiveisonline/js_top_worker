@@ -69,6 +69,11 @@ end
 
 module M = Impl.Make (S)
 
+let test () = 
+  let oc = open_out "/tmp/mytest.txt" in
+  Printf.fprintf oc "Hello, world\n%!";
+  close_out oc
+  
 let run () =
   (* Here we bind the server stub functions to the implementations *)
   let open Js_of_ocaml in
@@ -76,6 +81,7 @@ let run () =
   try
     Console.console##log (Js.string "Starting worker...");
 
+    let _ = test () in
     Logs.set_reporter (Logs_browser.console_reporter ());
     Logs.set_level (Some Logs.Info);
     Server.exec execute;
