@@ -666,9 +666,40 @@ module Make (S : S) = struct
         Some (from, to_, wdispatch source query)
   end
 
+  let mangle_toplevel is_toplevel orig_source deps =
+    let src =
+      if not is_toplevel then
+        orig_source
+      else
+        if
+          String.length orig_source < 2 || orig_source.[0] <> '#' || orig_source.[1] <> ' '
+        then (Logs.err (fun m -> m "Warning, ignoring toplevel block without a leading '# '.\n%!"); orig_source)
+        else begin
+          try
+            let s = String.sub orig_source 2 (String.length orig_source - 2) in
+            let list = Ocamltop.parse_toplevel s in
+            let buff = Buffer.create 100 in
+            List.iter (fun (phr, junk, output) ->
+            Printf.bprintf buff "  %s%s\n" phr (String.make (String.length junk) ' ');
+            List.iter (fun x ->
+              Printf.bprintf buff "  %s\n" (String.make (String.length x) ' ')) output) list;
+            Buffer.contents buff
+          with e ->
+            Logs.err (fun m -> m "Error in mangle_toplevel: %s" (Printexc.to_string e));
+            let ppf = Format.err_formatter in
+            let _ = Location.report_exception ppf e in
+            orig_source
+          end
+    in
+    let line1 = List.map (fun id ->
+      Printf.sprintf "open %s" (modname_of_id id)) deps |> String.concat " " in
+    let line1 = line1 ^ "\n" in
+    line1, src
 
-  let complete_prefix _id _deps source position =
-    let source = Merlin_kernel.Msource.make source in
+  let complete_prefix _id _deps is_toplevel source position =
+    let line1, src = mangle_toplevel is_toplevel source [] in
+    let src= line1 ^ src in
+    let source = Merlin_kernel.Msource.make src in
     let map_kind :
         [ `Value
         | `Constructor
@@ -692,9 +723,9 @@ module Make (S : S) = struct
     in
     let position =
       match position with
-      | Toplevel_api_gen.Start -> `Start
-      | Offset x -> `Offset x
-      | Logical (x, y) -> `Logical (x, y)
+      | Toplevel_api_gen.Start -> `Offset (String.length line1)
+      | Offset x -> `Offset (x + String.length line1)
+      | Logical (x, y) -> `Logical (x + 1, y)
       | End -> `End
     in
     match Completion.at_pos source position with
@@ -747,35 +778,25 @@ module Make (S : S) = struct
       let _ = Location.report_exception ppf exn in
       ()
   
-  let mangle_toplevel orig_source =
-    if String.length orig_source < 2 || orig_source.[0] <> '#' || orig_source.[1] <> ' '
-    then (Logs.err (fun m -> m "Warning, ignoring toplevel block without a leading '# '.\n%!"); orig_source)
-    else begin
-      try
-        let s = String.sub orig_source 2 (String.length orig_source - 2) in
-        let list = Ocamltop.parse_toplevel s in
-        let buff = Buffer.create 100 in
-        List.iter (fun (phr, junk, output) ->
-        Printf.bprintf buff "  %s%s\n" phr (String.make (String.length junk) ' ');
-        List.iter (fun x ->
-          Printf.bprintf buff "  %s\n" (String.make (String.length x) ' ')) output) list;
-        Buffer.contents buff
-      with e ->
-        Logs.err (fun m -> m "Error in mangle_toplevel: %s" (Printexc.to_string e));
-        let ppf = Format.err_formatter in
-        let _ = Location.report_exception ppf e in
-        orig_source
-      end
+
+  let map_pos line1 pos =
+                Lexing.{ pos with
+                  pos_bol = pos.pos_bol - String.length line1;
+                    pos_lnum = pos.pos_lnum - 1;
+                    pos_cnum = pos.pos_cnum - String.length line1;
+                  }
+
+  let map_loc line1 (loc : Ocaml_parsing.Location.t) =
+                  { loc with
+                 Ocaml_utils.Warnings.loc_start = map_pos line1 loc.loc_start;
+                  Ocaml_utils.Warnings.loc_end = map_pos line1 loc.loc_end;
+                }
 
   let query_errors id deps is_toplevel orig_source =
     try
       Logs.info (fun m -> m "About to mangle toplevel");
-      let src = if is_toplevel then mangle_toplevel orig_source else orig_source in
-      Logs.info (fun m -> m "src: %s" src);
+      let line1, src = mangle_toplevel is_toplevel orig_source deps in
       let id = Option.get id in
-      let line1 = List.map (fun id ->
-        Printf.sprintf "open %s" (modname_of_id id)) deps |> String.concat " " in
-      let line1 = line1 ^ "\n" in
       let source = Merlin_kernel.Msource.make (line1 ^ src) in
       let query =
         Query_protocol.Errors { lexing = true; parsing = true; typing = true }
@@ -791,17 +812,8 @@ module Make (S : S) = struct
                  Ocaml_parsing.Location.print_sub_msg Format.str_formatter sub;
                  String.trim (Format.flush_str_formatter ())
                in
-               let loc = Ocaml_parsing.Location.loc_of_report error in
-               let map_pos pos =
-                  Lexing.{ pos with
-                    pos_bol = pos.pos_bol - String.length line1;
-                    pos_lnum = pos.pos_lnum - 1;
-                    pos_cnum = pos.pos_cnum - String.length line1;
-                  } in
-               let loc = { loc with
-                 Ocaml_utils.Warnings.loc_start = map_pos loc.loc_start;
-                  Ocaml_utils.Warnings.loc_end = map_pos loc.loc_end;
-                } in
+               let loc = map_loc line1 (Ocaml_parsing.Location.loc_of_report error) in
+
                let main =
                  Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main
                    error
@@ -824,15 +836,17 @@ module Make (S : S) = struct
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
-  let type_enclosing _id _deps source position =
+  let type_enclosing _id deps is_toplevel orig_source position =
+    let line1, src = mangle_toplevel is_toplevel orig_source deps in
+    let src = line1 ^ src in
     let position =
       match position with
       | Toplevel_api_gen.Start -> `Start
-      | Offset x -> `Offset x
-      | Logical (x, y) -> `Logical (x, y)
+      | Offset x -> `Offset (x + String.length line1)
+      | Logical (x, y) -> `Logical (x+1, y)
       | End -> `End
     in
-    let source = Merlin_kernel.Msource.make source in
+    let source = Merlin_kernel.Msource.make src in
     let query = Query_protocol.Type_enclosing (None, position, None) in
     let enclosing = wdispatch source query in
     let map_index_or_string = function

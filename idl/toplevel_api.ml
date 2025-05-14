@@ -295,7 +295,7 @@ module Make (R : RPC) = struct
       [ 
         "Complete a prefix"
       ]
-      (id_p @-> dependencies_p @-> source_p @-> position_p @-> returning completions_p err)
+      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning completions_p err)
   
   let query_errors =
     declare "query_errors"
@@ -309,5 +309,5 @@ module Make (R : RPC) = struct
       [
         "Get the type of the enclosing expression"
       ]
-      (id_p @-> dependencies_p @-> source_p @-> position_p @-> returning typed_enclosings_p err)
+      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning typed_enclosings_p err)
 end

@@ -2263,7 +2263,8 @@ module Make(R:RPC) =
       declare "complete_prefix" ["Complete a prefix"]
         (id_p @->
            (dependencies_p @->
-              (source_p @-> (position_p @-> (returning completions_p err)))))
+              (is_toplevel_p @->
+                 (source_p @-> (position_p @-> (returning completions_p err))))))
     let query_errors =
       declare "query_errors" ["Query the errors in the given source"]
         (id_p @->
@@ -2273,6 +2274,7 @@ module Make(R:RPC) =
       declare "type_enclosing" ["Get the type of the enclosing expression"]
         (id_p @->
            (dependencies_p @->
-              (source_p @->
-                 (position_p @-> (returning typed_enclosings_p err)))))
+              (is_toplevel_p @->
+                 (source_p @->
+                    (position_p @-> (returning typed_enclosings_p err))))))
   end

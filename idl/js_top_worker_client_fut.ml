@@ -82,9 +82,9 @@ module W = struct
   let query_errors rpc id deps is_toplevel doc = Wraw.query_errors rpc id deps is_toplevel doc |> Rpc_fut.T.get
   let exec_toplevel rpc doc = Wraw.exec_toplevel rpc doc |> Rpc_fut.T.get
 
-  let complete_prefix rpc id deps doc pos =
-    Wraw.complete_prefix rpc id deps doc pos |> Rpc_fut.T.get
+  let complete_prefix rpc id deps is_toplevel doc pos =
+    Wraw.complete_prefix rpc id deps is_toplevel doc pos |> Rpc_fut.T.get
 
-  let type_enclosing rpc id deps doc pos =
-    Wraw.type_enclosing rpc id deps doc pos |> Rpc_fut.T.get
+  let type_enclosing rpc id deps is_toplevel doc pos =
+    Wraw.type_enclosing rpc id deps is_toplevel doc pos |> Rpc_fut.T.get
 end
