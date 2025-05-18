@@ -252,7 +252,9 @@ module Make (S : S) = struct
       (* Check if it's already been downloaded. This will be the
          case for all toplevel cmis. Also check whether we're supposed
          to handle this cmi *)
-      if Sys.file_exists fs_name then Logs.info (fun m -> m "Found: %s" fs_name);
+      if Sys.file_exists fs_name
+      then Logs.info (fun m -> m "Found: %s" fs_name)
+      else Logs.info (fun m -> m "No sign of %s locally" fs_name);
       if
         (not (Sys.file_exists fs_name))
         && List.exists
@@ -269,6 +271,7 @@ module Make (S : S) = struct
         | None ->
             Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename));
+      if s = "merl" then reset_dirs () else reset_dirs_comp ();
       old_loader ~allow_hidden ~unit_name
     in
     let furl = "file://" in
@@ -673,7 +676,7 @@ module Make (S : S) = struct
       else
         if
           String.length orig_source < 2 || orig_source.[0] <> '#' || orig_source.[1] <> ' '
-        then (Logs.err (fun m -> m "Warning, ignoring toplevel block without a leading '# '.\n%!"); orig_source)
+        then (Logs.err (fun m -> m "xx Warning, ignoring toplevel block without a leading '# '.\n%!"); orig_source)
         else begin
           try
             let s = String.sub orig_source 2 (String.length orig_source - 2) in
@@ -693,7 +696,9 @@ module Make (S : S) = struct
     in
     let line1 = List.map (fun id ->
       Printf.sprintf "open %s" (modname_of_id id)) deps |> String.concat " " in
-    let line1 = line1 ^ "\n" in
+    let line1 = line1 ^ ";;\n" in
+    Logs.debug (fun m -> m "Line1: %s\n%!" line1);
+    Logs.debug (fun m -> m "Source: %s\n%!" src);
     line1, src
 
   let complete_prefix _id _deps is_toplevel source position =
@@ -750,30 +755,34 @@ module Make (S : S) = struct
     Logs.info (fun m -> m "add_cmi");
     let dep_modules = List.map modname_of_id deps in
     let loc = Location.none in
-    let env = Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib") ~open_implicit_modules:dep_modules in
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
     in
-    let prefix = Printf.sprintf "%s/%s" path (modname_of_id id) in
+    let filename = modname_of_id id |> String.uncapitalize_ascii in
+    let prefix = Printf.sprintf "%s/%s" path filename in
     let filename = Printf.sprintf "%s.ml" prefix in
     Logs.info (fun m -> m "prefix: %s\n%!" prefix);
     let oc = open_out filename in
     Printf.fprintf oc "%s" source;
     close_out oc;
+    (try Sys.remove (prefix ^ ".cmi") with e -> Logs.err (fun m -> m "Error removing %s: %s" filename (Printexc.to_string e)));
     let unit_info = Unit_info.make ~source_file:filename prefix in
     try
-      Logs.info (fun m -> m "Parsing...\n%!");
-      let lexbuf = Lexing.from_string source in
-      let ast = Parse.implementation lexbuf in
-      Logs.info (fun m -> m "got ast\n%!");
-      let _ = Typemod.type_implementation unit_info env ast in
-      Logs.info (fun m -> m "typed\n%!");
-      let b = Sys.file_exists (prefix ^ ".cmi") in
-      Logs.info (fun m -> m "b: %b\n%!" b);
+      let store = Local_store.fresh () in
+      Local_store.with_store store (fun () ->
+        Local_store.reset ();
+        let env = Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib") ~open_implicit_modules:dep_modules in
+        let lexbuf = Lexing.from_string source in
+        let ast = Parse.implementation lexbuf in
+        Logs.info (fun m -> m "About to type_implementation");
+        let _ = Typemod.type_implementation unit_info env  ast in
+        let b = Sys.file_exists (prefix ^ ".cmi") in
+        Logs.info (fun m -> m "file_exists: %s = %b\n%!" (prefix ^ ".cmi") b));
       (* reset_dirs () *) ()
     with exn ->
       let s = Printexc.to_string exn in
       Logs.err (fun m -> m "Error in add_cmi: %s" s);
+      Logs.err (fun m -> m "Backtrace: %s" (Printexc.get_backtrace ()));
       let ppf = Format.err_formatter in
       let _ = Location.report_exception ppf exn in
       ()

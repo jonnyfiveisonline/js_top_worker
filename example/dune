@@ -23,6 +23,14 @@
  (libraries js_top_worker_client lwt js_of_ocaml))
 
 (executable
+ (name example4)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (modes js)
+ (modules example4)
+ (libraries js_top_worker_client lwt js_of_ocaml))
+
+(executable
  (name worker)
  (modes byte)
  (modules worker)
@@ -103,8 +111,11 @@
   example.bc.js
   example2.bc.js
   example3.bc.js
+  example4.bc.js
   index2.html
   index3.html
+  index4.html
   cmis
+  lib
   server.py
   (alias_rec all)))
