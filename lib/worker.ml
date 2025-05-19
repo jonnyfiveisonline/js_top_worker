@@ -9,11 +9,11 @@ module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
    thread" keeping the page responsive. *)
 
 let server process e =
-  Jslib.log "Worker received: %s" e;
+  (* Jslib.log "Worker received: %s" e; *)
   let _, id, call = Jsonrpc.version_id_and_call_of_string e in
   Impl.M.bind (process call) (fun response ->
       let rtxt = Jsonrpc.string_of_response ~id response in
-      Jslib.log "Worker sending: %s" rtxt;
+      (* Jslib.log "Worker sending: %s" rtxt; *)
       Js_of_ocaml.Worker.post_message (Js_of_ocaml.Js.string rtxt);
       Impl.M.return ())
 
