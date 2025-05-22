@@ -96,6 +96,7 @@ let run () =
     let rpc_fn = Impl.IdlM.server Server.implementation in
     Js_of_ocaml.Worker.set_onmessage (fun x ->
       let s = Js_of_ocaml.Js.to_string x in
+      Logs.debug (fun m -> m "Worker received: %s" s);
       ignore (server rpc_fn s));
     Console.console##log (Js.string "All finished")
   with e ->
