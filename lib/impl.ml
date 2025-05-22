@@ -900,7 +900,7 @@ module Make (S : S) = struct
       in
       let enclosing =
         List.map
-          (fun (x, y, z) -> (x, map_index_or_string y, map_tail_position z))
+          (fun (x, y, z) -> (map_loc line1 x, map_index_or_string y, map_tail_position z))
           enclosing
       in
       IdlM.ErrM.return enclosing
