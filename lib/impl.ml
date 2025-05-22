@@ -808,7 +808,11 @@ module Make (S : S) = struct
         let b = Sys.file_exists (prefix ^ ".cmi") in
         Logs.info (fun m -> m "file_exists: %s = %b\n%!" (prefix ^ ".cmi") b));
       (* reset_dirs () *) ()
-    with exn ->
+    with
+    | Env.Error e ->
+      Logs.err (fun m -> m "Env.Error: %a" Env.report_error e);
+      ()
+    | exn ->
       let s = Printexc.to_string exn in
       Logs.err (fun m -> m "Error in add_cmi: %s" s);
       Logs.err (fun m -> m "Backtrace: %s" (Printexc.get_backtrace ()));
