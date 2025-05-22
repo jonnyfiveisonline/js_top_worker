@@ -13,7 +13,7 @@ let server process e =
   let _, id, call = Jsonrpc.version_id_and_call_of_string e in
   Impl.M.bind (process call) (fun response ->
       let rtxt = Jsonrpc.string_of_response ~id response in
-      (* Jslib.log "Worker sending: %s" rtxt; *)
+      Jslib.log "Worker sending: %s" rtxt;
       Js_of_ocaml.Worker.post_message (Js_of_ocaml.Js.string rtxt);
       Impl.M.return ())
 
@@ -96,7 +96,7 @@ let run () =
     let rpc_fn = Impl.IdlM.server Server.implementation in
     Js_of_ocaml.Worker.set_onmessage (fun x ->
       let s = Js_of_ocaml.Js.to_string x in
-      Logs.debug (fun m -> m "Worker received: %s" s);
+      Jslib.log "Worker received: %s" s;
       ignore (server rpc_fn s));
     Console.console##log (Js.string "All finished")
   with e ->

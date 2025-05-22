@@ -295,16 +295,16 @@ module Make (S : S) = struct
       dcs.dcs_toplevel_modules;
 
     let new_load ~s ~old_loader ~allow_hidden ~unit_name =
-      Logs.info (fun m -> m "%s Loading: %s" s unit_name);
+      (* Logs.info (fun m -> m "%s Loading: %s" s unit_name); *)
       let filename = filename_of_module unit_name in
 
       let fs_name = Filename.(concat path filename) in
       (* Check if it's already been downloaded. This will be the
          case for all toplevel cmis. Also check whether we're supposed
          to handle this cmi *)
-      if Sys.file_exists fs_name
+      (* if Sys.file_exists fs_name
       then Logs.info (fun m -> m "Found: %s" fs_name)
-      else Logs.info (fun m -> m "No sign of %s locally" fs_name);
+      else Logs.info (fun m -> m "No sign of %s locally" fs_name); *)
       if
         (not (Sys.file_exists fs_name))
         && List.exists
