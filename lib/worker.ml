@@ -83,7 +83,7 @@ let run () =
 
     let _ = test () in
     Logs.set_reporter (Logs_browser.console_reporter ());
-    Logs.set_level (Some Logs.Info);
+    Logs.set_level (Some Logs.Debug);
     Server.exec execute;
     Server.setup setup;
     Server.init init;
