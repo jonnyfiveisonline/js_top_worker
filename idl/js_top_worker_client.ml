@@ -29,7 +29,10 @@ let demux context msg =
       | Some (mv, outstanding_execution) ->
           Brr.G.stop_timer outstanding_execution;
           let msg = Message.Ev.data (Brr.Ev.as_type msg) in
-          Js_of_ocaml.Console.console##log (Js_of_ocaml.Js.string "Client received the following, to be converted to an OCaml string");
+          Js_of_ocaml.Console.console##log
+            (Js_of_ocaml.Js.string
+               "Client received the following, to be converted to an OCaml \
+                string");
           Js_of_ocaml.Console.console##log msg;
           let msg = Js_of_ocaml.Js.to_string msg in
           (* log (Printf.sprintf "Client received: %s" msg); *)
@@ -99,6 +102,7 @@ module W : sig
     bool ->
     string ->
     (Toplevel_api_gen.error list, Toplevel_api_gen.err) result Lwt.t
+
   val compile_js :
     rpc ->
     string option ->
@@ -113,7 +117,9 @@ end = struct
   let setup rpc a = Wraw.setup rpc a |> Rpc_lwt.T.get
   let typecheck rpc a = Wraw.typecheck rpc a |> Rpc_lwt.T.get
   let exec rpc a = Wraw.exec rpc a |> Rpc_lwt.T.get
+
   let query_errors rpc id deps is_toplevel doc =
     Wraw.query_errors rpc id deps is_toplevel doc |> Rpc_lwt.T.get
+
   let compile_js rpc id s = Wraw.compile_js rpc id s |> Rpc_lwt.T.get
 end
