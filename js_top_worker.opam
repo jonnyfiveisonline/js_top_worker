@@ -15,6 +15,7 @@ depends: [
   "js_of_ocaml-compiler"
   "js_of_ocaml-ppx"
   "js_top_worker-rpc"
+  "rpclib-lwt"
 ]
 build : [
   ["dune" "subst"] {pinned}
