@@ -50,22 +50,21 @@ let capture f () =
       Sys.remove filename_out;
       Sys.remove filename_err)
 
+let (let*) = Lwt.bind
+
+
 let binary_handler process s =
-  let ic = Unix.in_channel_of_descr s in
-  let oc = Unix.out_channel_of_descr s in
   (* Read a 16 byte length encoded as a string *)
   let len_buf = Bytes.make 16 '\000' in
-  really_input ic len_buf 0 (Bytes.length len_buf);
+  let* _ = Lwt_unix.read s len_buf 0 (Bytes.length len_buf) in
   let len = int_of_string (Bytes.unsafe_to_string len_buf) in
   let msg_buf = Bytes.make len '\000' in
-  really_input ic msg_buf 0 (Bytes.length msg_buf);
-  let ( >>= ) = M.bind in
-  process msg_buf >>= fun result ->
+  let* _ = Lwt_unix.read s msg_buf 0 (Bytes.length msg_buf) in
+  let* result = process msg_buf in
   let len_buf = Printf.sprintf "%016d" (String.length result) in
-  output_string oc len_buf;
-  output_string oc result;
-  flush oc;
-  M.return ()
+  let* _ = Lwt_unix.write s (Bytes.of_string len_buf) 0 16 in
+  let* _ = Lwt_unix.write s (Bytes.of_string result) 0 (String.length result) in
+  Lwt.return ()
 
 let mkdir_rec dir perm =
   let rec p_mkdir dir =
@@ -76,21 +75,25 @@ let mkdir_rec dir perm =
   p_mkdir dir
 
 let serve_requests rpcfn path =
+  let (let*) = Lwt.bind in
   (try Unix.unlink path with Unix.Unix_error (Unix.ENOENT, _, _) -> ());
   mkdir_rec (Filename.dirname path) 0o0755;
-  let sock = Unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
-  Unix.bind sock (Unix.ADDR_UNIX path);
-  Unix.listen sock 5;
-  while true do
-    let this_connection, _ = Unix.accept sock in
-    Fun.protect
-      ~finally:(fun () -> Unix.close this_connection)
-      (fun () ->
+  let sock = Lwt_unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  let* () = Lwt_unix.bind sock (Unix.ADDR_UNIX path) in
+  Lwt_unix.listen sock 5;
+  let rec loop () =
+    let* this_connection, _ = Lwt_unix.accept sock in
+    let* () =
+      Lwt.finalize (fun () ->
         (* Here I am calling M.run to make sure that I am running the process,
             this is not much of a problem with IdM or ExnM, but in general you
             should ensure that the computation is started by a runner. *)
-        binary_handler rpcfn this_connection |> M.run)
-  done
+        binary_handler rpcfn this_connection)
+      (fun () -> Lwt_unix.close this_connection)
+    in
+    loop ()
+  in
+  loop ()
 
 let handle_findlib_error = function
   | Failure msg -> Printf.fprintf stderr "%s" msg
@@ -108,6 +111,7 @@ module S : Impl.S = struct
 
   let capture = capture
   let sync_get _ = None
+  let async_get _ = Lwt.return (Error (`Msg "Not implemented"))
   let create_file ~name:_ ~content:_ = failwith "Not implemented"
 
   let import_scripts urls =
@@ -155,8 +159,8 @@ let start_server () =
   Logs.set_level (Some Logs.Info);
   (* let pid = Unix.getpid () in *)
   Server.exec execute;
-  Server.setup setup;
-  Server.init init;
+  Server.setup (IdlM.T.lift setup);
+  Server.init (IdlM.T.lift init);
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
@@ -165,10 +169,10 @@ let start_server () =
   Server.exec_toplevel exec_toplevel;
   let rpc_fn = IdlM.server Server.implementation in
   let process x =
-    let open M in
+    let open Lwt in
     rpc_fn (Jsonrpc.call_of_string (Bytes.unsafe_to_string x))
     >>= fun response -> Jsonrpc.string_of_response response |> return
   in
   serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath
 
-let _ = start_server ()
+let _ = Lwt_main.run (start_server ())

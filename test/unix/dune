@@ -5,4 +5,4 @@
  (package js_top_worker-unix)
  (modules unix_test)
  (link_flags (-linkall))
- (libraries js_top_worker logs logs.fmt rpclib.core rpclib.json findlib.top))
+ (libraries js_top_worker logs logs.fmt rpclib.core rpclib.json findlib.top lwt.unix))

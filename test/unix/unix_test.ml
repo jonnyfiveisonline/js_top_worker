@@ -59,13 +59,14 @@ let handle_findlib_error = function
       Printf.fprintf stderr "Package requires itself: %s\n" pkg
   | exn -> raise exn
 
-module Server = Js_top_worker_rpc.Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
+module Server = Js_top_worker_rpc.Toplevel_api_gen.Make (IdlM.GenServer ())
 
 module S : Impl.S = struct
   type findlib_t = unit
 
   let capture = capture
   let sync_get _ = None
+  let async_get _ = Lwt.return (Error (`Msg "Not implemented"))
   let create_file ~name:_ ~content:_ = failwith "Not implemented"
 
   let import_scripts urls =
@@ -98,8 +99,8 @@ let start_server () =
   Logs.set_level (Some Logs.Info);
   (* let pid = Unix.getpid () in *)
   Server.exec execute;
-  Server.setup setup;
-  Server.init init;
+  Server.setup (IdlM.T.lift setup);
+  Server.init (IdlM.T.lift init);
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
@@ -108,7 +109,7 @@ let start_server () =
   Server.exec_toplevel exec_toplevel;
   IdlM.server Server.implementation
 
-module Client = Js_top_worker_rpc.Toplevel_api_gen.Make (Impl.IdlM.GenClient ())
+module Client = Js_top_worker_rpc.Toplevel_api_gen.Make (IdlM.GenClient ())
 
 let c1, c2, c3, c4 = "c1", "c2", "c3", "c4"
 let notebook = [
@@ -140,6 +141,6 @@ let _ =
     let* _ = run notebook in
     IdlM.ErrM.return ()
   in
-  match x |> IdlM.T.get |> M.run with
+  match x |> IdlM.T.get |> Lwt_main.run with
   | Ok () -> Printf.printf "Success\n%!"
   | Error (InternalError s) -> Printf.printf "Error: %s\n%!" s

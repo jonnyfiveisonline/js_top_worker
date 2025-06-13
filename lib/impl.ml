@@ -1,7 +1,9 @@
 (* Implementation *)
 open Js_top_worker_rpc
-module M = Idl.IdM (* Server is synchronous *)
-module IdlM = Idl.Make (M)
+module M = Rpc_lwt.ErrM (* Server is not synchronous *)
+module IdlM = Rpc_lwt
+
+let ( let* ) = Lwt.bind
 
 type captured = { stdout : string; stderr : string }
 
@@ -103,6 +105,7 @@ module type S = sig
   val capture : (unit -> 'a) -> unit -> captured * 'a
   val create_file : name:string -> content:string -> unit
   val sync_get : string -> string option
+  val async_get : string -> (string, [> `Msg of string ]) result Lwt.t
   val import_scripts : string list -> unit
   val init_function : string -> unit -> unit
   val get_stdlib_dcs : string -> Toplevel_api_gen.dynamic_cmis list
@@ -234,7 +237,7 @@ module Make (S : S) = struct
 
   let execute :
       string ->
-      (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) IdlM.T.resultb =
+      Toplevel_api_gen.exec_result =
     let code_buff = Buffer.create 100 in
     let res_buff = Buffer.create 100 in
     let pp_code = Format.formatter_of_buffer code_buff in
@@ -259,16 +262,15 @@ module Make (S : S) = struct
       let mime_vals = Mime_printer.get () in
       Format.pp_print_flush pp_code ();
       Format.pp_print_flush pp_result ();
-      IdlM.ErrM.return
-        Toplevel_api_gen.
-          {
-            stdout = string_opt o.stdout;
-            stderr = string_opt o.stderr;
-            sharp_ppf = buff_opt code_buff;
-            caml_ppf = buff_opt res_buff;
-            highlight = !highlighted;
-            mime_vals;
-          }
+      Toplevel_api_gen.
+        {
+          stdout = string_opt o.stdout;
+          stderr = string_opt o.stderr;
+          sharp_ppf = buff_opt code_buff;
+          caml_ppf = buff_opt res_buff;
+          highlight = !highlighted;
+          mime_vals;
+        }
 
   let filename_of_module unit_name =
     Printf.sprintf "%s.cmi" (String.uncapitalize_ascii unit_name)
@@ -293,21 +295,29 @@ module Make (S : S) = struct
   let add_dynamic_cmis dcs =
     let fetch filename =
       let url = Filename.concat dcs.Toplevel_api_gen.dcs_url filename in
+      S.async_get url
+    in
+    let fetch_sync filename =
+      let url = Filename.concat dcs.Toplevel_api_gen.dcs_url filename in
       S.sync_get url
     in
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
     in
-
-    List.iter
+    let (let*) = Lwt.bind in
+    let* () = Lwt_list.iter_p
       (fun name ->
         let filename = filename_of_module name in
-        match fetch (filename_of_module name) with
-        | Some content -> (
+        let* r = fetch (filename_of_module name) in
+        let () = 
+          match r with
+          | Ok content -> (
             let name = Filename.(concat path filename) in
             try S.create_file ~name ~content with _ -> ())
-        | None -> ())
-      dcs.dcs_toplevel_modules;
+        | Error _ -> () in
+        Lwt.return ())
+      dcs.dcs_toplevel_modules
+    in
 
     let new_load ~s ~old_loader ~allow_hidden ~unit_name =
       (* Logs.info (fun m -> m "%s Loading: %s" s unit_name); *)
@@ -327,7 +337,7 @@ module Make (S : S) = struct
              dcs.dcs_file_prefixes
       then (
         Logs.info (fun m -> m "Fetching %s\n%!" filename);
-        match fetch filename with
+        match fetch_sync filename with
         | Some x ->
             S.create_file ~name:fs_name ~content:x;
             (* At this point we need to tell merlin that the dir contents
@@ -341,6 +351,7 @@ module Make (S : S) = struct
     in
     let furl = "file://" in
     let l = String.length furl in
+    let () =
     if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then
       let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
       Topdirs.dir_directory path
@@ -351,10 +362,11 @@ module Make (S : S) = struct
 
       let open Ocaml_typing.Persistent_env.Persistent_signature in
       let old_loader = !load in
-      load := new_load ~s:"merl" ~old_loader
+      load := new_load ~s:"merl" ~old_loader in
+    Lwt.return ()
 
   let init (init_libs : Toplevel_api_gen.init_config) =
-    try
+    Lwt.catch (fun () ->
       Logs.info (fun m -> m "init()");
       path := Some S.path;
 
@@ -364,9 +376,10 @@ module Make (S : S) = struct
         | Some dcs -> dcs
         | None -> "lib/ocaml/dynamic_cmis.json"
       in
-      (match S.get_stdlib_dcs stdlib_dcs with
-      | [ dcs ] -> add_dynamic_cmis dcs
-      | _ -> ());
+      let* () =
+        match S.get_stdlib_dcs stdlib_dcs with
+        | [ dcs ] -> add_dynamic_cmis dcs
+        | _ -> Lwt.return () in 
       Clflags.no_check_prims := true;
 
       requires := init_libs.findlib_requires;
@@ -376,13 +389,13 @@ module Make (S : S) = struct
       (* Set up the toplevel environment *)
       Logs.info (fun m -> m "init() finished");
 
-      IdlM.ErrM.return ()
-    with e ->
-      IdlM.ErrM.return_err
-        (Toplevel_api_gen.InternalError (Printexc.to_string e))
+      Lwt.return (Ok ()))
+    (fun e -> 
+      Lwt.return (Error
+        (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
   let setup () =
-    try
+    Lwt.catch (fun () ->
       Logs.info (fun m -> m "setup() ...");
 
       let o =
@@ -406,12 +419,12 @@ module Make (S : S) = struct
         | Some v -> S.require (not !execution_allowed) v !requires
         | None -> []
       in
-      List.iter add_dynamic_cmis dcs;
+      let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
 
       Logs.info (fun m -> m "setup() finished");
 
-      IdlM.ErrM.return
-        Toplevel_api_gen.
+      Lwt.return
+        (Ok Toplevel_api_gen.
           {
             stdout = string_opt o.stdout;
             stderr = string_opt o.stderr;
@@ -419,10 +432,10 @@ module Make (S : S) = struct
             caml_ppf = None;
             highlight = None;
             mime_vals = [];
-          }
-    with e ->
-      IdlM.ErrM.return_err
-        (Toplevel_api_gen.InternalError (Printexc.to_string e))
+          }))
+          (fun e ->
+      Lwt.return (Error
+        (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
   let complete _phrase = failwith "Not implemented"
 
@@ -590,7 +603,7 @@ module Make (S : S) = struct
         List.fold_left
           (fun acc (phr, _junk, _output) ->
             let new_output =
-              execute phr |> IdlM.T.get |> M.run |> Result.get_ok
+              execute phr
             in
             Printf.bprintf buf "# %s\n" phr;
             let r =
@@ -621,6 +634,10 @@ module Make (S : S) = struct
       Logs.info (fun m -> m "Error: %s" (Printexc.to_string e));
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
+
+  let execute (phrase : string) =
+    let result = execute phrase in
+    IdlM.ErrM.return result
 
   let config () =
     let path =

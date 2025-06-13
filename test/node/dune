@@ -13,7 +13,8 @@
   logs.fmt
   rpclib.core
   rpclib.json
-  findlib.top))
+  findlib.top
+  lwt.unix))
 
 (rule
  (targets node_test.js)

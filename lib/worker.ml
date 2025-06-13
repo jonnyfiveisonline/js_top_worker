@@ -11,11 +11,11 @@ module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 let server process e =
   (* Jslib.log "Worker received: %s" e; *)
   let _, id, call = Jsonrpc.version_id_and_call_of_string e in
-  Impl.M.bind (process call) (fun response ->
+  Lwt.bind (process call) (fun response ->
       let rtxt = Jsonrpc.string_of_response ~id response in
       Jslib.log "Worker sending: %s" rtxt;
       Js_of_ocaml.Worker.post_message (Js_of_ocaml.Js.string rtxt);
-      Impl.M.return ())
+      Lwt.return ())
 
 let loc = function
   | Syntaxerr.Error x -> Some (Syntaxerr.location_of_error x)
@@ -52,6 +52,7 @@ module S : Impl.S = struct
     (captured, x)
 
   let sync_get = Jslib.sync_get
+  let async_get = Jslib.async_get
   let create_file = Js_of_ocaml.Sys_js.create_file
 
   let get_stdlib_dcs uri =
@@ -90,8 +91,8 @@ let run () =
     Logs.set_reporter (Logs_browser.console_reporter ());
     Logs.set_level (Some Logs.Debug);
     Server.exec execute;
-    Server.setup setup;
-    Server.init init;
+    Server.setup (Impl.IdlM.T.lift setup);
+    Server.init (Impl.IdlM.T.lift init);
     Server.typecheck typecheck_phrase;
     Server.complete_prefix complete_prefix;
     Server.query_errors query_errors;

@@ -34,6 +34,18 @@ module S : Impl.S = struct
           m "Error reading file %a: %s" Fpath.pp f (Printexc.to_string e));
       None
 
+  let async_get f =
+    let f = Fpath.v ("_opam/" ^ f) in
+    Logs.info (fun m -> m "async_get: %a" Fpath.pp f);
+    Lwt.catch (fun () ->
+      let open Lwt.Infix in
+        Lwt_io.with_file ~mode:Lwt_io.input (Fpath.to_string f) Lwt_io.read
+        >>= fun content -> Lwt.return (Ok content))
+      (fun e ->
+        Logs.err (fun m ->
+            m "Error reading file %a: %s" Fpath.pp f (Printexc.to_string e));
+        Lwt.return (Error (`Msg (Printexc.to_string e))))
+
   let create_file = Js_of_ocaml.Sys_js.create_file
 
   let import_scripts urls =
@@ -61,8 +73,8 @@ let start_server () =
   Logs.set_level (Some Logs.Info);
   (* let pid = Unix.getpid () in *)
   Server.exec execute;
-  Server.setup setup;
-  Server.init init;
+  Server.setup (IdlM.T.lift setup);
+  Server.init (IdlM.T.lift init);
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
@@ -103,6 +115,6 @@ let _ =
     Logs.info (fun m -> m "Exec toplevel output: %s" o3.script); *)
     IdlM.ErrM.return ()
   in
-  match x |> IdlM.T.get |> M.run with
+  match x |> IdlM.T.get |> Lwt_main.run with
   | Ok () -> Logs.info (fun m -> m "Success")
   | Error (InternalError s) -> Logs.err (fun m -> m "Error: %s" s)

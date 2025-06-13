@@ -6,6 +6,7 @@
  (libraries
   logs
   js_top_worker-rpc
+  rpclib-lwt
   js_of_ocaml-compiler
   js_of_ocaml-ppx
   astring
@@ -41,6 +42,7 @@
   js_top_worker
   js_of_ocaml-ppx
   js_of_ocaml-toplevel
+  js_of_ocaml-lwt
   logs.browser
   uri
   angstrom
