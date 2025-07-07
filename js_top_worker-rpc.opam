@@ -11,6 +11,7 @@ depends: [
   "mime_printer"
   "rresult"
   "merlin-lib"
+  "rpclib"
 ]
 build : [
   ["dune" "subst"] {pinned}
