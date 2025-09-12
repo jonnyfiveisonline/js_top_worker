@@ -118,7 +118,7 @@ module S : Impl.S = struct
     if List.length urls > 0 then failwith "Not implemented" else ()
 
   let init_function _ () = failwith "Not implemented"
-  let findlib_init _ = ()
+  let findlib_init _ = Lwt.return ()
   let get_stdlib_dcs _uri = []
 
   let require _ () packages =

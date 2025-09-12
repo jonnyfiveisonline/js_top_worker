@@ -109,7 +109,7 @@ module type S = sig
   val import_scripts : string list -> unit
   val init_function : string -> unit -> unit
   val get_stdlib_dcs : string -> Toplevel_api_gen.dynamic_cmis list
-  val findlib_init : string -> findlib_t
+  val findlib_init : string -> findlib_t Lwt.t
   val path : string
 
   val require :
@@ -120,7 +120,7 @@ module Make (S : S) = struct
   let functions : (unit -> unit) list option ref = ref None
   let requires : string list ref = ref []
   let path : string option ref = ref None
-  let findlib_v : S.findlib_t option ref = ref None
+  let findlib_v : S.findlib_t Lwt.t option ref = ref None
   let execution_allowed = ref true
 
   let refill_lexbuf s p ppf buffer len =
@@ -373,6 +373,7 @@ module Make (S : S) = struct
         path := Some S.path;
 
         findlib_v := Some (S.findlib_init "findlib_index");
+
         let stdlib_dcs =
           match init_libs.stdlib_dcs with
           | Some dcs -> dcs
@@ -418,11 +419,14 @@ module Make (S : S) = struct
               failwith ("Error: " ^ err)
         in
 
-        let dcs =
+        let* dcs =
           match !findlib_v with
-          | Some v -> S.require (not !execution_allowed) v !requires
-          | None -> []
+          | Some v ->
+            let* v = v in
+            Lwt.return (S.require (not !execution_allowed) v !requires)
+          | None -> Lwt.return []
         in
+
         let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
 
         Logs.info (fun m -> m "setup() finished");

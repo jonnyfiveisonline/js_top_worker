@@ -54,7 +54,7 @@ module S : Impl.S = struct
     if List.length urls > 0 then failwith "Not implemented" else ()
 
   let init_function _ () = failwith "Not implemented"
-  let findlib_init = Js_top_worker_web.Findlibish.init sync_get
+  let findlib_init = Js_top_worker_web.Findlibish.init async_get
 
   let get_stdlib_dcs uri =
     Js_top_worker_web.Findlibish.fetch_dynamic_cmis sync_get uri

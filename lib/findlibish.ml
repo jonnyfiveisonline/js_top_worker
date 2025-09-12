@@ -109,19 +109,30 @@ let fetch_dynamic_cmis sync_get url =
       Rpcmarshal.unmarshal
         Js_top_worker_rpc.Toplevel_api_gen.typ_of_dynamic_cmis rpc
 
-let init sync_get findlib_index : t =
+let (let*) = Lwt.bind
+
+let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findlib_index : t Lwt.t =
   Jslib.log "Initializing findlib";
+  let* findlib_txt = async_get findlib_index in
   let findlib_metas =
-    match sync_get findlib_index with
-    | None -> []
-    | Some txt -> Astring.String.fields ~empty:false txt
+    match findlib_txt with
+    | Error (`Msg m) ->
+        Jslib.log "Error fetching findlib index: %s" m;
+        []
+    | Ok txt -> Astring.String.fields ~empty:false txt
   in
-  let metas =
-    List.filter_map
+  let* metas =
+    Lwt_list.map_p
       (fun x ->
-        match sync_get x with Some meta -> Some (x, meta) | None -> None)
+        let* res = async_get x in
+        match res with
+        | Error (`Msg m) ->
+            Jslib.log "Error fetching findlib meta %s: %s" x m;
+          Lwt.return_none
+        | Ok meta -> Lwt.return_some (x, meta))
       findlib_metas
   in
+  let metas = List.filter_map Fun.id metas in
   List.filter_map
     (fun (x, meta) ->
       match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference x with
@@ -150,7 +161,7 @@ let init sync_get findlib_index : t =
           Jslib.log "Failed to parse uri: %s" m;
           None)
     metas
-  |> flatten_libs
+  |> flatten_libs |> Lwt.return
 
 let require sync_get cmi_only v packages =
   let rec require dcss package :

@@ -1,8 +1,8 @@
 node_test.js: [INFO] init()
 Initializing findlib
-node_test.js: [INFO] sync_get: _opam/findlib_index
-node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib/META
-node_test.js: [INFO] sync_get: _opam/lib/astring/META
+node_test.js: [INFO] async_get: _opam/findlib_index
+node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
+node_test.js: [INFO] async_get: _opam/lib/astring/META
 Parsed uri: lib/ocaml/stdlib/META
 Parsed uri: lib/astring/META
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/dynamic_cmis.json

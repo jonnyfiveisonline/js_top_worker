@@ -59,7 +59,7 @@ module S : Impl.S = struct
     Findlibish.fetch_dynamic_cmis sync_get uri |> Result.to_list
 
   let import_scripts = Js_of_ocaml.Worker.import_scripts
-  let findlib_init = Findlibish.init sync_get
+  let findlib_init = Findlibish.init async_get
 
   let require b v = function
     | [] -> []
