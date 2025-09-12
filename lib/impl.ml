@@ -61,7 +61,7 @@ let mangle_toplevel is_toplevel orig_source deps =
     List.map (fun id -> Printf.sprintf "open %s" (modname_of_id id)) deps
     |> String.concat " "
   in
-  let line1 = line1 ^ ";;\n" in
+  let line1 = if line1 <> "" then line1 ^ ";;\n" else "" in
   Logs.debug (fun m -> m "Line1: %s\n%!" line1);
   Logs.debug (fun m -> m "Source: %s\n%!" src);
   if is_mangled_broken orig_source src then (
@@ -764,6 +764,8 @@ module Make (S : S) = struct
     try
       let line1, src = mangle_toplevel is_toplevel source [] in
       let src = line1 ^ src in
+      Logs.info (fun m -> m "line1: '%s' (length: %d)" line1 (String.length line1));
+
       let source = Merlin_kernel.Msource.make src in
       let map_kind :
           [ `Value
@@ -807,7 +809,8 @@ module Make (S : S) = struct
                 })
               compl.entries
           in
-          IdlM.ErrM.return { Toplevel_api_gen.from; to_; entries }
+          let l1l = String.length line1 in
+          IdlM.ErrM.return { Toplevel_api_gen.from = from - l1l; to_ = to_ - l1l; entries }
       | None ->
           IdlM.ErrM.return { Toplevel_api_gen.from = 0; to_ = 0; entries = [] }
     with e ->
