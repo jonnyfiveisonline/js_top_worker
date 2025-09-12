@@ -304,6 +304,9 @@ module Make (S : S) = struct
     in
     let ( let* ) = Lwt.bind in
     let* () =
+      Logs.info (fun m -> m "Adding toplevel modules for dynamic cmis from %s" dcs.dcs_url);
+      Logs.info (fun m -> m "  toplevel modules: %s"
+        (String.concat ", " dcs.dcs_toplevel_modules));
       Lwt_list.iter_p
         (fun name ->
           let filename = filename_of_module name in
