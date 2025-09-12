@@ -3,16 +3,15 @@ let log fmt =
     (fun s -> Js_of_ocaml.(Console.console##log (Js.string s)))
     fmt
 
-
 let map_url url =
   let open Js_of_ocaml in
   let global_rel_url =
-    let x : Js.js_string Js.t option = Js.Unsafe.js_expr "globalThis.__global_rel_url" |> Js.Optdef.to_option in
+    let x : Js.js_string Js.t option =
+      Js.Unsafe.js_expr "globalThis.__global_rel_url" |> Js.Optdef.to_option
+    in
     Option.map Js.to_string x
   in
-  match global_rel_url with
-  | Some rel -> Filename.concat rel url
-  | None -> url
+  match global_rel_url with Some rel -> Filename.concat rel url | None -> url
 
 let sync_get url =
   let open Js_of_ocaml in
@@ -32,19 +31,19 @@ let sync_get url =
         (fun b -> Some (Typed_array.String.of_arrayBuffer b))
   | _ -> None
 
-
 let async_get url =
-  let (let*) = Lwt.bind in
+  let ( let* ) = Lwt.bind in
   let open Js_of_ocaml in
   Console.console##log (Js.string ("Fetching: " ^ url));
-  let* frame = Js_of_ocaml_lwt.XmlHttpRequest.perform_raw
-    ~response_type:ArrayBuffer url in
+  let* frame =
+    Js_of_ocaml_lwt.XmlHttpRequest.perform_raw ~response_type:ArrayBuffer url
+  in
   match frame.code with
   | 200 ->
-      Lwt.return (Js.Opt.case
-        frame.content
-        (fun () ->
-          Error (`Msg "Failed to receive file"))
-        (fun b -> Ok (Typed_array.String.of_arrayBuffer b)))
+      Lwt.return
+        (Js.Opt.case frame.content
+           (fun () -> Error (`Msg "Failed to receive file"))
+           (fun b -> Ok (Typed_array.String.of_arrayBuffer b)))
   | _ ->
-    Lwt.return (Error (`Msg (Printf.sprintf "Failed to fetch %s: %d" url frame.code)))
+      Lwt.return
+        (Error (`Msg (Printf.sprintf "Failed to fetch %s: %d" url frame.code)))

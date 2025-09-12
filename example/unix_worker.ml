@@ -50,8 +50,7 @@ let capture f () =
       Sys.remove filename_out;
       Sys.remove filename_err)
 
-let (let*) = Lwt.bind
-
+let ( let* ) = Lwt.bind
 
 let binary_handler process s =
   (* Read a 16 byte length encoded as a string *)
@@ -75,7 +74,7 @@ let mkdir_rec dir perm =
   p_mkdir dir
 
 let serve_requests rpcfn path =
-  let (let*) = Lwt.bind in
+  let ( let* ) = Lwt.bind in
   (try Unix.unlink path with Unix.Unix_error (Unix.ENOENT, _, _) -> ());
   mkdir_rec (Filename.dirname path) 0o0755;
   let sock = Lwt_unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
@@ -84,12 +83,13 @@ let serve_requests rpcfn path =
   let rec loop () =
     let* this_connection, _ = Lwt_unix.accept sock in
     let* () =
-      Lwt.finalize (fun () ->
-        (* Here I am calling M.run to make sure that I am running the process,
+      Lwt.finalize
+        (fun () ->
+          (* Here I am calling M.run to make sure that I am running the process,
             this is not much of a problem with IdM or ExnM, but in general you
             should ensure that the computation is started by a runner. *)
-        binary_handler rpcfn this_connection)
-      (fun () -> Lwt_unix.close this_connection)
+          binary_handler rpcfn this_connection)
+        (fun () -> Lwt_unix.close this_connection)
     in
     loop ()
   in
@@ -131,7 +131,7 @@ module S : Impl.S = struct
     with exn ->
       handle_findlib_error exn;
       []
-  
+
   let path = "/tmp"
 end
 

@@ -6,7 +6,7 @@ export OCAMLRUNPARAM=b
 unix_worker &
 pid=$!
 
-sleep 1
+sleep 2
 
 unix_client init '{ findlib_requires:[], execute: true }'
 unix_client setup 

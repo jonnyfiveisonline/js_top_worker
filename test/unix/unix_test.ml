@@ -111,13 +111,15 @@ let start_server () =
 
 module Client = Js_top_worker_rpc.Toplevel_api_gen.Make (IdlM.GenClient ())
 
-let c1, c2, c3, c4 = "c1", "c2", "c3", "c4"
-let notebook = [
-  (c1,[],"typ xxxx = int;;\n");
-  (c2,[c1],"type yyy=xxx;;\n");
-  (c3,[c1;c2],"type xxx = int;;\n");
-  (c4,[c1;c2;c3],"type yyy = xxx;;\n");
-]
+let c1, c2, c3, c4 = ("c1", "c2", "c3", "c4")
+
+let notebook =
+  [
+    (c1, [], "typ xxxx = int;;\n");
+    (c2, [ c1 ], "type yyy=xxx;;\n");
+    (c3, [ c1; c2 ], "type xxx = int;;\n");
+    (c4, [ c1; c2; c3 ], "type yyy = xxx;;\n");
+  ]
 
 let _ =
   let rpc = start_server () in
@@ -131,11 +133,11 @@ let _ =
     let rec run notebook =
       match notebook with
       | (id, deps, cell) :: cells ->
-        let* errs = Client.query_errors rpc (Some id) deps false cell in
-        Printf.printf "Cell %s: %d errors\n%!" id (List.length errs);
-        run cells
+          let* errs = Client.query_errors rpc (Some id) deps false cell in
+          Printf.printf "Cell %s: %d errors\n%!" id (List.length errs);
+          run cells
       | [] -> IdlM.ErrM.return ()
-    in  
+    in
     let* _ = Client.init rpc init in
     let* _ = Client.setup rpc () in
     let* _ = run notebook in

@@ -235,9 +235,7 @@ module Make (S : S) = struct
      with End_of_file -> ());
     flush_all ()
 
-  let execute :
-      string ->
-      Toplevel_api_gen.exec_result =
+  let execute : string -> Toplevel_api_gen.exec_result =
     let code_buff = Buffer.create 100 in
     let res_buff = Buffer.create 100 in
     let pp_code = Format.formatter_of_buffer code_buff in
@@ -304,19 +302,21 @@ module Make (S : S) = struct
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
     in
-    let (let*) = Lwt.bind in
-    let* () = Lwt_list.iter_p
-      (fun name ->
-        let filename = filename_of_module name in
-        let* r = fetch (filename_of_module name) in
-        let () = 
-          match r with
-          | Ok content -> (
-            let name = Filename.(concat path filename) in
-            try S.create_file ~name ~content with _ -> ())
-        | Error _ -> () in
-        Lwt.return ())
-      dcs.dcs_toplevel_modules
+    let ( let* ) = Lwt.bind in
+    let* () =
+      Lwt_list.iter_p
+        (fun name ->
+          let filename = filename_of_module name in
+          let* r = fetch (filename_of_module name) in
+          let () =
+            match r with
+            | Ok content -> (
+                let name = Filename.(concat path filename) in
+                try S.create_file ~name ~content with _ -> ())
+            | Error _ -> ()
+          in
+          Lwt.return ())
+        dcs.dcs_toplevel_modules
     in
 
     let new_load ~s ~old_loader ~allow_hidden ~unit_name =
@@ -352,90 +352,95 @@ module Make (S : S) = struct
     let furl = "file://" in
     let l = String.length furl in
     let () =
-    if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then
-      let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
-      Topdirs.dir_directory path
-    else
-      let open Persistent_env.Persistent_signature in
-      let old_loader = !load in
-      load := new_load ~s:"comp" ~old_loader;
+      if String.length dcs.dcs_url > l && String.sub dcs.dcs_url 0 l = furl then
+        let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
+        Topdirs.dir_directory path
+      else
+        let open Persistent_env.Persistent_signature in
+        let old_loader = !load in
+        load := new_load ~s:"comp" ~old_loader;
 
-      let open Ocaml_typing.Persistent_env.Persistent_signature in
-      let old_loader = !load in
-      load := new_load ~s:"merl" ~old_loader in
+        let open Ocaml_typing.Persistent_env.Persistent_signature in
+        let old_loader = !load in
+        load := new_load ~s:"merl" ~old_loader
+    in
     Lwt.return ()
 
   let init (init_libs : Toplevel_api_gen.init_config) =
-    Lwt.catch (fun () ->
-      Logs.info (fun m -> m "init()");
-      path := Some S.path;
+    Lwt.catch
+      (fun () ->
+        Logs.info (fun m -> m "init()");
+        path := Some S.path;
 
-      findlib_v := Some (S.findlib_init "findlib_index");
-      let stdlib_dcs =
-        match init_libs.stdlib_dcs with
-        | Some dcs -> dcs
-        | None -> "lib/ocaml/dynamic_cmis.json"
-      in
-      let* () =
-        match S.get_stdlib_dcs stdlib_dcs with
-        | [ dcs ] -> add_dynamic_cmis dcs
-        | _ -> Lwt.return () in 
-      Clflags.no_check_prims := true;
+        findlib_v := Some (S.findlib_init "findlib_index");
+        let stdlib_dcs =
+          match init_libs.stdlib_dcs with
+          | Some dcs -> dcs
+          | None -> "lib/ocaml/dynamic_cmis.json"
+        in
+        let* () =
+          match S.get_stdlib_dcs stdlib_dcs with
+          | [ dcs ] -> add_dynamic_cmis dcs
+          | _ -> Lwt.return ()
+        in
+        Clflags.no_check_prims := true;
 
-      requires := init_libs.findlib_requires;
-      functions := Some [];
-      execution_allowed := init_libs.execute;
+        requires := init_libs.findlib_requires;
+        functions := Some [];
+        execution_allowed := init_libs.execute;
 
-      (* Set up the toplevel environment *)
-      Logs.info (fun m -> m "init() finished");
+        (* Set up the toplevel environment *)
+        Logs.info (fun m -> m "init() finished");
 
-      Lwt.return (Ok ()))
-    (fun e -> 
-      Lwt.return (Error
-        (Toplevel_api_gen.InternalError (Printexc.to_string e))))
+        Lwt.return (Ok ()))
+      (fun e ->
+        Lwt.return
+          (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
   let setup () =
-    Lwt.catch (fun () ->
-      Logs.info (fun m -> m "setup() ...");
+    Lwt.catch
+      (fun () ->
+        Logs.info (fun m -> m "setup() ...");
 
-      let o =
-        try
-          match !functions with
-          | Some l -> setup l ()
-          | None -> failwith "Error: toplevel has not been initialised"
-        with
-        | Persistent_env.Error e ->
-            Persistent_env.report_error Format.err_formatter e;
-            let err = Format.asprintf "%a" Persistent_env.report_error e in
-            failwith ("Error: " ^ err)
-        | Env.Error e ->
-            Env.report_error Format.err_formatter e;
-            let err = Format.asprintf "%a" Env.report_error e in
-            failwith ("Error: " ^ err)
-      in
+        let o =
+          try
+            match !functions with
+            | Some l -> setup l ()
+            | None -> failwith "Error: toplevel has not been initialised"
+          with
+          | Persistent_env.Error e ->
+              Persistent_env.report_error Format.err_formatter e;
+              let err = Format.asprintf "%a" Persistent_env.report_error e in
+              failwith ("Error: " ^ err)
+          | Env.Error e ->
+              Env.report_error Format.err_formatter e;
+              let err = Format.asprintf "%a" Env.report_error e in
+              failwith ("Error: " ^ err)
+        in
 
-      let dcs =
-        match !findlib_v with
-        | Some v -> S.require (not !execution_allowed) v !requires
-        | None -> []
-      in
-      let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
+        let dcs =
+          match !findlib_v with
+          | Some v -> S.require (not !execution_allowed) v !requires
+          | None -> []
+        in
+        let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
 
-      Logs.info (fun m -> m "setup() finished");
+        Logs.info (fun m -> m "setup() finished");
 
-      Lwt.return
-        (Ok Toplevel_api_gen.
-          {
-            stdout = string_opt o.stdout;
-            stderr = string_opt o.stderr;
-            sharp_ppf = None;
-            caml_ppf = None;
-            highlight = None;
-            mime_vals = [];
-          }))
-          (fun e ->
-      Lwt.return (Error
-        (Toplevel_api_gen.InternalError (Printexc.to_string e))))
+        Lwt.return
+          (Ok
+             Toplevel_api_gen.
+               {
+                 stdout = string_opt o.stdout;
+                 stderr = string_opt o.stderr;
+                 sharp_ppf = None;
+                 caml_ppf = None;
+                 highlight = None;
+                 mime_vals = [];
+               }))
+      (fun e ->
+        Lwt.return
+          (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
   let complete _phrase = failwith "Not implemented"
 
@@ -602,9 +607,7 @@ module Make (S : S) = struct
       let mime_vals =
         List.fold_left
           (fun acc (phr, _junk, _output) ->
-            let new_output =
-              execute phr
-            in
+            let new_output = execute phr in
             Printf.bprintf buf "# %s\n" phr;
             let r =
               Option.to_list new_output.stdout
@@ -839,7 +842,7 @@ module Make (S : S) = struct
           let b = Sys.file_exists (prefix ^ ".cmi") in
           failed_cells := StringSet.remove id !failed_cells;
           Logs.info (fun m -> m "file_exists: %s = %b" (prefix ^ ".cmi") b));
-          Ocaml_typing.Cmi_cache.clear ();
+      Ocaml_typing.Cmi_cache.clear ()
     with
     | Env.Error e ->
         Logs.err (fun m -> m "Env.Error: %a" Env.report_error e);
@@ -913,9 +916,8 @@ module Make (S : S) = struct
                      source;
                    })
       in
-      (if List.length errors = 0
-      then add_cmi id deps src
-      else failed_cells := StringSet.add id !failed_cells);
+      if List.length errors = 0 then add_cmi id deps src
+      else failed_cells := StringSet.add id !failed_cells;
 
       (* Logs.info (fun m -> m "Got to end"); *)
       IdlM.ErrM.return errors

@@ -14,7 +14,7 @@
   rpclib.core
   rpclib.json
   findlib.top
-  lwt.unix))
+  js_of_ocaml-lwt))
 
 (rule
  (targets node_test.js)
