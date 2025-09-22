@@ -46,23 +46,127 @@ node_test.js: [INFO] About to type_implementation
 node_test.js: [INFO] file_exists: /static/cmis/cell__c2.cmi = true
 node_test.js: [INFO] Number of errors1: 1 (should be 1)
 node_test.js: [INFO] Number of errors2: 0 (should be 0)
-node_test.js: [ERROR] xx Warning, ignoring toplevel block without a leading '# '.
-
+node_test.js: [INFO] completing for id: c_comp1
 node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: 'let _ = List.leng' (length: 17)
+node_test.js: [INFO] complete after offset: g
 node_test.js: [INFO] Fetching stdlib__List.cmi
 
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__List.cmi
 node_test.js: [INFO] Completions for 'List.leng': 1 entries
 node_test.js: [INFO]   - length (Value): 'a list -> int
+node_test.js: [INFO] completing for id: c_comp2
 node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] Completions for 'List.': 2 entries
-node_test.js: [INFO]   - List (Module): 
-node_test.js: [INFO]   - ListLabels (Module): 
+node_test.js: [INFO] src: '  let _ = List.' (length: 15)
+node_test.js: [INFO] complete after offset: .
+node_test.js: [INFO] Completions for 'List.': 68 entries
+node_test.js: [INFO]   - (::) (Constructor): 'a * 'a list -> 'a List.t
+node_test.js: [INFO]   - ([]) (Constructor): 'a List.t
+node_test.js: [INFO]   - append (Value): 'a list -> 'a list -> 'a list
+node_test.js: [INFO]   - assoc (Value): 'a -> ('a * 'b) list -> 'b
+node_test.js: [INFO]   - assoc_opt (Value): 'a -> ('a * 'b) list -> 'b option
+node_test.js: [INFO]   - assq (Value): 'a -> ('a * 'b) list -> 'b
+node_test.js: [INFO]   - assq_opt (Value): 'a -> ('a * 'b) list -> 'b option
+node_test.js: [INFO]   - combine (Value): 'a list -> 'b list -> ('a * 'b) list
+node_test.js: [INFO]   - compare (Value): ('a -> 'a -> int) -> 'a list -> 'a list -> int
+node_test.js: [INFO]   - compare_length_with (Value): 'a list -> int -> int
+node_test.js: [INFO]   - compare_lengths (Value): 'a list -> 'b list -> int
+node_test.js: [INFO]   - concat (Value): 'a list list -> 'a list
+node_test.js: [INFO]   - concat_map (Value): ('a -> 'b list) -> 'a list -> 'b list
+node_test.js: [INFO]   - cons (Value): 'a -> 'a list -> 'a list
+node_test.js: [INFO]   - equal (Value): ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
+node_test.js: [INFO]   - exists (Value): ('a -> bool) -> 'a list -> bool
+node_test.js: [INFO]   - exists2 (Value): ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+node_test.js: [INFO]   - fast_sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
+node_test.js: [INFO]   - filter (Value): ('a -> bool) -> 'a list -> 'a list
+node_test.js: [INFO]   - filter_map (Value): ('a -> 'b option) -> 'a list -> 'b list
+node_test.js: [INFO]   - filteri (Value): (int -> 'a -> bool) -> 'a list -> 'a list
+node_test.js: [INFO]   - find (Value): ('a -> bool) -> 'a list -> 'a
+node_test.js: [INFO]   - find_all (Value): ('a -> bool) -> 'a list -> 'a list
+node_test.js: [INFO]   - find_index (Value): ('a -> bool) -> 'a list -> int option
+node_test.js: [INFO]   - find_map (Value): ('a -> 'b option) -> 'a list -> 'b option
+node_test.js: [INFO]   - find_mapi (Value): (int -> 'a -> 'b option) -> 'a list -> 'b option
+node_test.js: [INFO]   - find_opt (Value): ('a -> bool) -> 'a list -> 'a option
+node_test.js: [INFO]   - flatten (Value): 'a list list -> 'a list
+node_test.js: [INFO]   - fold_left (Value): ('acc -> 'a -> 'acc) -> 'acc -> 'a list -> 'acc
+node_test.js: [INFO]   - fold_left2 (Value): ('acc -> 'a -> 'b -> 'acc) -> 'acc -> 'a list -> 'b list -> 'acc
+node_test.js: [INFO]   - fold_left_map (Value): ('acc -> 'a -> 'acc * 'b) -> 'acc -> 'a list -> 'acc * 'b list
+node_test.js: [INFO]   - fold_right (Value): ('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc
+node_test.js: [INFO]   - fold_right2 (Value): ('a -> 'b -> 'acc -> 'acc) -> 'a list -> 'b list -> 'acc -> 'acc
+node_test.js: [INFO]   - for_all (Value): ('a -> bool) -> 'a list -> bool
+node_test.js: [INFO]   - for_all2 (Value): ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+node_test.js: [INFO]   - hd (Value): 'a list -> 'a
+node_test.js: [INFO]   - init (Value): int -> (int -> 'a) -> 'a list
+node_test.js: [INFO]   - is_empty (Value): 'a list -> bool
+node_test.js: [INFO]   - iter (Value): ('a -> unit) -> 'a list -> unit
+node_test.js: [INFO]   - iter2 (Value): ('a -> 'b -> unit) -> 'a list -> 'b list -> unit
+node_test.js: [INFO]   - iteri (Value): (int -> 'a -> unit) -> 'a list -> unit
+node_test.js: [INFO]   - length (Value): 'a list -> int
+node_test.js: [INFO]   - map (Value): ('a -> 'b) -> 'a list -> 'b list
+node_test.js: [INFO]   - map2 (Value): ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+node_test.js: [INFO]   - mapi (Value): (int -> 'a -> 'b) -> 'a list -> 'b list
+node_test.js: [INFO]   - mem (Value): 'a -> 'a list -> bool
+node_test.js: [INFO]   - mem_assoc (Value): 'a -> ('a * 'b) list -> bool
+node_test.js: [INFO]   - mem_assq (Value): 'a -> ('a * 'b) list -> bool
+node_test.js: [INFO]   - memq (Value): 'a -> 'a list -> bool
+node_test.js: [INFO]   - merge (Value): ('a -> 'a -> int) -> 'a list -> 'a list -> 'a list
+node_test.js: [INFO]   - nth (Value): 'a list -> int -> 'a
+node_test.js: [INFO]   - nth_opt (Value): 'a list -> int -> 'a option
+node_test.js: [INFO]   - of_seq (Value): 'a Seq.t -> 'a list
+node_test.js: [INFO]   - partition (Value): ('a -> bool) -> 'a list -> 'a list * 'a list
+node_test.js: [INFO]   - partition_map (Value): ('a -> ('b, 'c) Either.t) -> 'a list -> 'b list * 'c list
+node_test.js: [INFO]   - remove_assoc (Value): 'a -> ('a * 'b) list -> ('a * 'b) list
+node_test.js: [INFO]   - remove_assq (Value): 'a -> ('a * 'b) list -> ('a * 'b) list
+node_test.js: [INFO]   - rev (Value): 'a list -> 'a list
+node_test.js: [INFO]   - rev_append (Value): 'a list -> 'a list -> 'a list
+node_test.js: [INFO]   - rev_map (Value): ('a -> 'b) -> 'a list -> 'b list
+node_test.js: [INFO]   - rev_map2 (Value): ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+node_test.js: [INFO]   - sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
+node_test.js: [INFO]   - sort_uniq (Value): ('a -> 'a -> int) -> 'a list -> 'a list
+node_test.js: [INFO]   - split (Value): ('a * 'b) list -> 'a list * 'b list
+node_test.js: [INFO]   - stable_sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
+node_test.js: [INFO]   - tl (Value): 'a list -> 'a list
+node_test.js: [INFO]   - to_seq (Value): 'a list -> 'a Seq.t
+node_test.js: [INFO]   - t (Type): type 'a t = 'a list = [] | (::) of 'a * 'a list
+node_test.js: [INFO] completing for id: c_comp3
 node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] Completions for 'ma': 0 entries
+node_test.js: [INFO] src: '  let _ = ma' (length: 12)
+node_test.js: [INFO] complete after offset: a
+node_test.js: [INFO] Completions for 'ma': 3 entries
+node_test.js: [INFO]   - max (Value): 'a -> 'a -> 'a
+node_test.js: [INFO]   - max_float (Value): float
+node_test.js: [INFO]   - max_int (Value): int
+node_test.js: [INFO] completing for id: c_comp4
 node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: 'let _ = List.leng' (length: 17)
+node_test.js: [INFO] complete after offset: g
 node_test.js: [INFO] Completions for 'List.leng' (non-toplevel): 1 entries
 node_test.js: [INFO]   - length (Value): 'a list -> int
+node_test.js: [INFO] completing for id: c_comp5
 node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: '  let _ = List.leng
+   let foo=1.0;;' (length: 36)
 node_test.js: [INFO] Completions for 'List.leng' (Logical position): 0 entries
+node_test.js: [INFO] completing for id: c_comp6
+node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: '  let my_var = 42;;
+  let x = 1 + my_v' (length: 38)
+node_test.js: [INFO] complete after offset: v
+node_test.js: [INFO] Completions for 'my_v' (toplevel variable): 1 entries
+node_test.js: [INFO]   - my_var (Value): int
+node_test.js: [INFO] completing for id: c_comp7
+node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: '  let rec factorial n = if n <= 1 then 1 else n * facto' (length: 55)
+node_test.js: [INFO] complete after offset: o
+node_test.js: [INFO] Completions for 'facto' (recursive function): 1 entries
+node_test.js: [INFO]   - factorial (Value): int -> int
+node_test.js: [INFO] completing for id: c_comp8
+node_test.js: [INFO] line1: '' (length: 0)
+node_test.js: [INFO] src: '  String.lengt' (length: 14)
+node_test.js: [INFO] complete after offset: t
+node_test.js: [INFO] Fetching stdlib__String.cmi
+
+node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__String.cmi
+node_test.js: [INFO] Completions for 'String.lengt' (module path): 1 entries
+node_test.js: [INFO]   - length (Value): string -> int
 node_test.js: [INFO] Success

@@ -117,8 +117,9 @@ let _ =
 
     (* Test completion for List.leng *)
     let* completions1 =
-      Client.complete_prefix rpc (Some "c_comp1") [] true "let _ = List.leng"
-        (Offset 16)
+      let text = "let _ = List.leng" in
+      Client.complete_prefix rpc (Some "c_comp1") [] false text
+        (Offset (String.length text))
     in
     Logs.info (fun m ->
         m "Completions for 'List.leng': %d entries"
@@ -142,8 +143,9 @@ let _ =
 
     (* Test completion for List. (should show all List module functions) *)
     let* completions2 =
-      Client.complete_prefix rpc (Some "c_comp2") [] true "# let _ = List."
-        (Offset 12)
+      let text = "# let _ = List." in
+      Client.complete_prefix rpc (Some "c_comp2") [] true text
+        (Offset (String.length text))
     in
     Logs.info (fun m ->
         m "Completions for 'List.': %d entries"
@@ -167,8 +169,9 @@ let _ =
 
     (* Test completion for partial identifier *)
     let* completions3 =
-      Client.complete_prefix rpc (Some "c_comp3") [] true "# let _ = ma"
-        (Offset 10)
+      let text = "# let _ = ma" in
+      Client.complete_prefix rpc (Some "c_comp3") [] true text
+        (Offset (String.length text))
     in
     Logs.info (fun m ->
         m "Completions for 'ma': %d entries" (List.length completions3.entries));
@@ -191,8 +194,9 @@ let _ =
 
     (* Test completion in non-toplevel context *)
     let* completions4 =
-      Client.complete_prefix rpc (Some "c_comp4") [] false "let _ = List.leng"
-        (Offset 16)
+      let text = "let _ = List.leng" in
+      Client.complete_prefix rpc (Some "c_comp4") [] false text
+        (Offset (String.length text))
     in
     Logs.info (fun m ->
         m "Completions for 'List.leng' (non-toplevel): %d entries"
@@ -216,8 +220,8 @@ let _ =
 
     (* Test completion using Logical position constructor *)
     let* completions5 =
-      Client.complete_prefix rpc (Some "c_comp5") [] true
-        "# let _ = List.leng\n   let foo=1.0;;"
+      let text = "# let _ = List.leng\n   let foo=1.0;;" in
+      Client.complete_prefix rpc (Some "c_comp5") [] true text
         (Logical (1, 16))
     in
     Logs.info (fun m ->
@@ -239,6 +243,85 @@ let _ =
               | Variant -> "Variant")
               entry.desc))
       completions5.entries;
+
+    (* Test toplevel completion with variable binding *)
+    let* completions6 =
+      let s = "# let my_var = 42;;\n# let x = 1 + my_v" in
+      Client.complete_prefix rpc (Some "c_comp6") [] true
+        s
+        (Offset (String.length s))
+    in
+    Logs.info (fun m ->
+        m "Completions for 'my_v' (toplevel variable): %d entries"
+          (List.length completions6.entries));
+    List.iter
+      (fun entry ->
+        Logs.info (fun m ->
+            m "  - %s (%s): %s" entry.name
+              (match entry.kind with
+              | Constructor -> "Constructor"
+              | Keyword -> "Keyword"
+              | Label -> "Label"
+              | MethodCall -> "MethodCall"
+              | Modtype -> "Modtype"
+              | Module -> "Module"
+              | Type -> "Type"
+              | Value -> "Value"
+              | Variant -> "Variant")
+              entry.desc))
+      completions6.entries;
+
+    (* Test toplevel completion with function definition *)
+    let* completions7 =
+      Client.complete_prefix rpc (Some "c_comp7") [] true
+        "# let rec factorial n = if n <= 1 then 1 else n * facto"
+        (Offset 55)
+    in
+    Logs.info (fun m ->
+        m "Completions for 'facto' (recursive function): %d entries"
+          (List.length completions7.entries));
+    List.iter
+      (fun entry ->
+        Logs.info (fun m ->
+            m "  - %s (%s): %s" entry.name
+              (match entry.kind with
+              | Constructor -> "Constructor"
+              | Keyword -> "Keyword"
+              | Label -> "Label"
+              | MethodCall -> "MethodCall"
+              | Modtype -> "Modtype"
+              | Module -> "Module"
+              | Type -> "Type"
+              | Value -> "Value"
+              | Variant -> "Variant")
+              entry.desc))
+      completions7.entries;
+
+    (* Test toplevel completion with module paths *)
+    let* completions8 =
+      Client.complete_prefix rpc (Some "c_comp8") [] true
+        "# String.lengt"
+        (Offset 14)
+    in
+    Logs.info (fun m ->
+        m "Completions for 'String.lengt' (module path): %d entries"
+          (List.length completions8.entries));
+    List.iter
+      (fun entry ->
+        Logs.info (fun m ->
+            m "  - %s (%s): %s" entry.name
+              (match entry.kind with
+              | Constructor -> "Constructor"
+              | Keyword -> "Keyword"
+              | Label -> "Label"
+              | MethodCall -> "MethodCall"
+              | Modtype -> "Modtype"
+              | Module -> "Module"
+              | Type -> "Type"
+              | Value -> "Value"
+              | Variant -> "Variant")
+              entry.desc))
+      completions8.entries;
 
     (* let* o3 =
       Client.exec_toplevel rpc

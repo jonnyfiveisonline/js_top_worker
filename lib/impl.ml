@@ -763,12 +763,14 @@ module Make (S : S) = struct
 
   let failed_cells = ref StringSet.empty
 
-  let complete_prefix _id _deps is_toplevel source position =
+  let complete_prefix id deps is_toplevel source position =
     try
-      let line1, src = mangle_toplevel is_toplevel source [] in
-      let src = line1 ^ src in
-      Logs.info (fun m -> m "line1: '%s' (length: %d)" line1 (String.length line1));
+      Logs.info (fun m -> m "completing for id: %s" (match id with Some x -> x | None -> "(none)"));
 
+      let line1, src = mangle_toplevel is_toplevel source deps in
+      Logs.info (fun m -> m "line1: '%s' (length: %d)" line1 (String.length line1));
+      Logs.info (fun m -> m "src: '%s' (length: %d)" src (String.length src));
+      let src = line1 ^ src in
       let source = Merlin_kernel.Msource.make src in
       let map_kind :
           [ `Value
@@ -798,6 +800,13 @@ module Make (S : S) = struct
         | Logical (x, y) -> `Logical (x + 1, y)
         | End -> `End
       in
+
+      (match position with
+      | `Offset x ->
+          let first_char = String.sub src (x-1) 1 in
+          Logs.info (fun m -> m "complete after offset: %s" first_char)
+      | _ -> ());
+
       match Completion.at_pos source position with
       | Some (from, to_, compl) ->
           let entries =
