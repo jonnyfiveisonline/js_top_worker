@@ -61,8 +61,8 @@ let mangle_toplevel is_toplevel orig_source deps =
     List.map (fun id -> Printf.sprintf "open %s" (modname_of_id id)) deps
     |> String.concat " "
   in
-  let line1 = if line1 <> "" then line1 ^ ";;\n" else "" in
-  Logs.debug (fun m -> m "Line1: %s\n%!" line1);
+  let line1 = if line1 = "" then "" else line1 ^ ";;\n" in
+  Logs.debug (fun m -> m "Line1: '%s'\n%!" line1);
   Logs.debug (fun m -> m "Source: %s\n%!" src);
   if is_mangled_broken orig_source src then (
     Printf.printf "Warning: mangled source is broken\n%!";
