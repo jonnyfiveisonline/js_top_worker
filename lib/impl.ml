@@ -62,7 +62,7 @@ let mangle_toplevel is_toplevel orig_source deps =
     |> String.concat " "
   in
   let line1 = if line1 = "" then "" else line1 ^ ";;\n" in
-  Logs.debug (fun m -> m "Line1: '%s'\n%!" line1);
+  Logs.debug (fun m -> m "Line 1: '%s'\n%!" line1);
   Logs.debug (fun m -> m "Source: %s\n%!" src);
   if is_mangled_broken orig_source src then (
     Printf.printf "Warning: mangled source is broken\n%!";
