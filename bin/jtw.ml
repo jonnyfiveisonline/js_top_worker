@@ -38,7 +38,7 @@ let gen_cmis cmis =
   in
   List.map gen_one cmis
 
-let opam output_dir_str switch libraries no_worker =
+let opam verbose output_dir_str switch libraries no_worker =
   Opam.switch := switch;
   let libraries =
     match Ocamlfind.deps libraries with
@@ -49,7 +49,6 @@ let opam output_dir_str switch libraries no_worker =
         (* failwith ("Bad libs: " ^ m) *)
         failwith ("Bad libs: " ^ m)
   in
-  let verbose = true in
   Eio_main.run @@ fun env ->
   Eio.Switch.run @@ fun sw ->
   if verbose then Logs.set_level (Some Logs.Debug) else Logs.set_level None;
@@ -206,6 +205,9 @@ let opam_cmd =
     in
     Arg.(value & opt string "html" & info [ "o"; "output" ] ~doc)
   in
+  let verbose =
+    let doc = "Enable verbose logging" in
+    Arg.(value & flag & info [ "v"; "verbose" ] ~doc) in
   let no_worker =
     let doc = "Do not create worker.js" in
     Arg.(value & flag & info [ "no-worker" ] ~doc)
@@ -216,7 +218,7 @@ let opam_cmd =
   in
   let info = Cmd.info "opam" ~doc:"Generate opam files" in
   Cmd.v info
-    Term.(ret (const opam $ output_dir $ switch $ libraries $ no_worker))
+    Term.(ret (const opam $ verbose $ output_dir $ switch $ libraries $ no_worker))
 
 let main_cmd =
   let doc = "An odoc notebook tool" in

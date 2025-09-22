@@ -46,6 +46,7 @@ let preloaded =
 
 let rec read_libraries_from_pkg_defs ~library_name ~dir meta_uri pkg_expr =
   try
+    Jslib.log "Reading library: %s" library_name;
     let pkg_defs = pkg_expr.Fl_metascanner.pkg_defs in
     let archive_filename =
       try Some (Fl_metascanner.lookup "archive" [ "byte" ] pkg_defs)
@@ -54,7 +55,8 @@ let rec read_libraries_from_pkg_defs ~library_name ~dir meta_uri pkg_expr =
         with _ -> None)
     in
 
-    let deps_str = Fl_metascanner.lookup "requires" [] pkg_defs in
+    let deps_str =
+      try Fl_metascanner.lookup "requires" [] pkg_defs with _ -> "" in
     let deps = Astring.String.fields ~empty:false deps_str in
     let subdir =
       List.find_opt (fun d -> d.Fl_metascanner.def_var = "directory") pkg_defs
@@ -72,9 +74,11 @@ let rec read_libraries_from_pkg_defs ~library_name ~dir meta_uri pkg_expr =
           let file_name_len = String.length a in
           if file_name_len > 0 then Some (Filename.chop_extension a) else None)
     in
+    Jslib.log "Number of children: %d" (List.length pkg_expr.pkg_children);
     let children =
       List.filter_map
         (fun (n, expr) ->
+          Jslib.log "Found child: %s" n;
           let library_name = library_name ^ "." ^ n in
           match
             read_libraries_from_pkg_defs ~library_name ~dir meta_uri expr
@@ -169,6 +173,8 @@ let require sync_get cmi_only v packages =
     match List.find (fun lib -> lib.name = package) v with
     | exception Not_found ->
         Jslib.log "Package %s not found" package;
+        Jslib.log "Available packages: %s"
+          (String.concat ", " (List.map (fun lib -> Printf.sprintf "%s (%d)" lib.name (List.length lib.children)) v));
         dcss
     | lib ->
         if lib.loaded then dcss
