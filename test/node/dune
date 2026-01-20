@@ -14,7 +14,8 @@
   rpclib.core
   rpclib.json
   findlib.top
-  js_of_ocaml-lwt))
+  js_of_ocaml-lwt
+  zarith_stubs_js))
 
 (rule
  (targets node_test.js)
@@ -30,6 +31,7 @@
    +toplevel.js
    +dynlink.js
    +bigstringaf/runtime.js
+   +zarith_stubs_js/runtime.js
    +js_top_worker/stubs.js
    %{dep:node_test.bc}
    -o
