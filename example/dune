@@ -45,6 +45,7 @@
  (modules unix_worker)
  (link_flags (-linkall))
  (libraries
+  unix
   js_top_worker
   logs
   logs.fmt

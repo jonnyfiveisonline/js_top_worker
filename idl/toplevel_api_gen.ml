@@ -11,7 +11,7 @@
     use_vmthreads = false;
     recursive_types = false;
     principal = false;
-    transparent_modules = false;
+    no_alias_deps = false;
     unboxed_types = false;
     unsafe_string = false;
     cookies = [("library-name", "js_top_worker_rpc_def")]

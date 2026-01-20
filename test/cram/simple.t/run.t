@@ -6,7 +6,7 @@
   unix_worker: [INFO] Setup complete
   unix_worker: [INFO] setup() finished
   {mime_vals:[];stderr:S(error while evaluating #enable "pretty";;
-  error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.2.0
+  error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.4.0
   Unknown directive enable.
   Unknown directive disable.)}
   {mime_vals:[];parts:[];script:S(# Printf.printf "Hello, world\n";;
