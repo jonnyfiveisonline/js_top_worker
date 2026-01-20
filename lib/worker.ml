@@ -97,7 +97,6 @@ let run () =
     Server.complete_prefix complete_prefix;
     Server.query_errors query_errors;
     Server.type_enclosing type_enclosing;
-    Server.compile_js compile_js;
     Server.exec_toplevel exec_toplevel;
     let rpc_fn = Impl.IdlM.server Server.implementation in
     Js_of_ocaml.Worker.set_onmessage (fun x ->

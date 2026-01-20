@@ -165,7 +165,6 @@ let start_server () =
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
-  Server.compile_js compile_js;
   Server.exec_toplevel exec_toplevel;
   let rpc_fn = IdlM.server Server.implementation in
   let process x =

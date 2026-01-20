@@ -2201,11 +2201,6 @@ module Make(R:RPC) =
         ["Execute a toplevel script. The toplevel must have been";
         "Initialised first. Returns the updated toplevel script."]
         (toplevel_script_p @-> (returning exec_toplevel_result_p err))
-    let compile_js =
-      declare "compile_js"
-        ["Compile a phrase to javascript. The toplevel must have been";
-        "Initialised first."]
-        (id_p @-> (phrase_p @-> (returning phrase_p err)))
     let complete_prefix =
       declare "complete_prefix" ["Complete a prefix"]
         (id_p @->
