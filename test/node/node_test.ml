@@ -51,7 +51,15 @@ module S : Impl.S = struct
   let create_file = Js_of_ocaml.Sys_js.create_file
 
   let import_scripts urls =
-    if List.length urls > 0 then failwith "Not implemented" else ()
+    let open Js_of_ocaml.Js in
+    let import_scripts_fn = Unsafe.get Unsafe.global (string "importScripts") in
+    List.iter
+      (fun url ->
+        let (_ : 'a) =
+          Unsafe.fun_call import_scripts_fn [| Unsafe.inject (string url) |]
+        in
+        ())
+      urls
 
   let init_function _ () = failwith "Not implemented"
   let findlib_init = Js_top_worker_web.Findlibish.init async_get
@@ -62,7 +70,7 @@ module S : Impl.S = struct
 
   let require b v = function
     | [] -> []
-    | packages -> Js_top_worker_web.Findlibish.require sync_get b v packages
+    | packages -> Js_top_worker_web.Findlibish.require ~import_scripts sync_get b v packages
 
   let path = "/static/cmis"
 end
@@ -93,7 +101,7 @@ let _ =
   let ( let* ) = IdlM.ErrM.bind in
   let init_config =
     Js_top_worker_rpc.Toplevel_api_gen.
-      { stdlib_dcs = None; findlib_requires = [ "stringext" ]; execute = false }
+      { stdlib_dcs = None; findlib_requires = [ "base" ]; execute = true }
   in
   let x =
     let open Client in

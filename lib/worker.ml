@@ -63,7 +63,7 @@ module S : Impl.S = struct
 
   let require b v = function
     | [] -> []
-    | packages -> Findlibish.require sync_get b v packages
+    | packages -> Findlibish.require ~import_scripts sync_get b v packages
 
   let init_function func_name =
     let open Js_of_ocaml in

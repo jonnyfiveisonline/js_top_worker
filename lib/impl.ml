@@ -416,9 +416,9 @@ module Make (S : S) = struct
               Persistent_env.report_error Format.err_formatter e;
               let err = Format.asprintf "%a" Persistent_env.report_error e in
               failwith ("Error: " ^ err)
-          | Env.Error e ->
-              Env.report_error Format.err_formatter e;
-              let err = Format.asprintf "%a" Env.report_error e in
+          | Env.Error _ as exn ->
+              Location.report_exception Format.err_formatter exn;
+              let err = Format.asprintf "%a" Location.report_exception exn in
               failwith ("Error: " ^ err)
         in
 
@@ -478,7 +478,7 @@ module Make (S : S) = struct
               Typemod.type_toplevel_phrase oldenv sstr
             in
             let sg' = Typemod.Signature_names.simplify newenv sn sg in
-            ignore (Includemod.signatures ~mark:Mark_positive oldenv sg sg');
+            ignore (Includemod.signatures ~mark:true oldenv sg sg');
             Typecore.force_delayed_checks ();
             Printtyped.implementation pp_result str;
             Format.pp_print_flush pp_result ();
@@ -535,15 +535,15 @@ module Make (S : S) = struct
           Logs.info (fun m -> m "Typing...");
           let str, sg, sn, _shape, newenv =
             try Typemod.type_toplevel_phrase oldenv sstr
-            with Env.Error e ->
-              Env.report_error Format.err_formatter e;
+            with Env.Error _ as exn ->
+              Location.report_exception Format.err_formatter exn;
               (* exit 1 *)
-              let err = Format.asprintf "%a" Env.report_error e in
+              let err = Format.asprintf "%a" Location.report_exception exn in
               failwith ("Error: " ^ err)
           in
           Logs.info (fun m -> m "simplify...");
           let sg' = Typemod.Signature_names.simplify newenv sn sg in
-          ignore (Includemod.signatures ~mark:Mark_positive oldenv sg sg');
+          ignore (Includemod.signatures ~mark:true oldenv sg sg');
           Typecore.force_delayed_checks ();
           Logs.info (fun m -> m "Translmod...");
           let lam = Translmod.transl_toplevel_definition str in
@@ -590,7 +590,7 @@ module Make (S : S) = struct
             match id with Some id -> `Named id | None -> `Iife
           in
           Js_of_ocaml_compiler.Driver.f' ~standalone:false ~wrap_with_fun
-            ~link:`No fmt p.debug p.code;
+            ~link:`No fmt p.code;
           Format.(pp_print_flush std_formatter ());
           Format.(pp_print_flush err_formatter ());
           flush stdout;
@@ -845,7 +845,7 @@ module Make (S : S) = struct
     Printf.fprintf oc "%s" source;
     close_out oc;
     (try Sys.remove (prefix ^ ".cmi") with Sys_error _ -> ());
-    let unit_info = Unit_info.make ~source_file:filename prefix in
+    let unit_info = Unit_info.make ~source_file:filename Impl prefix in
     try
       let store = Local_store.fresh () in
       Local_store.with_store store (fun () ->
@@ -863,8 +863,8 @@ module Make (S : S) = struct
           Logs.info (fun m -> m "file_exists: %s = %b" (prefix ^ ".cmi") b));
       Ocaml_typing.Cmi_cache.clear ()
     with
-    | Env.Error e ->
-        Logs.err (fun m -> m "Env.Error: %a" Env.report_error e);
+    | Env.Error _ as exn ->
+        Logs.err (fun m -> m "Env.Error: %a" Location.report_exception exn);
         failed_cells := StringSet.add id !failed_cells;
         ()
     | exn ->
@@ -908,7 +908,7 @@ module Make (S : S) = struct
         wdispatch source query
         |> StdLabels.List.filter_map
              ~f:(fun
-                 (Ocaml_parsing.Location.{ kind; main = _; sub; source } as
+                 (Ocaml_parsing.Location.{ kind; main = _; sub; source; _ } as
                   error)
                ->
                let of_sub sub =

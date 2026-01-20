@@ -1,20 +1,41 @@
 node_test.js: [INFO] init()
 Initializing findlib
 node_test.js: [INFO] async_get: _opam/findlib_index
+node_test.js: [INFO] async_get: _opam/lib/sexplib0/META
+node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/META
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
-node_test.js: [INFO] async_get: _opam/lib/astring/META
+node_test.js: [INFO] async_get: _opam/lib/base/META
+Parsed uri: lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
 Parsed uri: lib/ocaml/stdlib/META
-Parsed uri: lib/astring/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/dynamic_cmis.json
 node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
-node_test.js: [INFO]   toplevel modules: CamlinternalOO, Stdlib, CamlinternalFormat, Std_exit, CamlinternalMod, CamlinternalFormatBasics, CamlinternalLazy
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
+node_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalLazy.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
 node_test.js: [INFO] init() finished
 node_test.js: [INFO] setup() ...
 node_test.js: [INFO] Fetching stdlib__Format.cmi
@@ -26,9 +47,53 @@ node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_test.js: [INFO] Setup complete
-Package stringext not found
+Loading package base
+lib.dir: None
+Loading package base.base_internalhash_types
+lib.dir: base_internalhash_types
+uri: lib/base/base_internalhash_types/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/lib/base/base_internalhash_types/dynamic_cmis.json
+importScripts: lib/base/base_internalhash_types/base_internalhash_types.cma.js
+Finished loading package base.base_internalhash_types
+Loading package base.shadow_stdlib
+lib.dir: shadow_stdlib
+uri: lib/base/shadow_stdlib/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/lib/base/shadow_stdlib/dynamic_cmis.json
+importScripts: lib/base/shadow_stdlib/shadow_stdlib.cma.js
+Finished loading package base.shadow_stdlib
+Loading package ocaml_intrinsics_kernel
+lib.dir: None
+uri: lib/ocaml_intrinsics_kernel/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/lib/ocaml_intrinsics_kernel/dynamic_cmis.json
+importScripts: lib/ocaml_intrinsics_kernel/ocaml_intrinsics_kernel.cma.js
+Finished loading package ocaml_intrinsics_kernel
+Loading package sexplib0
+lib.dir: None
+uri: lib/sexplib0/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/lib/sexplib0/dynamic_cmis.json
+importScripts: lib/sexplib0/sexplib0.cma.js
+Finished loading package sexplib0
+uri: lib/base/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/lib/base/dynamic_cmis.json
+importScripts: lib/base/base.cma.js
+Finished loading package base
+node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/
+node_test.js: [INFO]   toplevel modules: Base
+node_test.js: [INFO] async_get: _opam/lib/base/base.cmi
+node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/sexplib0/
+node_test.js: [INFO]   toplevel modules: Sexplib0
+node_test.js: [INFO] async_get: _opam/lib/sexplib0/sexplib0.cmi
+node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml_intrinsics_kernel/
+node_test.js: [INFO]   toplevel modules: Ocaml_intrinsics_kernel
+node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/ocaml_intrinsics_kernel.cmi
+node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/shadow_stdlib/
+node_test.js: [INFO]   toplevel modules: Shadow_stdlib
+node_test.js: [INFO] async_get: _opam/lib/base/shadow_stdlib/shadow_stdlib.cmi
+node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/base_internalhash_types/
+node_test.js: [INFO]   toplevel modules: Base_internalhash_types
+node_test.js: [INFO] async_get: _opam/lib/base/base_internalhash_types/base_internalhash_types.cmi
 node_test.js: [INFO] setup() finished
-node_test.js: [INFO] setup output: OCaml version 5.2.0
+node_test.js: [INFO] setup output: OCaml version 5.4.0
 Unknown directive enable.
 Unknown directive disable.
 node_test.js: [INFO] add_cmi
@@ -59,9 +124,9 @@ node_test.js: [INFO] completing for id: c_comp2
 node_test.js: [INFO] line1: '' (length: 0)
 node_test.js: [INFO] src: '  let _ = List.' (length: 15)
 node_test.js: [INFO] complete after offset: .
-node_test.js: [INFO] Completions for 'List.': 68 entries
-node_test.js: [INFO]   - (::) (Constructor): 'a * 'a list -> 'a List.t
-node_test.js: [INFO]   - ([]) (Constructor): 'a List.t
+node_test.js: [INFO] Completions for 'List.': 73 entries
+node_test.js: [INFO]   - (::) (Constructor): 'a0 * 'a0 list -> 'a0 List.t
+node_test.js: [INFO]   - ([]) (Constructor): 'a0 List.t
 node_test.js: [INFO]   - append (Value): 'a list -> 'a list -> 'a list
 node_test.js: [INFO]   - assoc (Value): 'a -> ('a * 'b) list -> 'b
 node_test.js: [INFO]   - assoc_opt (Value): 'a -> ('a * 'b) list -> 'b option
@@ -74,6 +139,8 @@ node_test.js: [INFO]   - compare_lengths (Value): 'a list -> 'b list -> int
 node_test.js: [INFO]   - concat (Value): 'a list list -> 'a list
 node_test.js: [INFO]   - concat_map (Value): ('a -> 'b list) -> 'a list -> 'b list
 node_test.js: [INFO]   - cons (Value): 'a -> 'a list -> 'a list
+node_test.js: [INFO]   - drop (Value): int -> 'a list -> 'a list
+node_test.js: [INFO]   - drop_while (Value): ('a -> bool) -> 'a list -> 'a list
 node_test.js: [INFO]   - equal (Value): ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
 node_test.js: [INFO]   - exists (Value): ('a -> bool) -> 'a list -> bool
 node_test.js: [INFO]   - exists2 (Value): ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
@@ -121,10 +188,13 @@ node_test.js: [INFO]   - rev (Value): 'a list -> 'a list
 node_test.js: [INFO]   - rev_append (Value): 'a list -> 'a list -> 'a list
 node_test.js: [INFO]   - rev_map (Value): ('a -> 'b) -> 'a list -> 'b list
 node_test.js: [INFO]   - rev_map2 (Value): ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+node_test.js: [INFO]   - singleton (Value): 'a -> 'a list
 node_test.js: [INFO]   - sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
 node_test.js: [INFO]   - sort_uniq (Value): ('a -> 'a -> int) -> 'a list -> 'a list
 node_test.js: [INFO]   - split (Value): ('a * 'b) list -> 'a list * 'b list
 node_test.js: [INFO]   - stable_sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
+node_test.js: [INFO]   - take (Value): int -> 'a list -> 'a list
+node_test.js: [INFO]   - take_while (Value): ('a -> bool) -> 'a list -> 'a list
 node_test.js: [INFO]   - tl (Value): 'a list -> 'a list
 node_test.js: [INFO]   - to_seq (Value): 'a list -> 'a Seq.t
 node_test.js: [INFO]   - t (Type): type 'a t = 'a list = [] | (::) of 'a * 'a list

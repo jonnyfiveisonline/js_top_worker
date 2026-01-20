@@ -145,25 +145,31 @@ let opam verbose output_dir_str switch libraries no_worker =
         let archives = List.map (fun x -> Fpath.(dir / x)) archives in
         let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
         let dest = Fpath.(output_dir / "lib" // d) in
-        let _ = Bos.OS.Dir.create dest in
-        let doit archive =
+        let (_ : (bool, _) result) = Bos.OS.Dir.create dest in
+        let compile_archive archive =
           let output = Fpath.(dest / (Fpath.filename archive ^ ".js")) in
-          let cmd =
-            match switch with
-            | None ->
-                Bos.Cmd.(
-                  v "js_of_ocaml" % "compile" % Fpath.to_string archive % "-o"
-                  % Fpath.to_string output)
-            | Some s ->
-                Bos.Cmd.(
-                  v "opam" % "exec" % "--switch" % s % "--" % "js_of_ocaml"
-                  % "compile" % Fpath.to_string archive % "-o"
-                  % Fpath.to_string output)
+          let js_runtime = Ocamlfind.jsoo_runtime lib in
+          let js_files =
+            List.map (fun f -> Fpath.(dir / f |> to_string)) js_runtime
           in
-          let _ = Util.lines_of_process cmd in
-          ()
+          let base_cmd =
+            match switch with
+            | None -> Bos.Cmd.(v "js_of_ocaml")
+            | Some s ->
+                Bos.Cmd.(v "opam" % "exec" % "--switch" % s % "--" % "js_of_ocaml")
+          in
+          let cmd =
+            Bos.Cmd.(
+              base_cmd % "compile" % "--toplevel" % "--include-runtime"
+              % "--effects=cps")
+          in
+          let cmd = List.fold_left (fun c f -> Bos.Cmd.(c % f)) cmd js_files in
+          let cmd =
+            Bos.Cmd.(cmd % Fpath.to_string archive % "-o" % Fpath.to_string output)
+          in
+          ignore (Util.lines_of_process cmd)
         in
-        List.iter doit archives)
+        List.iter compile_archive archives)
       libraries;
 
     (* Format.eprintf "@[<hov 2>dir: %a [%a]@]\n%!" Fpath.pp dir (Fmt.list ~sep:Fmt.sp Fmt.string) files) cmis; *)
@@ -189,7 +195,7 @@ let opam verbose output_dir_str switch libraries no_worker =
   Format.eprintf "Number of cmis: %d\n%!" (List.length init_cmis);
 
   let () =
-    if no_worker then () else Mk_backend.mk switch libraries output_dir
+    if no_worker then () else Mk_backend.mk switch output_dir
   in
 
   `Ok ()

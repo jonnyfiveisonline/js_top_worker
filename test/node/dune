@@ -39,17 +39,19 @@
  (targets
   (dir _opam))
  (action
-  (run jtw opam astring --no-worker -o _opam)))
+  (run jtw opam base --no-worker -o _opam)))
 
 (rule
- (with-outputs-to
-  node_test.out
-  (run
-   node
-   --stack-size=2000
-   -r
-   ./%{dep:import_scripts.js}
-   %{dep:node_test.js})))
+ (deps _opam)
+ (action
+  (with-outputs-to
+   node_test.out
+   (run
+    node
+    --stack-size=2000
+    -r
+    ./%{dep:import_scripts.js}
+    %{dep:node_test.js}))))
 
 (rule
  (alias runtest)

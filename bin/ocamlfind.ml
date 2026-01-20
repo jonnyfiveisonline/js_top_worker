@@ -65,3 +65,16 @@ let meta_file pkg =
   let package = Fl_package_base.query pkg in
   let meta = package.Fl_package_base.package_meta in
   meta
+
+let jsoo_runtime pkg =
+  init ();
+  let package = Fl_package_base.query pkg in
+  try
+    let runtime =
+      Fl_metascanner.lookup "jsoo_runtime" []
+        package.Fl_package_base.package_defs
+    in
+    (* Runtime may be space-separated list of files *)
+    String.split_on_char ' ' runtime
+    |> List.filter (fun x -> String.length x > 0)
+  with _ -> []

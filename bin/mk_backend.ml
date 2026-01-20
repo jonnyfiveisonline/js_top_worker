@@ -1,6 +1,6 @@
 (* To make a toplevel backend.js *)
 
-let mk switch libs dir =
+let mk switch dir =
   let txt = {|let _ = Js_top_worker_web.Worker.run ()|} in
   let file = Fpath.(dir / "worker.ml") in
   Util.write_file file [ txt ];
@@ -21,18 +21,7 @@ let mk switch libs dir =
     Bos.Cmd.(cmd % "-g" % "-o" % Fpath.(dir / "worker.bc" |> to_string))
   in
   let _ = Util.lines_of_process cmd in
-  let cmd =
-    Bos.Cmd.(
-      ocamlfind_cmd % "query" % "-format" % "%+(jsoo_runtime)" % "-r"
-      % "js_top_worker-web")
-  in
-  let cmd = Util.StringSet.fold (fun lib cmd -> Bos.Cmd.(cmd % lib)) libs cmd in
-  let js_files =
-    Util.lines_of_process cmd
-    |> List.filter (fun x -> String.length x > 0)
-    |> List.map (fun x -> Astring.String.cuts ~sep:" " x)
-    |> List.flatten
-  in
+  (* No longer query library stubs - they are now linked directly into each library's JS file *)
   let cmd =
     Bos.Cmd.(
       js_of_ocaml_cmd % "--toplevel" % "--no-cmis" % "--linkall" % "--pretty")
@@ -40,13 +29,12 @@ let mk switch libs dir =
   let cmd =
     List.fold_right
       (fun a cmd -> Bos.Cmd.(cmd % a))
-      (js_files
-      @ [
-          "+dynlink.js";
-          "+toplevel.js";
-          "+bigstringaf/runtime.js";
-          "+js_top_worker/stubs.js";
-        ])
+      [
+        "+dynlink.js";
+        "+toplevel.js";
+        "+bigstringaf/runtime.js";
+        "+js_top_worker/stubs.js";
+      ]
       cmd
   in
   let cmd =

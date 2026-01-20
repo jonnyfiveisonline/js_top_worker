@@ -167,14 +167,19 @@ let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findli
     metas
   |> flatten_libs |> Lwt.return
 
-let require sync_get cmi_only v packages =
+let require ~import_scripts sync_get cmi_only v packages =
   let rec require dcss package :
       Js_top_worker_rpc.Toplevel_api_gen.dynamic_cmis list =
     match List.find (fun lib -> lib.name = package) v with
     | exception Not_found ->
         Jslib.log "Package %s not found" package;
-        Jslib.log "Available packages: %s"
-          (String.concat ", " (List.map (fun lib -> Printf.sprintf "%s (%d)" lib.name (List.length lib.children)) v));
+        let available =
+          v
+          |> List.map (fun lib ->
+                 Printf.sprintf "%s (%d)" lib.name (List.length lib.children))
+          |> String.concat ", "
+        in
+        Jslib.log "Available packages: %s" available;
         dcss
     | lib ->
         if lib.loaded then dcss
@@ -191,19 +196,20 @@ let require sync_get cmi_only v packages =
           Jslib.log "uri: %s" (Uri.to_string uri);
           match fetch_dynamic_cmis sync_get (Uri.to_string uri) with
           | Ok dcs ->
-              let () =
-                match lib.archive_name with
-                | None -> ()
-                | Some archive ->
+              let should_load =
+                (not (List.mem lib.name preloaded)) && not cmi_only
+              in
+              Option.iter
+                (fun archive ->
+                  if should_load then begin
                     let archive_js =
                       Fpath.(dir / (archive ^ ".cma.js") |> to_string)
                     in
-                    if List.mem lib.name preloaded || cmi_only then ()
-                    else
-                      Js_of_ocaml.Worker.import_scripts
-                        [ Uri.with_path uri archive_js |> Uri.to_string ];
-                    lib.loaded <- true
-              in
+                    import_scripts
+                      [ Uri.with_path uri archive_js |> Uri.to_string ]
+                  end)
+                lib.archive_name;
+              lib.loaded <- true;
               Jslib.log "Finished loading package %s" lib.name;
               dcs :: dep_dcs
           | Error (`Msg m) ->
