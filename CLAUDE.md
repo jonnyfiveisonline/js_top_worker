@@ -52,3 +52,16 @@ Key directories:
 - `bin/`: Command-line tools, notably `jtw` for OPAM package handling
 
 The system uses RPC (via `rpclib`) for communication between the client and worker, with support for both browser WebWorkers and Unix sockets for testing.
+
+## Technical Q&A Log
+
+When the user asks technical questions about the codebase, tools, or dependencies (especially js_of_ocaml, dune, findlib, etc.), Claude should:
+
+1. **Answer the question** with technical accuracy
+2. **Record the Q&A** in `docs/technical-qa.md` with:
+   - The question asked
+   - The answer provided
+   - Verification steps taken (code inspection, testing, documentation lookup)
+   - Date of the entry
+
+This creates institutional knowledge that persists across sessions.

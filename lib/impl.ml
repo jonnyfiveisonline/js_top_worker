@@ -248,7 +248,6 @@ module Make (S : S) = struct
     in
     fun phrase ->
       Buffer.clear code_buff;
-      Buffer.clear code_buff;
       Buffer.clear res_buff;
       Buffer.clear stderr_buff;
       Buffer.clear stdout_buff;
@@ -449,8 +448,6 @@ module Make (S : S) = struct
         Lwt.return
           (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
-  let complete _phrase = failwith "Not implemented"
-
   let typecheck_phrase :
       string ->
       (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) IdlM.T.resultb =
@@ -508,16 +505,6 @@ module Make (S : S) = struct
               highlight = !highlighted;
               mime_vals = [];
             }
-
-  let split_primitives p =
-    let len = String.length p in
-    let rec split beg cur =
-      if cur >= len then []
-      else if Char.equal p.[cur] '\000' then
-        String.sub p beg (cur - beg) :: split (cur + 1) (cur + 1)
-      else split beg (cur + 1)
-    in
-    Array.of_list (split 0 0)
 
   let handle_toplevel stripped =
     if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' '
