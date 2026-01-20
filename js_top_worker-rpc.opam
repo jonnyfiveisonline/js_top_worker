@@ -6,12 +6,15 @@ license: "ISC"
 homepage: "https://github.com/jonludlam/js_top_worker"
 bug-reports: "https://github.com/jonludlam/js_top_worker/issues"
 depends: [
-  "ocaml" {>= "4.04"}
-  "dune" {>= "2.9.1"}
+  "ocaml" {>= "5.1"}
+  "dune" {>= "3.10"}
   "mime_printer"
   "rresult"
   "merlin-lib"
   "rpclib"
+  "cbort"
+  "zarith"
+  "bytesrw"
 ]
 build : [
   ["dune" "subst"] {pinned}
@@ -23,4 +26,5 @@ An OCaml toplevel designed to run as a web worker
 """
 pin-depends: [
   [ "mime_printer.dev" "git+https://github.com/jonludlam/mime_printer.git#odoc_notebook" ]
+  [ "cbort.dev" "git+https://tangled.org/@anil.recoil.org/ocaml-cbort.git" ]
 ]

@@ -19,29 +19,27 @@ let rec flatten_libs libs =
 
 let preloaded =
   [
-    "logs";
-    "js_top_worker-rpc";
-    "js_of_ocaml-compiler";
-    "js_of_ocaml-ppx";
+    "angstrom";
     "astring";
-    "mime_printer";
     "compiler-libs.common";
     "compiler-libs.toplevel";
-    "merlin-lib.kernel";
-    "merlin-lib.utils";
-    "merlin-lib.query_protocol";
-    "merlin-lib.query_commands";
-    "merlin-lib.ocaml_parsing";
     "findlib";
     "findlib.top";
-    "js_top_worker";
+    "fpath";
+    "js_of_ocaml-compiler";
     "js_of_ocaml-ppx";
     "js_of_ocaml-toplevel";
+    "js_top_worker";
+    "js_top_worker-rpc";
+    "logs";
     "logs.browser";
+    "merlin-lib.kernel";
+    "merlin-lib.ocaml_parsing";
+    "merlin-lib.query_commands";
+    "merlin-lib.query_protocol";
+    "merlin-lib.utils";
+    "mime_printer";
     "uri";
-    "angstrom";
-    "findlib";
-    "fpath";
   ]
 
 let rec read_libraries_from_pkg_defs ~library_name ~dir meta_uri pkg_expr =
