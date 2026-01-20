@@ -1,0 +1,207 @@
+=== Node.js Directive Tests ===
+
+node_directive_test.js: [INFO] init()
+Initializing findlib
+Parsed uri: lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
+Parsed uri: lib/ocaml/stdlib/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
+node_directive_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
+node_directive_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_directive_test.js: [INFO] init() finished
+node_directive_test.js: [INFO] setup() ...
+node_directive_test.js: [INFO] Fetching stdlib__Format.cmi
+
+node_directive_test.js: [INFO] Fetching stdlib__Sys.cmi
+
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_directive_test.js: [INFO] Setup complete
+node_directive_test.js: [INFO] setup() finished
+--- Section 1: Basic Execution ---
+[PASS] basic_eval: # 1 + 2;;
+  - : int = 3
+[PASS] let_binding: # let x = 42;;
+  val x : int = 42
+
+--- Section 2: #show Directives ---
+[PASS] show_type_point: # #show point;;
+  type point = { x : float; y : float; }
+[PASS] show_val_origin: # #show origin;;
+  val origin : point
+[PASS] show_module: # #show MyMod;;
+  module MyMod : sig type t = int val zero : int end
+[PASS] show_exception: # #show My_error;;
+  exception My_error of string
+[PASS] show_type_list: # #show_type list;;
+  type 'a list = [] | (::) of 'a * 'a list
+node_directive_test.js: [INFO] Fetching stdlib__List.cmi
+
+[PASS] show_val_list_map: # #show_val List.map;;
+  val map : ('a -> 'b) -> 'a list -> 'b list
+[PASS] show_module_list: # #show_module List;;
+  module List :
+    sig
+      type 'a t = 'a list = [] | (::) of 'a * 'a list
+      val length : 'a list -> int
+      val compare_lengths : 'a list -> 'b list -> int
+      val compare_length_with : 'a list -> int -> int
+      val is_empty : 'a list -> bool
+      val cons : 'a -> 'a list -> 'a list
+      val singleton : 'a -> 'a list
+      val hd : 'a list -> 'a
+      val tl : 'a list -> 'a list
+      val nth : 'a list -> int -> 'a
+      val nth_opt : 'a list -> int -> 'a option
+      val rev : 'a list -> 'a list
+      val init : int -> (int -> 'a) -> 'a list
+      val append : 'a list -> 'a list -> 'a list
+      val rev_append : 'a list -> 'a list -> 'a list
+      val concat : 'a list list -> 'a list
+      val flatten : 'a list list -> 'a list
+      val equal : ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
+      val compare : ('a -> 'a -> int) -> 'a list -> 'a list -> int
+      val iter : ('a -> unit) -> 'a list -> unit
+      val iteri : (int -> 'a -> unit) -> 'a list -> unit
+      val map : ('a -> 'b) -> 'a list -> 'b list
+      val mapi : (int -> 'a -> 'b) -> 'a list -> 'b list
+      val rev_map : ('a -> 'b) -> 'a list -> 'b list
+      val filter_map : ('a -> 'b option) -> 'a list -> 'b list
+      val concat_map : ('a -> 'b list) -> 'a list -> 'b list
+      val fold_left_map :
+        ('acc -> 'a -> 'acc * 'b) -> 'acc -> 'a list -> 'acc * 'b list
+      val fold_left : ('acc -> 'a -> 'acc) -> 'acc -> 'a list -> 'acc
+      val fold_right : ('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc
+      val iter2 : ('a -> 'b -> unit) -> 'a list -> 'b list -> unit
+      val map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+      val rev_map2 : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+      val fold_left2 :
+        ('acc -> 'a -> 'b -> 'acc) -> 'acc -> 'a list -> 'b list -> 'acc
+      val fold_right2 :
+        ('a -> 'b -> 'acc -> 'acc) -> 'a list -> 'b list -> 'acc -> 'acc
+      val for_all : ('a -> bool) -> 'a list -> bool
+      val exists : ('a -> bool) -> 'a list -> bool
+      val for_all2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+      val exists2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+      val mem : 'a -> 'a list -> bool
+      val memq : 'a -> 'a list -> bool
+      val find : ('a -> bool) -> 'a list -> 'a
+      val find_opt : ('a -> bool) -> 'a list -> 'a option
+      val find_index : ('a -> bool) -> 'a list -> int option
+      val find_map : ('a -> 'b option) -> 'a list -> 'b option
+      val find_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b option
+      val filter : ('a -> bool) -> 'a list -> 'a list
+      val find_all : ('a -> bool) -> 'a list -> 'a list
+      val filteri : (int -> 'a -> bool) -> 'a list -> 'a list
+      val take : int -> 'a list -> 'a list
+      val drop : int -> 'a list -> 'a list
+      val take_while : ('a -> bool) -> 'a list -> 'a list
+      val drop_while : ('a -> bool) -> 'a list -> 'a list
+      val partition : ('a -> bool) -> 'a list -> 'a list * 'a list
+      val partition_map :
+        ('a -> ('b, 'c) Either.t) -> 'a list -> 'b list * 'c list
+      val assoc : 'a -> ('a * 'b) list -> 'b
+      val assoc_opt : 'a -> ('a * 'b) list -> 'b option
+      val assq : 'a -> ('a * 'b) list -> 'b
+      val assq_opt : 'a -> ('a * 'b) list -> 'b option
+      val mem_assoc : 'a -> ('a * 'b) list -> bool
+      val mem_assq : 'a -> ('a * 'b) list -> bool
+      val remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list
+      val remove_assq : 'a -> ('a * 'b) list -> ('a * 'b) list
+      val split : ('a * 'b) list -> 'a list * 'b list
+      val combine : 'a list -> 'b list -> ('a * 'b) list
+      val sort : ('a -> 'a -> int) -> 'a list -> 'a list
+      val stable_sort : ('a -> 'a -> int) -> 'a list -> 'a list
+      val fast_sort : ('a -> 'a -> int) -> 'a list -> 'a list
+      val sort_uniq : ('a -> 'a -> int) -> 'a list -> 'a list
+      val merge : ('a -> 'a -> int) -> 'a list -> 'a list -> 'a list
+      val to_seq : 'a list -> 'a Seq.t
+      val of_seq : 'a Seq.t -> 'a list
+    end
+[PASS] show_exception_not_found: # #show_exception Not_found;;
+  exception Not_found
+
+--- Section 3: #print_depth and #print_length ---
+[PASS] print_depth_truncated: # nested;;
+  - : int list list list list = [[[...]]]
+[PASS] print_depth_full: # nested;;
+  - : int list list list list = [[[[1; 2; 3]]]]
+[PASS] print_length_truncated: # long_list;;
+  - : int list = [1; 2; ...]
+[PASS] print_length_full: # long_list;;
+  - : int list = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10]
+
+--- Section 4: #install_printer / #remove_printer ---
+[PASS] install_printer: # Red;;
+  - : color = <color:red>
+[PASS] remove_printer: # Red;;
+  - : color = Red
+
+--- Section 5: #warnings / #warn_error ---
+[PASS] warnings_disabled: # let _ = let unused = 1 in 2;;
+  - : int = 2
+Line 1, characters 12-19:
+Warning 26 [unused-var]: unused variable unused2.
+[PASS] warnings_enabled: # let _ = let unused2 = 1 in 2;;
+  - : int = 2
+
+Line 1, characters 12-19:
+Error (warning 26 [unused-var]): unused variable unused3.
+[FAIL] warn_error: # let _ = let unused3 = 1 in 2;;
+
+--- Section 6: #rectypes ---
+
+Line 1, characters 0-23:
+Error: The type abbreviation t is cyclic:
+         'a t = 'a t -> int,
+         'a t -> int contains 'a t
+[FAIL] rectypes_before: # type 'a t = 'a t -> int;;
+[PASS] rectypes_after: # type 'a u = 'a u -> int;;
+  type 'a u = 'a u -> int
+
+--- Section 7: #directory ---
+[PASS] directory_add: (no error)
+[PASS] directory_remove: (no error)
+
+--- Section 8: #help ---
+[PASS] help: # #help;;
+  General
+  #help
+    Prints a list of all available directives, with corresponding argume...
+
+--- Section 9: #labels / #principal ---
+[PASS] labels_true: (no error)
+[PASS] labels_false: (no error)
+[PASS] principal_true: (no error)
+[PASS] principal_false: (no error)
+
+--- Section 10: Error Cases ---
+[PASS] unknown_directive: # #unknown_directive;;
+  Unknown directive unknown_directive.
+[PASS] show_nonexistent: # #show nonexistent_value;;
+  Unknown element.
+
+--- Section 11: Classes ---
+[PASS] show_class: # #show_class counter;;
+  class counter :
+    object val mutable n : int method get : int method incr : unit end
+
+=== Results: 29/31 tests passed ===
+FAILURE: Some tests failed.
