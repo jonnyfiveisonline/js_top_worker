@@ -81,7 +81,6 @@ module JsooTopPpx = struct
 
   let preprocess_structure str =
     let open Ast_mapper in
-    Printf.eprintf "Rewriting...\n%!";
     List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
         let mapper = ppx_rewriter [] in
         mapper.structure mapper str)
@@ -223,6 +222,7 @@ module Make (S : S) = struct
        while true do
          try
            let phr = !Toploop.parse_toplevel_phrase lb in
+           let phr = JsooTopPpx.preprocess_phrase phr in
            ignore (Toploop.execute_phrase printval pp_answer phr : bool)
          with
          | End_of_file -> raise End_of_file
