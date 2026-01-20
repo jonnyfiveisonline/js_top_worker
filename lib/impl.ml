@@ -1,9 +1,24 @@
-(* Implementation *)
+(** {1 OCaml Toplevel Implementation}
+
+    This module provides the core toplevel functionality for js_top_worker.
+    It implements phrase execution, type checking, and Merlin integration
+    (completion, errors, type info).
+
+    The module is parameterized by a backend signature [S] which provides
+    platform-specific operations for different environments (WebWorker,
+    Node.js, Unix). *)
+
 open Js_top_worker_rpc
 module M = Rpc_lwt.ErrM (* Server is not synchronous *)
 module IdlM = Rpc_lwt
 
 let ( let* ) = Lwt.bind
+
+(** {2 Cell Dependency System}
+
+    Cells are identified by string IDs and can depend on previous cells.
+    Each cell is wrapped in a module [Cell__<id>] so that later cells can
+    access earlier bindings via [open Cell__<id>]. *)
 
 type captured = { stdout : string; stderr : string }
 
@@ -70,6 +85,11 @@ let mangle_toplevel is_toplevel orig_source deps =
     Printf.printf "src length: %d\n%!" (String.length src));
   (line1, src)
 
+(** {2 PPX Preprocessing}
+
+    Handles PPX rewriter registration and application. The [Ppx_js.mapper]
+    is registered by default to support js_of_ocaml syntax extensions. *)
+
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
 
@@ -98,6 +118,11 @@ module JsooTopPpx = struct
     | Ptop_dir _ as x -> x
 end
 
+(** {2 Backend Signature}
+
+    Platform-specific operations that must be provided by each backend
+    (WebWorker, Node.js, Unix). *)
+
 module type S = sig
   type findlib_t
 
@@ -115,12 +140,20 @@ module type S = sig
     bool -> findlib_t -> string list -> Toplevel_api_gen.dynamic_cmis list
 end
 
+(** {2 Main Functor}
+
+    The toplevel implementation, parameterized by backend operations. *)
+
 module Make (S : S) = struct
+  (** {3 State} *)
+
   let functions : (unit -> unit) list option ref = ref None
   let requires : string list ref = ref []
   let path : string option ref = ref None
   let findlib_v : S.findlib_t Lwt.t option ref = ref None
   let execution_allowed = ref true
+
+  (** {3 Lexer Helpers} *)
 
   let refill_lexbuf s p ppf buffer len =
     if !p = String.length s then 0
@@ -140,11 +173,7 @@ module Make (S : S) = struct
       p := !p + len'';
       len''
 
-  (* RPC function implementations *)
-
-  (* These are all required to return the appropriate value for the API within the
-     [IdlM.T] monad. The simplest way to do this is to use [IdlM.ErrM.return] for
-     the success case and [IdlM.ErrM.return_err] for the failure case *)
+  (** {3 Setup and Initialization} *)
 
   let exec' s =
     S.capture
@@ -190,6 +219,8 @@ module Make (S : S) = struct
       stderr = Buffer.contents stderr_buff;
     }
 
+  (** {3 Output Helpers} *)
+
   let stdout_buff = Buffer.create 100
   let stderr_buff = Buffer.create 100
 
@@ -211,6 +242,8 @@ module Make (S : S) = struct
     | Translmod.Error (loc, _) ->
         Some loc
     | _ -> None
+
+  (** {3 Phrase Execution} *)
 
   let execute printval ?pp_code ?highlight_location pp_answer s =
     let s =
@@ -268,6 +301,11 @@ module Make (S : S) = struct
           highlight = !highlighted;
           mime_vals;
         }
+
+  (** {3 Dynamic CMI Loading}
+
+      Handles loading .cmi files on demand for packages that weren't
+      compiled into the worker. *)
 
   let filename_of_module unit_name =
     Printf.sprintf "%s.cmi" (String.uncapitalize_ascii unit_name)
@@ -367,6 +405,11 @@ module Make (S : S) = struct
         load := new_load ~s:"merl" ~old_loader
     in
     Lwt.return ()
+
+  (** {3 RPC Handlers}
+
+      Functions that implement the toplevel RPC API. Each function returns
+      results in the [IdlM.ErrM] monad. *)
 
   let init (init_libs : Toplevel_api_gen.init_config) =
     Lwt.catch
@@ -555,6 +598,11 @@ module Make (S : S) = struct
     let result = execute phrase in
     IdlM.ErrM.return result
 
+  (** {3 Merlin Integration}
+
+      Code intelligence features powered by Merlin: completion, type info,
+      error diagnostics. *)
+
   let config () =
     let path =
       match !path with Some p -> p | None -> failwith "Path not set"
@@ -569,6 +617,7 @@ module Make (S : S) = struct
     Merlin_kernel.Mpipeline.with_pipeline pipeline @@ fun () ->
     Query_commands.dispatch pipeline query
 
+  (** Completion prefix extraction, adapted from ocaml-lsp-server. *)
   module Completion = struct
     open Merlin_utils
     open Std
