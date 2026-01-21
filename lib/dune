@@ -19,7 +19,8 @@
   merlin-lib.query_commands
   merlin-lib.ocaml_parsing
   findlib
-  findlib.top)
+  findlib.top
+  ppxlib)
  (js_of_ocaml
   (javascript_files stubs.js))
  (preprocess

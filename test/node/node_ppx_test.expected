@@ -1,0 +1,84 @@
+=== Node.js PPX Tests ===
+
+node_ppx_test.js: [INFO] init()
+Initializing findlib
+node_ppx_test.js: [INFO] async_get: _opam/findlib_index
+node_ppx_test.js: [INFO] async_get: _opam/lib/sexplib0/META
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/META
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
+node_ppx_test.js: [INFO] async_get: _opam/lib/base/META
+Parsed uri: lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
+Parsed uri: lib/ocaml/stdlib/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
+node_ppx_test.js: [INFO] sync_get: _opam/lib/ocaml/dynamic_cmis.json
+node_ppx_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
+node_ppx_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalLazy.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
+node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
+node_ppx_test.js: [INFO] init() finished
+node_ppx_test.js: [INFO] setup() ...
+node_ppx_test.js: [INFO] Fetching stdlib__Format.cmi
+
+node_ppx_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Format.cmi
+node_ppx_test.js: [INFO] Fetching stdlib__Sys.cmi
+
+node_ppx_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Sys.cmi
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_ppx_test.js: [INFO] Setup complete
+node_ppx_test.js: [INFO] setup() finished
+--- Section 1: Basic PPX Preprocessing ---
+[PASS] basic_no_ppx: # let x = 1 + 2;;
+  val x : int = 3
+
+--- Section 2: PPX Pipeline Integration ---
+[PASS] record_type: # type t = { name: string; age: int };;
+  type t = { name : string; age : int; }
+[PASS] record_value: # let person = { name = "Alice"; age = 30 };;
+  val person : t = {name = "Alice"; age = 30}
+[PASS] record_access: # let get_name p = p.name;;
+  val get_name : t -> string = <fun>
+[PASS] module_def: # module M = struct let x = 42 end;;
+  module M : sig val x : int end
+
+--- Section 3: Complex Expressions ---
+[PASS] recursive_fn: # let rec fib n = if n <= 1 then n else fib (n-1) + fib (n-2);;
+  val fib : int -> int = <fun>
+[PASS] recursive_call: # fib 10;;
+  - : int = 55
+[PASS] module_type: # module type S = sig val x : int end;;
+  module type S = sig val x : int end
+[PASS] functor_def: # module F (X : S) = struct let y = X.x + 1 end;;
+  module F : (X : S) -> sig val y : int end
+
+--- Section 4: PPX Attributes (no-op test) ---
+[PASS] inline_attr: # let[@inline] f x = x + 1;;
+  val f : int -> int = <fun>
+[PASS] field_attr: # type point = { x: float [@default 0.0]; y: float };;
+  type point = { x : float; y : float; }
+
+=== Results: 11/11 tests passed ===
+SUCCESS: All PPX tests passed!

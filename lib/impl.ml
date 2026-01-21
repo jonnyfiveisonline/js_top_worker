@@ -87,29 +87,51 @@ let mangle_toplevel is_toplevel orig_source deps =
 
 (** {2 PPX Preprocessing}
 
-    Handles PPX rewriter registration and application. The [Ppx_js.mapper]
-    is registered by default to support js_of_ocaml syntax extensions. *)
+    Handles PPX rewriter registration and application. Supports both:
+    - Old-style [Ast_mapper] PPXs (e.g., [Ppx_js.mapper] for js_of_ocaml)
+    - Modern [ppxlib]-based PPXs (registered via [Ppxlib.Driver])
+
+    The [Ppx_js.mapper] is registered by default to support js_of_ocaml
+    syntax extensions. *)
 
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
 
+  (** Old-style Ast_mapper rewriters *)
   let ppx_rewriters = ref [ (fun _ -> Ppx_js.mapper) ]
 
   let () =
     Ast_mapper.register_function :=
       fun _ f -> ppx_rewriters := f :: !ppx_rewriters
 
-  let preprocess_structure str =
+  (** Apply old-style Ast_mapper rewriters *)
+  let apply_ast_mapper_rewriters_structure str =
     let open Ast_mapper in
     List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
         let mapper = ppx_rewriter [] in
         mapper.structure mapper str)
 
-  let preprocess_signature str =
+  let apply_ast_mapper_rewriters_signature sg =
     let open Ast_mapper in
-    List.fold_right !ppx_rewriters ~init:str ~f:(fun ppx_rewriter str ->
+    List.fold_right !ppx_rewriters ~init:sg ~f:(fun ppx_rewriter sg ->
         let mapper = ppx_rewriter [] in
-        mapper.signature mapper str)
+        mapper.signature mapper sg)
+
+  (** Apply all PPX transformations: old-style first, then ppxlib.
+      Handles AST version conversion between compiler's Parsetree and ppxlib's internal AST. *)
+  let preprocess_structure str =
+    str
+    |> apply_ast_mapper_rewriters_structure
+    |> Ppxlib_ast.Selected_ast.of_ocaml Structure
+    |> Ppxlib.Driver.map_structure
+    |> Ppxlib_ast.Selected_ast.to_ocaml Structure
+
+  let preprocess_signature sg =
+    sg
+    |> apply_ast_mapper_rewriters_signature
+    |> Ppxlib_ast.Selected_ast.of_ocaml Signature
+    |> Ppxlib.Driver.map_signature
+    |> Ppxlib_ast.Selected_ast.to_ocaml Signature
 
   let preprocess_phrase phrase =
     let open Parsetree in
@@ -509,7 +531,7 @@ module Make (S : S) = struct
       try
         let lb = Lexing.from_function (refill_lexbuf phr (ref 0) None) in
         let phr = !Toploop.parse_toplevel_phrase lb in
-        let phr = Toploop.preprocess_phrase pp_result phr in
+        let phr = JsooTopPpx.preprocess_phrase phr in
         match phr with
         | Parsetree.Ptop_def sstr ->
             let oldenv = !Toploop.toplevel_env in
