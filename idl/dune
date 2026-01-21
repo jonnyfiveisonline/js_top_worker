@@ -1,7 +1,7 @@
 (library
  (name js_top_worker_rpc)
  (public_name js_top_worker-rpc)
- (modules toplevel_api_gen rpc_cbor transport)
+ (modules toplevel_api_gen rpc_cbor transport channel)
  (libraries rresult mime_printer merlin-lib.query_protocol rpclib rpclib.json cbort))
 
 (library

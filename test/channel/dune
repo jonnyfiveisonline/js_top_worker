@@ -1,0 +1,3 @@
+(test
+ (name channel_test)
+ (libraries js_top_worker-rpc))

@@ -21,6 +21,12 @@ val decode_exn : string -> Rpc.t
 
     Convenience functions for encoding/decoding RPC calls and responses. *)
 
+val call_codec : Rpc.call Cbort.t
+(** Codec for RPC calls. *)
+
+val response_codec : Rpc.response Cbort.t
+(** Codec for RPC responses. *)
+
 val encode_call : Rpc.call -> string
 (** [encode_call c] encodes an RPC call to CBOR. *)
 
