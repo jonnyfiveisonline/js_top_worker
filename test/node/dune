@@ -139,7 +139,10 @@
   rpclib.json
   findlib.top
   js_of_ocaml-lwt
-  zarith_stubs_js))
+  zarith_stubs_js
+  ppx_deriving.show
+  ppx_deriving.eq
+  ppx_deriving.runtime))
 
 (rule
  (targets node_ppx_test.js)
