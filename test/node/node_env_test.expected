@@ -1,0 +1,116 @@
+=== Node.js Environment Tests ===
+
+node_env_test.js: [INFO] init()
+Initializing findlib
+Parsed uri: lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
+Parsed uri: lib/ocaml/stdlib/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
+node_env_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
+node_env_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_env_test.js: [INFO] init() finished
+--- Section 1: Default Environment ---
+node_env_test.js: [INFO] setup() for env default...
+node_env_test.js: [INFO] Fetching stdlib__Format.cmi
+
+node_env_test.js: [INFO] Fetching stdlib__Sys.cmi
+
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_env_test.js: [INFO] Setup complete
+node_env_test.js: [INFO] setup() finished for env default
+[PASS] default_setup: Default environment setup
+[PASS] default_define: # let default_val = 42;;
+  val default_val : int = 42
+
+--- Section 2: Creating New Environments ---
+node_env_test.js: [INFO] create_env(env1)
+[PASS] create_env1: Created environment env1
+node_env_test.js: [INFO] setup() for env env1...
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_env_test.js: [INFO] Setup complete
+node_env_test.js: [INFO] setup() finished for env env1
+[PASS] setup_env1: Setup environment env1
+[PASS] env1_define: # let env1_val = 100;;
+  val env1_val : int = 100
+
+--- Section 3: Environment Isolation ---
+Line 1, characters 0-11:
+Error: Unbound value default_val
+[PASS] isolation_default_from_env1: No leakage: # default_val;;
+
+Line 1, characters 0-8:
+Error: Unbound value env1_val
+[PASS] isolation_env1_from_default: No leakage: # env1_val;;
+[PASS] default_still_works: # default_val;;
+  - : int = 42
+
+--- Section 4: Multiple Environments ---
+node_env_test.js: [INFO] create_env(env2)
+node_env_test.js: [INFO] setup() for env env2...
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_env_test.js: [INFO] Setup complete
+node_env_test.js: [INFO] setup() finished for env env2
+[PASS] create_and_setup_env2: Created and setup env2
+[PASS] env2_define: # let env2_val = 200;;
+  val env2_val : int = 200
+
+Line 1, characters 0-8:
+Error: Unbound value env1_val
+Hint:   Did you mean env2_val?
+[PASS] isolation_env1_from_env2: No leakage: # env1_val;;
+
+Line 1, characters 0-8:
+Error: Unbound value env2_val
+Hint:   Did you mean env1_val?
+[PASS] isolation_env2_from_env1: No leakage: # env2_val;;
+
+--- Section 5: List Environments ---
+node_env_test.js: [INFO] list_envs() -> [env2, default, env1]
+[PASS] list_envs_count: Found 3 environments
+[PASS] list_envs_has_default: env2, default, env1
+[PASS] list_envs_has_env1: env2, default, env1
+[PASS] list_envs_has_env2: env2, default, env1
+
+--- Section 6: Destroy Environment ---
+node_env_test.js: [INFO] destroy_env(env2)
+[PASS] destroy_env2: Destroyed env2
+node_env_test.js: [INFO] list_envs() -> [default, env1]
+[PASS] env2_destroyed: default, env1
+[PASS] env1_still_exists: default, env1
+
+--- Section 7: Reuse Environment Name ---
+node_env_test.js: [INFO] create_env(env2)
+node_env_test.js: [INFO] setup() for env env2...
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_env_test.js: [INFO] Setup complete
+node_env_test.js: [INFO] setup() finished for env env2
+
+Line 1, characters 0-8:
+Error: Unbound value env2_val
+[PASS] new_env2_clean: Old value gone: # env2_val;;
+[PASS] new_env2_define: # let new_env2_val = 999;;
+  val new_env2_val : int = 999
+
+=== Results: 21/21 tests passed ===
+SUCCESS: All environment tests passed!
