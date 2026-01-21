@@ -2,11 +2,51 @@ node_test.js: [INFO] init()
 Initializing findlib
 node_test.js: [INFO] async_get: _opam/findlib_index
 node_test.js: [INFO] async_get: _opam/lib/sexplib0/META
+node_test.js: [INFO] async_get: _opam/lib/ppx_deriving/META
 node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/META
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
 node_test.js: [INFO] async_get: _opam/lib/base/META
 Parsed uri: lib/sexplib0/META
 Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ppx_deriving/META
+Reading library: ppx_deriving
+Number of children: 12
+Found child: api
+Reading library: ppx_deriving.api
+Number of children: 0
+Found child: create
+Reading library: ppx_deriving.create
+Number of children: 0
+Found child: enum
+Reading library: ppx_deriving.enum
+Number of children: 0
+Found child: eq
+Reading library: ppx_deriving.eq
+Number of children: 0
+Found child: fold
+Reading library: ppx_deriving.fold
+Number of children: 0
+Found child: iter
+Reading library: ppx_deriving.iter
+Number of children: 0
+Found child: make
+Reading library: ppx_deriving.make
+Number of children: 0
+Found child: map
+Reading library: ppx_deriving.map
+Number of children: 0
+Found child: ord
+Reading library: ppx_deriving.ord
+Number of children: 0
+Found child: runtime
+Reading library: ppx_deriving.runtime
+Number of children: 0
+Found child: show
+Reading library: ppx_deriving.show
+Number of children: 0
+Found child: std
+Reading library: ppx_deriving.std
 Number of children: 0
 Parsed uri: lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel

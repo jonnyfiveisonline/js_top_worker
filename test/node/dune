@@ -41,7 +41,7 @@
  (targets
   (dir _opam))
  (action
-  (run jtw opam base --no-worker -o _opam)))
+  (run jtw opam base ppx_deriving.runtime --no-worker -o _opam)))
 
 (rule
  (deps _opam)

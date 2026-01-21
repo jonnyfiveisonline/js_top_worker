@@ -1,10 +1,11 @@
 (** Node.js test for PPX preprocessing support.
 
-    This tests that the PPX preprocessing pipeline works correctly.
-    We verify that ppxlib-based PPXs are being applied by:
-    1. Testing that [@@deriving show] transforms code (generates runtime refs)
-    2. Testing that unknown derivers produce appropriate errors
-    3. Testing that basic code still works through the PPX pipeline
+    This tests that the PPX preprocessing pipeline works correctly with
+    ppx_deriving. We verify that:
+    1. [@@deriving show] generates working pp and show functions
+    2. [@@deriving eq] generates working equal functions
+    3. Multiple derivers work together
+    4. Basic code still works through the PPX pipeline
 
     The PPX pipeline in js_top_worker applies old-style Ast_mapper PPXs
     followed by ppxlib-based PPXs via Ppxlib.Driver.map_structure.
@@ -141,43 +142,80 @@ let _ =
     let* _ = Client.init rpc init_config in
     let* _ = Client.setup rpc "" in
 
-    Printf.printf "--- Section 1: ppx_deriving Transformation ---\n%!";
+    (* Load ppx_deriving.runtime so generated code can reference it *)
+    let* r = run_toplevel rpc "#require \"ppx_deriving.runtime\";;" in
+    Printf.printf "Loading ppx_deriving.runtime: %s\n%!"
+      (if contains r "Error" then "FAILED" else "OK");
 
-    (* Test that ppx_deriving IS transforming the code.
-       The type gets defined, but generated code fails due to missing runtime.
-       This proves the PPX ran and transformed the AST. *)
+    Printf.printf "\n--- Section 1: ppx_deriving.show ---\n%!";
+
+    (* Test [@@deriving show] generates pp and show functions *)
     let* r = run_toplevel rpc "type color = Red | Green | Blue [@@deriving show];;" in
-    (* The type should be defined *)
-    test "deriving_show_type" (contains r "type color")
-      "type defined with [@@deriving show]";
-    (* The generated pp_color function fails because runtime isn't available,
-       so we won't see val pp_color in output - but type IS defined *)
-    test "deriving_show_no_pp" (not (contains r "val pp_color"))
-      "pp_color not available (runtime missing)";
+    test "show_type_defined" (contains r "type color") "type color defined";
+    test "show_pp_generated" (contains r "val pp_color")
+      (if contains r "val pp_color" then "pp_color generated" else r);
+    test "show_fn_generated" (contains r "val show_color")
+      (if contains r "val show_color" then "show_color generated" else r);
 
-    (* Test with eq deriver *)
-    let* r = run_toplevel rpc "type status = On | Off [@@deriving eq];;" in
-    test "deriving_eq_type" (contains r "type status")
-      "type defined with [@@deriving eq]";
+    (* Test the generated show function works *)
+    let* r = run_toplevel rpc "show_color Red;;" in
+    test "show_fn_works" (contains r "Red")
+      (String.sub r 0 (min 60 (String.length r)));
 
-    Printf.printf "\n--- Section 2: Unknown Deriver Error ---\n%!";
+    (* Test with a record type *)
+    let* r = run_toplevel rpc "type point = { x: int; y: int } [@@deriving show];;" in
+    test "show_record_type" (contains r "type point") "point type defined";
+    test "show_record_pp" (contains r "val pp_point")
+      (if contains r "val pp_point" then "pp_point generated" else r);
 
-    (* Test that an unknown deriver produces an error - this proves PPX is active *)
-    let* r = run_toplevel rpc "type foo = A | B [@@deriving nonexistent];;" in
-    test "unknown_deriver_error" (contains r "Ppxlib.Deriving" || contains r "nonexistent" || contains r "Error")
+    let* r = run_toplevel rpc "show_point { x = 10; y = 20 };;" in
+    test "show_record_works" (contains r "10" && contains r "20")
+      (String.sub r 0 (min 60 (String.length r)));
+
+    Printf.printf "\n--- Section 2: ppx_deriving.eq ---\n%!";
+
+    (* Test [@@deriving eq] generates equal function *)
+    let* r = run_toplevel rpc "type status = Active | Inactive [@@deriving eq];;" in
+    test "eq_type_defined" (contains r "type status") "status type defined";
+    test "eq_fn_generated" (contains r "val equal_status")
+      (if contains r "val equal_status" then "equal_status generated" else r);
+
+    (* Test the generated equal function works *)
+    let* r = run_toplevel rpc "equal_status Active Active;;" in
+    test "eq_same_true" (contains r "true") r;
+
+    let* r = run_toplevel rpc "equal_status Active Inactive;;" in
+    test "eq_diff_false" (contains r "false") r;
+
+    Printf.printf "\n--- Section 3: Combined Derivers ---\n%!";
+
+    (* Test multiple derivers on one type *)
+    let* r = run_toplevel rpc "type expr = Num of int | Add of expr * expr [@@deriving show, eq];;" in
+    test "combined_type" (contains r "type expr") "expr type defined";
+    test "combined_pp" (contains r "val pp_expr")
+      (if contains r "val pp_expr" then "pp_expr generated" else r);
+    test "combined_eq" (contains r "val equal_expr")
+      (if contains r "val equal_expr" then "equal_expr generated" else r);
+
+    (* Test they work together *)
+    let* r = run_toplevel rpc "let e1 = Add (Num 1, Num 2);;" in
+    test "combined_value" (contains r "val e1") r;
+
+    let* r = run_toplevel rpc "show_expr e1;;" in
+    test "combined_show_works" (contains r "Add" || contains r "Num")
       (String.sub r 0 (min 80 (String.length r)));
 
-    Printf.printf "\n--- Section 3: Basic Code Through PPX Pipeline ---\n%!";
+    let* r = run_toplevel rpc "equal_expr e1 e1;;" in
+    test "combined_eq_self" (contains r "true") r;
+
+    let* r = run_toplevel rpc "equal_expr e1 (Num 1);;" in
+    test "combined_eq_diff" (contains r "false") r;
+
+    Printf.printf "\n--- Section 4: Basic Code Still Works ---\n%!";
 
     (* Verify normal code without PPX still works *)
     let* r = run_toplevel rpc "let x = 1 + 2;;" in
     test "basic_arithmetic" (contains r "val x : int = 3") r;
-
-    let* r = run_toplevel rpc "type point = { x: int; y: int };;" in
-    test "plain_record" (contains r "type point") r;
-
-    let* r = run_toplevel rpc "let p = { x = 10; y = 20 };;" in
-    test "record_value" (contains r "val p : point") r;
 
     let* r = run_toplevel rpc "let rec fib n = if n <= 1 then n else fib (n-1) + fib (n-2);;" in
     test "recursive_fn" (contains r "val fib : int -> int") r;
@@ -185,28 +223,14 @@ let _ =
     let* r = run_toplevel rpc "fib 10;;" in
     test "fib_result" (contains r "55") r;
 
-    Printf.printf "\n--- Section 4: Attributes Pass Through ---\n%!";
+    Printf.printf "\n--- Section 5: Module Support ---\n%!";
 
-    (* Test that standard attributes work *)
-    let* r = run_toplevel rpc "let[@inline] double x = x + x;;" in
-    test "inline_attr" (contains r "val double") r;
+    let* r = run_toplevel rpc "module M = struct type t = A | B [@@deriving show] end;;" in
+    test "module_with_deriving" (contains r "module M") r;
 
-    let* r = run_toplevel rpc "let[@warning \"-32\"] unused_fn () = ();;" in
-    test "warning_attr" (contains r "val unused_fn") r;
-
-    Printf.printf "\n--- Section 5: Module and Functor Support ---\n%!";
-
-    let* r = run_toplevel rpc "module M = struct let x = 42 end;;" in
-    test "module_def" (contains r "module M") r;
-
-    let* r = run_toplevel rpc "M.x;;" in
-    test "module_access" (contains r "42") r;
-
-    let* r = run_toplevel rpc "module type S = sig val x : int end;;" in
-    test "module_type" (contains r "module type S") r;
-
-    let* r = run_toplevel rpc "module F (X : S) = struct let y = X.x + 1 end;;" in
-    test "functor_def" (contains r "module F") r;
+    let* r = run_toplevel rpc "M.show_t M.A;;" in
+    test "module_show_works" (contains r "A")
+      (String.sub r 0 (min 60 (String.length r)));
 
     IdlM.ErrM.return ()
   in

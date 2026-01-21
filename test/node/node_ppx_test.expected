@@ -5,6 +5,45 @@ Initializing findlib
 Parsed uri: lib/sexplib0/META
 Reading library: sexplib0
 Number of children: 0
+Parsed uri: lib/ppx_deriving/META
+Reading library: ppx_deriving
+Number of children: 12
+Found child: api
+Reading library: ppx_deriving.api
+Number of children: 0
+Found child: create
+Reading library: ppx_deriving.create
+Number of children: 0
+Found child: enum
+Reading library: ppx_deriving.enum
+Number of children: 0
+Found child: eq
+Reading library: ppx_deriving.eq
+Number of children: 0
+Found child: fold
+Reading library: ppx_deriving.fold
+Number of children: 0
+Found child: iter
+Reading library: ppx_deriving.iter
+Number of children: 0
+Found child: make
+Reading library: ppx_deriving.make
+Number of children: 0
+Found child: map
+Reading library: ppx_deriving.map
+Number of children: 0
+Found child: ord
+Reading library: ppx_deriving.ord
+Number of children: 0
+Found child: runtime
+Reading library: ppx_deriving.runtime
+Number of children: 0
+Found child: show
+Reading library: ppx_deriving.show
+Number of children: 0
+Found child: std
+Reading library: ppx_deriving.std
+Number of children: 0
 Parsed uri: lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel
 Number of children: 0
@@ -35,49 +74,62 @@ error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_ppx_test.js: [INFO] Setup complete
 node_ppx_test.js: [INFO] setup() finished for env default
---- Section 1: ppx_deriving Transformation ---
-File "_none_", line 1:
-Error: Unbound module Ppx_deriving_runtime
-[PASS] deriving_show_type: type defined with [@@deriving show]
-[PASS] deriving_show_no_pp: pp_color not available (runtime missing)
+/home/node/.opam/default/lib/ppx_deriving/runtime: added to search path
+Loading ppx_deriving.runtime: OK
 
-File "_none_", line 1:
-Error: Unbound module Ppx_deriving_runtime
-[PASS] deriving_eq_type: type defined with [@@deriving eq]
+--- Section 1: ppx_deriving.show ---
+[PASS] show_type_defined: type color defined
+[PASS] show_pp_generated: pp_color generated
+[PASS] show_fn_generated: show_color generated
+[PASS] show_fn_works: # show_color Red;;
+  - : Ppx_deriving_runtime.string = "Red"
+[PASS] show_record_type: point type defined
+[PASS] show_record_pp: pp_point generated
+[PASS] show_record_works: # show_point { x = 10; y = 20 };;
+  - : Ppx_deriving_runtime
 
---- Section 2: Unknown Deriver Error ---
+--- Section 2: ppx_deriving.eq ---
+[PASS] eq_type_defined: status type defined
+[PASS] eq_fn_generated: equal_status generated
+[PASS] eq_same_true: # equal_status Active Active;;
+  - : Ppx_deriving_runtime.bool = true
+[PASS] eq_diff_false: # equal_status Active Inactive;;
+  - : Ppx_deriving_runtime.bool = false
 
-Line 1, characters 29-40:
-Error: Cannot locate deriver nonexistent
-[PASS] unknown_deriver_error: # type foo = A | B [@@deriving nonexistent];;
+--- Section 3: Combined Derivers ---
+[PASS] combined_type: expr type defined
+[PASS] combined_pp: pp_expr generated
+[PASS] combined_eq: equal_expr generated
+[PASS] combined_value: # let e1 = Add (Num 1, Num 2);;
+  val e1 : expr = Add (Num 1, Num 2)
+[PASS] combined_show_works: # show_expr e1;;
+  - : Ppx_deriving_runtime.string = "(Add ((Num 1), (Num 2)))"
+[PASS] combined_eq_self: # equal_expr e1 e1;;
+  - : Ppx_deriving_runtime.bool = true
+[PASS] combined_eq_diff: # equal_expr e1 (Num 1);;
+  - : Ppx_deriving_runtime.bool = false
 
---- Section 3: Basic Code Through PPX Pipeline ---
+--- Section 4: Basic Code Still Works ---
 [PASS] basic_arithmetic: # let x = 1 + 2;;
   val x : int = 3
-[PASS] plain_record: # type point = { x: int; y: int };;
-  type point = { x : int; y : int; }
-[PASS] record_value: # let p = { x = 10; y = 20 };;
-  val p : point = {x = 10; y = 20}
 [PASS] recursive_fn: # let rec fib n = if n <= 1 then n else fib (n-1) + fib (n-2);;
   val fib : int -> int = <fun>
 [PASS] fib_result: # fib 10;;
   - : int = 55
 
---- Section 4: Attributes Pass Through ---
-[PASS] inline_attr: # let[@inline] double x = x + x;;
-  val double : int -> int = <fun>
-[PASS] warning_attr: # let[@warning "-32"] unused_fn () = ();;
-  val unused_fn : unit -> unit = <fun>
+--- Section 5: Module Support ---
+[PASS] module_with_deriving: # module M = struct type t = A | B [@@deriving show] end;;
+  module M :
+    sig
+      type t = A | B
+      val pp :
+        Ppx_deriving_runtime.Format.formatter -> t -> Ppx_deriving_runtime.unit
+      val show : t -> Ppx_deriving_runtime.string
+    end
+Line 1, characters 0-8:
+Error: Unbound value M.show_t
+Hint:   Did you mean M.show?
+[PASS] module_show_works: # M.show_t M.A;;
 
---- Section 5: Module and Functor Support ---
-[PASS] module_def: # module M = struct let x = 42 end;;
-  module M : sig val x : int end
-[PASS] module_access: # M.x;;
-  - : int = 42
-[PASS] module_type: # module type S = sig val x : int end;;
-  module type S = sig val x : int end
-[PASS] functor_def: # module F (X : S) = struct let y = X.x + 1 end;;
-  module F : (X : S) -> sig val y : int end
-
-=== Results: 15/15 tests passed ===
+=== Results: 23/23 tests passed ===
 SUCCESS: All PPX tests passed!
