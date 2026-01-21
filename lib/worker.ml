@@ -10,10 +10,10 @@ module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
 
 let server process e =
   (* Jslib.log "Worker received: %s" e; *)
-  let _, id, call = Jsonrpc.version_id_and_call_of_string e in
+  let id, call = Transport.Cbor.id_and_call_of_string e in
   Lwt.bind (process call) (fun response ->
-      let rtxt = Jsonrpc.string_of_response ~id response in
-      Jslib.log "Worker sending: %s" rtxt;
+      let rtxt = Transport.Cbor.string_of_response ~id response in
+      (* Jslib.log "Worker sending CBOR response"; *)
       Js_of_ocaml.Worker.post_message (Js_of_ocaml.Js.string rtxt);
       Lwt.return ())
 

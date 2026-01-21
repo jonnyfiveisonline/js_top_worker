@@ -52,13 +52,20 @@ let capture f () =
 
 let ( let* ) = Lwt.bind
 
+let rec read_exact s buf off len =
+  if len <= 0 then Lwt.return ()
+  else
+    let* n = Lwt_unix.read s buf off len in
+    if n = 0 then Lwt.fail End_of_file
+    else read_exact s buf (off + n) (len - n)
+
 let binary_handler process s =
   (* Read a 16 byte length encoded as a string *)
   let len_buf = Bytes.make 16 '\000' in
-  let* _ = Lwt_unix.read s len_buf 0 (Bytes.length len_buf) in
+  let* () = read_exact s len_buf 0 16 in
   let len = int_of_string (Bytes.unsafe_to_string len_buf) in
   let msg_buf = Bytes.make len '\000' in
-  let* _ = Lwt_unix.read s msg_buf 0 (Bytes.length msg_buf) in
+  let* () = read_exact s msg_buf 0 len in
   let* result = process msg_buf in
   let len_buf = Printf.sprintf "%016d" (String.length result) in
   let* _ = Lwt_unix.write s (Bytes.of_string len_buf) 0 16 in
@@ -169,8 +176,9 @@ let start_server () =
   let rpc_fn = IdlM.server Server.implementation in
   let process x =
     let open Lwt in
-    rpc_fn (Jsonrpc.call_of_string (Bytes.unsafe_to_string x))
-    >>= fun response -> Jsonrpc.string_of_response response |> return
+    let _, call = Js_top_worker_rpc.Transport.Cbor.id_and_call_of_string (Bytes.unsafe_to_string x) in
+    rpc_fn call >>= fun response ->
+    Js_top_worker_rpc.Transport.Cbor.string_of_response ~id:(Rpc.Int 0L) response |> return
   in
   serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath
 

@@ -11,7 +11,7 @@ let binary_rpc path (call : Rpc.call) : Rpc.response =
   Unix.connect s sockaddr;
   let ic = Unix.in_channel_of_descr s in
   let oc = Unix.out_channel_of_descr s in
-  let msg_buf = Jsonrpc.string_of_call call in
+  let msg_buf = Transport.Cbor.string_of_call call in
   let len = Printf.sprintf "%016d" (String.length msg_buf) in
   output_string oc len;
   output_string oc msg_buf;
@@ -22,7 +22,7 @@ let binary_rpc path (call : Rpc.call) : Rpc.response =
   let msg_buf = Bytes.make len '\000' in
   really_input ic msg_buf 0 len;
   let (response : Rpc.response) =
-    Jsonrpc.response_of_string (Bytes.unsafe_to_string msg_buf)
+    Transport.Cbor.response_of_string (Bytes.unsafe_to_string msg_buf)
   in
   response
 (*
