@@ -80,23 +80,46 @@ module W : sig
     Toplevel_api_gen.init_config ->
     (unit, Toplevel_api_gen.err) result Lwt.t
 
+  val create_env :
+    rpc ->
+    string ->
+    (unit, Toplevel_api_gen.err) result Lwt.t
+
+  val destroy_env :
+    rpc ->
+    string ->
+    (unit, Toplevel_api_gen.err) result Lwt.t
+
+  val list_envs :
+    rpc ->
+    (string list, Toplevel_api_gen.err) result Lwt.t
+
   val setup :
     rpc ->
-    unit ->
+    string ->
     (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) result Lwt.t
 
   val typecheck :
     rpc ->
+    string ->
     string ->
     (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) result Lwt.t
 
   val exec :
     rpc ->
     string ->
+    string ->
     (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) result Lwt.t
+
+  val exec_toplevel :
+    rpc ->
+    string ->
+    string ->
+    (Toplevel_api_gen.exec_toplevel_result, Toplevel_api_gen.err) result Lwt.t
 
   val query_errors :
     rpc ->
+    string ->
     string option ->
     string list ->
     bool ->
@@ -108,10 +131,14 @@ end = struct
   type exec_result = Toplevel_api_gen.exec_result
 
   let init rpc a = Wraw.init rpc a |> Rpc_lwt.T.get
-  let setup rpc a = Wraw.setup rpc a |> Rpc_lwt.T.get
-  let typecheck rpc a = Wraw.typecheck rpc a |> Rpc_lwt.T.get
-  let exec rpc a = Wraw.exec rpc a |> Rpc_lwt.T.get
+  let create_env rpc env_id = Wraw.create_env rpc env_id |> Rpc_lwt.T.get
+  let destroy_env rpc env_id = Wraw.destroy_env rpc env_id |> Rpc_lwt.T.get
+  let list_envs rpc = Wraw.list_envs rpc () |> Rpc_lwt.T.get
+  let setup rpc env_id = Wraw.setup rpc env_id |> Rpc_lwt.T.get
+  let typecheck rpc env_id phrase = Wraw.typecheck rpc env_id phrase |> Rpc_lwt.T.get
+  let exec rpc env_id phrase = Wraw.exec rpc env_id phrase |> Rpc_lwt.T.get
+  let exec_toplevel rpc env_id script = Wraw.exec_toplevel rpc env_id script |> Rpc_lwt.T.get
 
-  let query_errors rpc id deps is_toplevel doc =
-    Wraw.query_errors rpc id deps is_toplevel doc |> Rpc_lwt.T.get
+  let query_errors rpc env_id id deps is_toplevel doc =
+    Wraw.query_errors rpc env_id id deps is_toplevel doc |> Rpc_lwt.T.get
 end

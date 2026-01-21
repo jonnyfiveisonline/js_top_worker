@@ -38,26 +38,43 @@ module W : sig
   val init : rpc -> init_config -> (unit, err) result Lwt.t
   (** Initialise the toplevel. This must be called before any other API. *)
 
-  val setup : rpc -> unit -> (exec_result, err) result Lwt.t
-  (** Start the toplevel. Return value is the initial blurb printed when
-      starting a toplevel. Note that the toplevel must be initialised first. *)
+  val create_env : rpc -> string -> (unit, err) result Lwt.t
+  (** Create a new isolated execution environment with the given ID. *)
 
-  val typecheck : rpc -> string -> (exec_result, err) result Lwt.t
-  (** Typecheck a phrase using the toplevel. The toplevel must have been
-      initialised first. *)
+  val destroy_env : rpc -> string -> (unit, err) result Lwt.t
+  (** Destroy an execution environment. *)
 
-  val exec : rpc -> string -> (exec_result, err) result Lwt.t
-  (** Execute a phrase using the toplevel. The toplevel must have been
-      initialised first. *)
+  val list_envs : rpc -> (string list, err) result Lwt.t
+  (** List all existing environment IDs. *)
+
+  val setup : rpc -> string -> (exec_result, err) result Lwt.t
+  (** Start the toplevel for the given environment. If [env_id] is empty string,
+      uses the default environment. Return value is the initial blurb printed
+      when starting a toplevel. Note that the toplevel must be initialised first. *)
+
+  val typecheck : rpc -> string -> string -> (exec_result, err) result Lwt.t
+  (** Typecheck a phrase using the toplevel. If [env_id] is empty string, uses the
+      default environment. The toplevel must have been initialised first. *)
+
+  val exec : rpc -> string -> string -> (exec_result, err) result Lwt.t
+  (** Execute a phrase using the toplevel. If [env_id] is empty string, uses the
+      default environment. The toplevel must have been initialised first. *)
+
+  val exec_toplevel :
+    rpc ->
+    string ->
+    string ->
+    (Toplevel_api_gen.exec_toplevel_result, err) result Lwt.t
+  (** Execute a toplevel script. If [env_id] is empty string, uses the default
+      environment. The toplevel must have been initialised first. *)
 
   val query_errors :
     rpc ->
+    string ->
     string option ->
     string list ->
     bool ->
     string ->
     (Toplevel_api_gen.error list, err) result Lwt.t
-  (** Query the toplevel for errors. The first argument is the phrase to check
-      for errors. If it is [None], the toplevel will return all errors. If it is
-      [Some s], the toplevel will return only errors related to [s]. *)
+  (** Query the toplevel for errors. [env_id] specifies the environment. *)
 end

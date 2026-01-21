@@ -36,8 +36,8 @@ let log_output (o : Toplevel_api_gen.exec_result) =
 let _ =
   let ( let* ) = Lwt_result.bind in
   let* rpc = initialise "_opam/worker.js" (fun _ -> log "Timeout") in
-  let* o = W.setup rpc () in
+  let* o = W.setup rpc "" in
   log_output o;
-  let* o = W.exec rpc "2*2;;" in
+  let* o = W.exec rpc "" "2*2;;" in
   log_output o;
   Lwt.return (Ok ())

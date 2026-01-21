@@ -9,13 +9,13 @@ References:
   $ unix_worker &
   unix_worker: [INFO] init()
   unix_worker: [INFO] init() finished
-  unix_worker: [INFO] setup() ...
+  unix_worker: [INFO] setup() for env default...
   unix_worker: [INFO] Setup complete
-  unix_worker: [INFO] setup() finished
+  unix_worker: [INFO] setup() finished for env default
   $ sleep 2
   $ unix_client init '{ findlib_requires:[], execute: true }'
   N
-  $ unix_client setup
+  $ unix_client setup ''
   {mime_vals:[];stderr:S(error while evaluating #enable "pretty";;
   error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.4.0
   Unknown directive enable.
@@ -25,11 +25,11 @@ References:
 SECTION 1: Basic Code Execution (Baseline)
 ==============================================
 
-  $ unix_client exec_toplevel '# 1 + 2;;'
+  $ unix_client exec_toplevel '' '# 1 + 2;;'
   {mime_vals:[];parts:[];script:S(# 1 + 2;;
     - : int = 3)}
 
-  $ unix_client exec_toplevel '# let x = 42;;'
+  $ unix_client exec_toplevel '' '# let x = 42;;'
   {mime_vals:[];parts:[];script:S(# let x = 42;;
     val x : int = 42)}
 
@@ -39,63 +39,63 @@ SECTION 2: #show Directives (Environment Query)
 
 Define some types and values to query:
 
-  $ unix_client exec_toplevel '# type point = { x: float; y: float };;'
+  $ unix_client exec_toplevel '' '# type point = { x: float; y: float };;'
   {mime_vals:[];parts:[];script:S(# type point = { x: float; y: float };;
     type point = { x : float; y : float; })}
 
-  $ unix_client exec_toplevel '# let origin = { x = 0.0; y = 0.0 };;'
+  $ unix_client exec_toplevel '' '# let origin = { x = 0.0; y = 0.0 };;'
   {mime_vals:[];parts:[];script:S(# let origin = { x = 0.0; y = 0.0 };;
     val origin : point = {x = 0.; y = 0.})}
 
-  $ unix_client exec_toplevel '# module MyMod = struct type t = int let zero = 0 end;;'
+  $ unix_client exec_toplevel '' '# module MyMod = struct type t = int let zero = 0 end;;'
   {mime_vals:[];parts:[];script:S(# module MyMod = struct type t = int let zero = 0 end;;
     module MyMod : sig type t = int val zero : int end)}
 
-  $ unix_client exec_toplevel '# exception My_error of string;;'
+  $ unix_client exec_toplevel '' '# exception My_error of string;;'
   {mime_vals:[];parts:[];script:S(# exception My_error of string;;
     exception My_error of string)}
 
 Test #show directive:
 
-  $ unix_client exec_toplevel '# #show point;;'
+  $ unix_client exec_toplevel '' '# #show point;;'
   {mime_vals:[];parts:[];script:S(# #show point;;
     type point = { x : float; y : float; })}
 
-  $ unix_client exec_toplevel '# #show origin;;'
+  $ unix_client exec_toplevel '' '# #show origin;;'
   {mime_vals:[];parts:[];script:S(# #show origin;;
     val origin : point)}
 
-  $ unix_client exec_toplevel '# #show MyMod;;'
+  $ unix_client exec_toplevel '' '# #show MyMod;;'
   {mime_vals:[];parts:[];script:S(# #show MyMod;;
     module MyMod : sig type t = int val zero : int end)}
 
-  $ unix_client exec_toplevel '# #show My_error;;'
+  $ unix_client exec_toplevel '' '# #show My_error;;'
   {mime_vals:[];parts:[];script:S(# #show My_error;;
     exception My_error of string)}
 
 Test #show_type directive:
 
-  $ unix_client exec_toplevel '# #show_type point;;'
+  $ unix_client exec_toplevel '' '# #show_type point;;'
   {mime_vals:[];parts:[];script:S(# #show_type point;;
     type point = { x : float; y : float; })}
 
-  $ unix_client exec_toplevel '# #show_type list;;'
+  $ unix_client exec_toplevel '' '# #show_type list;;'
   {mime_vals:[];parts:[];script:S(# #show_type list;;
     type 'a list = [] | (::) of 'a * 'a list)}
 
 Test #show_val directive:
 
-  $ unix_client exec_toplevel '# #show_val origin;;'
+  $ unix_client exec_toplevel '' '# #show_val origin;;'
   {mime_vals:[];parts:[];script:S(# #show_val origin;;
     val origin : point)}
 
-  $ unix_client exec_toplevel '# #show_val List.map;;'
+  $ unix_client exec_toplevel '' '# #show_val List.map;;'
   {mime_vals:[];parts:[];script:S(# #show_val List.map;;
     val map : ('a -> 'b) -> 'a list -> 'b list)}
 
 Test #show_module directive:
 
-  $ unix_client exec_toplevel '# #show_module List;;'
+  $ unix_client exec_toplevel '' '# #show_module List;;'
   {mime_vals:[];parts:[];script:S(# #show_module List;;
     module List :
       sig
@@ -178,11 +178,11 @@ Test #show_module directive:
 
 Test #show_exception directive:
 
-  $ unix_client exec_toplevel '# #show_exception Not_found;;'
+  $ unix_client exec_toplevel '' '# #show_exception Not_found;;'
   {mime_vals:[];parts:[];script:S(# #show_exception Not_found;;
     exception Not_found)}
 
-  $ unix_client exec_toplevel '# #show_exception Invalid_argument;;'
+  $ unix_client exec_toplevel '' '# #show_exception Invalid_argument;;'
   {mime_vals:[];parts:[];script:S(# #show_exception Invalid_argument;;
     exception Invalid_argument of string)}
 
@@ -190,73 +190,73 @@ Test #show_exception directive:
 SECTION 3: #print_depth and #print_length
 ==============================================
 
-  $ unix_client exec_toplevel '# let nested = [[[[1;2;3]]]];;'
+  $ unix_client exec_toplevel '' '# let nested = [[[[1;2;3]]]];;'
   {mime_vals:[];parts:[];script:S(# let nested = [[[[1;2;3]]]];;
     val nested : int list list list list = [[[[1; 2; 3]]]])}
 
 Test #print_depth:
 
-  $ unix_client exec_toplevel '# #print_depth 2;;'
+  $ unix_client exec_toplevel '' '# #print_depth 2;;'
   {mime_vals:[];parts:[];script:S(# #print_depth 2;;)}
 
-  $ unix_client exec_toplevel '# nested;;'
+  $ unix_client exec_toplevel '' '# nested;;'
   {mime_vals:[];parts:[];script:S(# nested;;
     - : int list list list list = [[[...]]])}
 
-  $ unix_client exec_toplevel '# #print_depth 100;;'
+  $ unix_client exec_toplevel '' '# #print_depth 100;;'
   {mime_vals:[];parts:[];script:S(# #print_depth 100;;)}
 
-  $ unix_client exec_toplevel '# nested;;'
+  $ unix_client exec_toplevel '' '# nested;;'
   {mime_vals:[];parts:[];script:S(# nested;;
     - : int list list list list = [[[[1; 2; 3]]]])}
 
 Test #print_length:
 
-  $ unix_client exec_toplevel '# let long_list = [1;2;3;4;5;6;7;8;9;10];;'
+  $ unix_client exec_toplevel '' '# let long_list = [1;2;3;4;5;6;7;8;9;10];;'
   {mime_vals:[];parts:[];script:S(# let long_list = [1;2;3;4;5;6;7;8;9;10];;
     val long_list : int list = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10])}
 
-  $ unix_client exec_toplevel '# #print_length 3;;'
+  $ unix_client exec_toplevel '' '# #print_length 3;;'
   {mime_vals:[];parts:[];script:S(# #print_length 3;;)}
 
-  $ unix_client exec_toplevel '# long_list;;'
+  $ unix_client exec_toplevel '' '# long_list;;'
   {mime_vals:[];parts:[];script:S(# long_list;;
     - : int list = [1; 2; ...])}
 
-  $ unix_client exec_toplevel '# #print_length 100;;'
+  $ unix_client exec_toplevel '' '# #print_length 100;;'
   {mime_vals:[];parts:[];script:S(# #print_length 100;;)}
 
 ==============================================
 SECTION 4: #install_printer and #remove_printer
 ==============================================
 
-  $ unix_client exec_toplevel '# type color = Red | Green | Blue;;'
+  $ unix_client exec_toplevel '' '# type color = Red | Green | Blue;;'
   {mime_vals:[];parts:[];script:S(# type color = Red | Green | Blue;;
     type color = Red | Green | Blue)}
 
-  $ unix_client exec_toplevel '# let pp_color fmt c = Format.fprintf fmt "<color:%s>" (match c with Red -> "red" | Green -> "green" | Blue -> "blue");;'
+  $ unix_client exec_toplevel '' '# let pp_color fmt c = Format.fprintf fmt "<color:%s>" (match c with Red -> "red" | Green -> "green" | Blue -> "blue");;'
   {mime_vals:[];parts:[];script:S(# let pp_color fmt c = Format.fprintf fmt "<color:%s>" (match c with Red -> "red" | Green -> "green" | Blue -> "blue");;
     val pp_color : Format.formatter -> color -> unit = <fun>)}
 
 Test #install_printer:
 
-  $ unix_client exec_toplevel '# #install_printer pp_color;;'
+  $ unix_client exec_toplevel '' '# #install_printer pp_color;;'
   {mime_vals:[];parts:[];script:S(# #install_printer pp_color;;)}
 
-  $ unix_client exec_toplevel '# Red;;'
+  $ unix_client exec_toplevel '' '# Red;;'
   {mime_vals:[];parts:[];script:S(# Red;;
     - : color = <color:red>)}
 
-  $ unix_client exec_toplevel '# [Red; Green; Blue];;'
+  $ unix_client exec_toplevel '' '# [Red; Green; Blue];;'
   {mime_vals:[];parts:[];script:S(# [Red; Green; Blue];;
     - : color list = [<color:red>; <color:green>; <color:blue>])}
 
 Test #remove_printer:
 
-  $ unix_client exec_toplevel '# #remove_printer pp_color;;'
+  $ unix_client exec_toplevel '' '# #remove_printer pp_color;;'
   {mime_vals:[];parts:[];script:S(# #remove_printer pp_color;;)}
 
-  $ unix_client exec_toplevel '# Red;;'
+  $ unix_client exec_toplevel '' '# Red;;'
   {mime_vals:[];parts:[];script:S(# Red;;
     - : color = Red)}
 
@@ -264,23 +264,23 @@ Test #remove_printer:
 SECTION 5: #warnings and #warn_error
 ==============================================
 
-  $ unix_client exec_toplevel '# #warnings "-26";;'
+  $ unix_client exec_toplevel '' '# #warnings "-26";;'
   {mime_vals:[];parts:[];script:S(# #warnings "-26";;)}
 
 Code with unused variable should not warn:
 
-  $ unix_client exec_toplevel '# let _ = let unused = 1 in 2;;'
+  $ unix_client exec_toplevel '' '# let _ = let unused = 1 in 2;;'
   {mime_vals:[];parts:[];script:S(# let _ = let unused = 1 in 2;;
     - : int = 2)}
 
 Re-enable warning:
 
-  $ unix_client exec_toplevel '# #warnings "+26";;'
+  $ unix_client exec_toplevel '' '# #warnings "+26";;'
   {mime_vals:[];parts:[];script:S(# #warnings "+26";;)}
 
 Now should warn:
 
-  $ unix_client exec_toplevel '# let _ = let unused2 = 1 in 2;;'
+  $ unix_client exec_toplevel '' '# let _ = let unused2 = 1 in 2;;'
   {mime_vals:[];parts:[];script:S(# let _ = let unused2 = 1 in 2;;
     Line 1, characters 12-19:
     Warning 26 [unused-var]: unused variable unused2.
@@ -288,17 +288,17 @@ Now should warn:
 
 Test #warn_error:
 
-  $ unix_client exec_toplevel '# #warn_error "+26";;'
+  $ unix_client exec_toplevel '' '# #warn_error "+26";;'
   {mime_vals:[];parts:[];script:S(# #warn_error "+26";;)}
 
-  $ unix_client exec_toplevel '# let _ = let unused3 = 1 in 2;;'
+  $ unix_client exec_toplevel '' '# let _ = let unused3 = 1 in 2;;'
   {mime_vals:[];parts:[];script:S(# let _ = let unused3 = 1 in 2;;
     Line 1, characters 12-19:
     Error (warning 26 [unused-var]): unused variable unused3.)}
 
 Reset:
 
-  $ unix_client exec_toplevel '# #warn_error "-a";;'
+  $ unix_client exec_toplevel '' '# #warn_error "-a";;'
   {mime_vals:[];parts:[];script:S(# #warn_error "-a";;)}
 
 ==============================================
@@ -307,7 +307,7 @@ SECTION 6: #rectypes
 
 Without rectypes, recursive type should fail:
 
-  $ unix_client exec_toplevel "# type 'a t = 'a t -> int;;"
+  $ unix_client exec_toplevel '' "# type 'a t = 'a t -> int;;"
   {mime_vals:[];parts:[];script:S(# type 'a t = 'a t -> int;;
     Line 1, characters 0-23:
     Error: The type abbreviation t is cyclic:
@@ -316,12 +316,12 @@ Without rectypes, recursive type should fail:
 
 Enable rectypes:
 
-  $ unix_client exec_toplevel '# #rectypes;;'
+  $ unix_client exec_toplevel '' '# #rectypes;;'
   {mime_vals:[];parts:[];script:S(# #rectypes;;)}
 
 Now recursive type should work:
 
-  $ unix_client exec_toplevel "# type 'a u = 'a u -> int;;"
+  $ unix_client exec_toplevel '' "# type 'a u = 'a u -> int;;"
   {mime_vals:[];parts:[];script:S(# type 'a u = 'a u -> int;;
     type 'a u = 'a u -> int)}
 
@@ -329,17 +329,17 @@ Now recursive type should work:
 SECTION 7: #directory
 ==============================================
 
-  $ unix_client exec_toplevel '# #directory "/tmp";;'
+  $ unix_client exec_toplevel '' '# #directory "/tmp";;'
   {mime_vals:[];parts:[];script:S(# #directory "/tmp";;)}
 
-  $ unix_client exec_toplevel '# #remove_directory "/tmp";;'
+  $ unix_client exec_toplevel '' '# #remove_directory "/tmp";;'
   {mime_vals:[];parts:[];script:S(# #remove_directory "/tmp";;)}
 
 ==============================================
 SECTION 8: #help
 ==============================================
 
-  $ unix_client exec_toplevel '# #help;;'
+  $ unix_client exec_toplevel '' '# #help;;'
   {mime_vals:[];parts:[];script:S(# #help;;
     General
     #help
@@ -443,17 +443,17 @@ Create a test file:
   > let add x y = x + y
   > EOF
 
-  $ unix_client exec_toplevel '# #use "/tmp/test_use.ml";;'
+  $ unix_client exec_toplevel '' '# #use "/tmp/test_use.ml";;'
   {mime_vals:[];parts:[];script:S(# #use "/tmp/test_use.ml";;
     val from_file : string = "loaded via #use"
     
     val add : int -> int -> int = <fun>)}
 
-  $ unix_client exec_toplevel '# from_file;;'
+  $ unix_client exec_toplevel '' '# from_file;;'
   {mime_vals:[];parts:[];script:S(# from_file;;
     - : string = "loaded via #use")}
 
-  $ unix_client exec_toplevel '# add 1 2;;'
+  $ unix_client exec_toplevel '' '# add 1 2;;'
   {mime_vals:[];parts:[];script:S(# add 1 2;;
     - : int = 3)}
 
@@ -468,11 +468,11 @@ Create a test file:
   > type t = A | B
   > EOF
 
-  $ unix_client exec_toplevel '# #mod_use "/tmp/test_mod.ml";;'
+  $ unix_client exec_toplevel '' '# #mod_use "/tmp/test_mod.ml";;'
   {mime_vals:[];parts:[];script:S(# #mod_use "/tmp/test_mod.ml";;
     module Test_mod : sig val value : int type t = A | B end)}
 
-  $ unix_client exec_toplevel '# Test_mod.value;;'
+  $ unix_client exec_toplevel '' '# Test_mod.value;;'
   {mime_vals:[];parts:[];script:S(# Test_mod.value;;
     - : int = 42)}
 
@@ -480,11 +480,11 @@ Create a test file:
 SECTION 11: Findlib #require
 ==============================================
 
-  $ unix_client exec_toplevel '# #require "str";;'
+  $ unix_client exec_toplevel '' '# #require "str";;'
   {mime_vals:[];parts:[];script:S(# #require "str";;
     /home/node/.opam/default/lib/ocaml/str: added to search path)}
 
-  $ unix_client exec_toplevel '# Str.regexp "test";;'
+  $ unix_client exec_toplevel '' '# Str.regexp "test";;'
   {mime_vals:[];parts:[];script:S(# Str.regexp "test";;
     - : Str.regexp = <abstr>)}
 
@@ -492,7 +492,7 @@ SECTION 11: Findlib #require
 SECTION 12: Findlib #list
 ==============================================
 
-  $ unix_client exec_toplevel '# #list;;'
+  $ unix_client exec_toplevel '' '# #list;;'
   {mime_vals:[];parts:[];script:S(# #list;;
     afl-persistent      (version: n/a)
     alcotest            (version: 1.9.1)
@@ -913,16 +913,16 @@ SECTION 12: Findlib #list
 SECTION 13: #labels and #principal
 ==============================================
 
-  $ unix_client exec_toplevel '# #labels true;;'
+  $ unix_client exec_toplevel '' '# #labels true;;'
   {mime_vals:[];parts:[];script:S(# #labels true;;)}
 
-  $ unix_client exec_toplevel '# #labels false;;'
+  $ unix_client exec_toplevel '' '# #labels false;;'
   {mime_vals:[];parts:[];script:S(# #labels false;;)}
 
-  $ unix_client exec_toplevel '# #principal true;;'
+  $ unix_client exec_toplevel '' '# #principal true;;'
   {mime_vals:[];parts:[];script:S(# #principal true;;)}
 
-  $ unix_client exec_toplevel '# #principal false;;'
+  $ unix_client exec_toplevel '' '# #principal false;;'
   {mime_vals:[];parts:[];script:S(# #principal false;;)}
 
 ==============================================
@@ -931,25 +931,25 @@ SECTION 14: Error Cases
 
 Unknown directive:
 
-  $ unix_client exec_toplevel '# #unknown_directive;;'
+  $ unix_client exec_toplevel '' '# #unknown_directive;;'
   {mime_vals:[];parts:[];script:S(# #unknown_directive;;
     Unknown directive unknown_directive.)}
 
 #show with non-existent identifier:
 
-  $ unix_client exec_toplevel '# #show nonexistent_value;;'
+  $ unix_client exec_toplevel '' '# #show nonexistent_value;;'
   {mime_vals:[];parts:[];script:S(# #show nonexistent_value;;
     Unknown element.)}
 
 #require non-existent package:
 
-  $ unix_client exec_toplevel '# #require "nonexistent_package_12345";;'
+  $ unix_client exec_toplevel '' '# #require "nonexistent_package_12345";;'
   {mime_vals:[];parts:[];script:S(# #require "nonexistent_package_12345";;
     No such package: nonexistent_package_12345)}
 
 #use non-existent file:
 
-  $ unix_client exec_toplevel '# #use "/nonexistent/file.ml";;'
+  $ unix_client exec_toplevel '' '# #use "/nonexistent/file.ml";;'
   {mime_vals:[];parts:[];script:S(# #use "/nonexistent/file.ml";;
     Cannot find file /nonexistent/file.ml.)}
 
@@ -959,19 +959,19 @@ SECTION 15: #load (bytecode loading)
 
 Note: #load may not work in js_of_ocaml context
 
-  $ unix_client exec_toplevel '# #load "str.cma";;'
+  $ unix_client exec_toplevel '' '# #load "str.cma";;'
   {mime_vals:[];parts:[];script:S(# #load "str.cma";;)}
 
 ==============================================
 SECTION 16: Classes (#show_class)
 ==============================================
 
-  $ unix_client exec_toplevel '# class counter = object val mutable n = 0 method incr = n <- n + 1 method get = n end;;'
+  $ unix_client exec_toplevel '' '# class counter = object val mutable n = 0 method incr = n <- n + 1 method get = n end;;'
   {mime_vals:[];parts:[];script:S(# class counter = object val mutable n = 0 method incr = n <- n + 1 method get = n end;;
     class counter :
       object val mutable n : int method get : int method incr : unit end)}
 
-  $ unix_client exec_toplevel '# #show_class counter;;'
+  $ unix_client exec_toplevel '' '# #show_class counter;;'
   {mime_vals:[];parts:[];script:S(# #show_class counter;;
     class counter :
       object val mutable n : int method get : int method incr : unit end)}

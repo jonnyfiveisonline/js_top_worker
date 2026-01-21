@@ -167,13 +167,24 @@ end
     The toplevel implementation, parameterized by backend operations. *)
 
 module Make (S : S) = struct
-  (** {3 State} *)
+  (** {3 Global State}
+
+      These are shared across all environments. *)
 
   let functions : (unit -> unit) list option ref = ref None
   let requires : string list ref = ref []
   let path : string option ref = ref None
   let findlib_v : S.findlib_t Lwt.t option ref = ref None
   let execution_allowed = ref true
+
+  (** {3 Environment Management}
+
+      Helper to resolve env_id string to an Environment.t.
+      Empty string means the default environment. *)
+
+  let resolve_env env_id =
+    let id = if env_id = "" then Environment.default_id else env_id in
+    Environment.get_or_create id
 
   (** {3 Lexer Helpers} *)
 
@@ -290,7 +301,7 @@ module Make (S : S) = struct
      with End_of_file -> ());
     flush_all ()
 
-  let execute : string -> Toplevel_api_gen.exec_result =
+  let execute_in_env env phrase =
     let code_buff = Buffer.create 100 in
     let res_buff = Buffer.create 100 in
     let pp_code = Format.formatter_of_buffer code_buff in
@@ -301,28 +312,28 @@ module Make (S : S) = struct
       let _file2, line2, col2 = Location.get_pos_info loc.Location.loc_end in
       highlighted := Some Toplevel_api_gen.{ line1; col1; line2; col2 }
     in
-    fun phrase ->
-      Buffer.clear code_buff;
-      Buffer.clear res_buff;
-      Buffer.clear stderr_buff;
-      Buffer.clear stdout_buff;
-      let o, () =
+    Buffer.clear code_buff;
+    Buffer.clear res_buff;
+    Buffer.clear stderr_buff;
+    Buffer.clear stdout_buff;
+    let o, () =
+      Environment.with_env env (fun () ->
         S.capture
           (fun () -> execute true ~pp_code ~highlight_location pp_result phrase)
-          ()
-      in
-      let mime_vals = Mime_printer.get () in
-      Format.pp_print_flush pp_code ();
-      Format.pp_print_flush pp_result ();
-      Toplevel_api_gen.
-        {
-          stdout = string_opt o.stdout;
-          stderr = string_opt o.stderr;
-          sharp_ppf = buff_opt code_buff;
-          caml_ppf = buff_opt res_buff;
-          highlight = !highlighted;
-          mime_vals;
-        }
+          ())
+    in
+    let mime_vals = Mime_printer.get () in
+    Format.pp_print_flush pp_code ();
+    Format.pp_print_flush pp_result ();
+    Toplevel_api_gen.
+      {
+        stdout = string_opt o.stdout;
+        stderr = string_opt o.stderr;
+        sharp_ppf = buff_opt code_buff;
+        caml_ppf = buff_opt res_buff;
+        highlight = !highlighted;
+        mime_vals;
+      }
 
   (** {3 Dynamic CMI Loading}
 
@@ -465,57 +476,73 @@ module Make (S : S) = struct
         Lwt.return
           (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
-  let setup () =
+  let setup env_id =
     Lwt.catch
       (fun () ->
-        Logs.info (fun m -> m "setup() ...");
+        let env = resolve_env env_id in
+        Logs.info (fun m -> m "setup() for env %s..." (Environment.id env));
 
-        let o =
-          try
-            match !functions with
-            | Some l -> setup l ()
-            | None -> failwith "Error: toplevel has not been initialised"
-          with
-          | Persistent_env.Error e ->
-              Persistent_env.report_error Format.err_formatter e;
-              let err = Format.asprintf "%a" Persistent_env.report_error e in
-              failwith ("Error: " ^ err)
-          | Env.Error _ as exn ->
-              Location.report_exception Format.err_formatter exn;
-              let err = Format.asprintf "%a" Location.report_exception exn in
-              failwith ("Error: " ^ err)
-        in
+        if Environment.is_setup env then (
+          Logs.info (fun m -> m "setup() already done for env %s" (Environment.id env));
+          Lwt.return
+            (Ok
+               Toplevel_api_gen.
+                 {
+                   stdout = None;
+                   stderr = Some "Environment already set up";
+                   sharp_ppf = None;
+                   caml_ppf = None;
+                   highlight = None;
+                   mime_vals = [];
+                 }))
+        else
+          let o =
+            Environment.with_env env (fun () ->
+              try
+                match !functions with
+                | Some l -> setup l ()
+                | None -> failwith "Error: toplevel has not been initialised"
+              with
+              | Persistent_env.Error e ->
+                  Persistent_env.report_error Format.err_formatter e;
+                  let err = Format.asprintf "%a" Persistent_env.report_error e in
+                  failwith ("Error: " ^ err)
+              | Env.Error _ as exn ->
+                  Location.report_exception Format.err_formatter exn;
+                  let err = Format.asprintf "%a" Location.report_exception exn in
+                  failwith ("Error: " ^ err))
+          in
 
-        let* dcs =
-          match !findlib_v with
-          | Some v ->
-            let* v = v in
-            Lwt.return (S.require (not !execution_allowed) v !requires)
-          | None -> Lwt.return []
-        in
+          let* dcs =
+            match !findlib_v with
+            | Some v ->
+              let* v = v in
+              Lwt.return (S.require (not !execution_allowed) v !requires)
+            | None -> Lwt.return []
+          in
 
-        let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
+          let* () = Lwt_list.iter_p add_dynamic_cmis dcs in
 
-        Logs.info (fun m -> m "setup() finished");
+          Environment.mark_setup env;
+          Logs.info (fun m -> m "setup() finished for env %s" (Environment.id env));
 
-        Lwt.return
-          (Ok
-             Toplevel_api_gen.
-               {
-                 stdout = string_opt o.stdout;
-                 stderr = string_opt o.stderr;
-                 sharp_ppf = None;
-                 caml_ppf = None;
-                 highlight = None;
-                 mime_vals = [];
-               }))
+          Lwt.return
+            (Ok
+               Toplevel_api_gen.
+                 {
+                   stdout = string_opt o.stdout;
+                   stderr = string_opt o.stderr;
+                   sharp_ppf = None;
+                   caml_ppf = None;
+                   highlight = None;
+                   mime_vals = [];
+                 }))
       (fun e ->
         Lwt.return
           (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 
-  let typecheck_phrase :
-      string ->
-      (Toplevel_api_gen.exec_result, Toplevel_api_gen.err) IdlM.T.resultb =
+  let typecheck_phrase env_id phr =
+    let env = resolve_env env_id in
     let res_buff = Buffer.create 100 in
     let pp_result = Format.formatter_of_buffer res_buff in
     let highlighted = ref None in
@@ -524,10 +551,10 @@ module Make (S : S) = struct
       let _file2, line2, col2 = Location.get_pos_info loc.Location.loc_end in
       highlighted := Some Toplevel_api_gen.{ line1; col1; line2; col2 }
     in
-    fun phr ->
-      Buffer.clear res_buff;
-      Buffer.clear stderr_buff;
-      Buffer.clear stdout_buff;
+    Buffer.clear res_buff;
+    Buffer.clear stderr_buff;
+    Buffer.clear stdout_buff;
+    Environment.with_env env (fun () ->
       try
         let lb = Lexing.from_function (refill_lexbuf phr (ref 0) None) in
         let phr = !Toploop.parse_toplevel_phrase lb in
@@ -569,9 +596,9 @@ module Make (S : S) = struct
               caml_ppf = buff_opt res_buff;
               highlight = !highlighted;
               mime_vals = [];
-            }
+            })
 
-  let handle_toplevel stripped =
+  let handle_toplevel env stripped =
     if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' '
     then (
       Printf.eprintf
@@ -585,7 +612,7 @@ module Make (S : S) = struct
       let mime_vals =
         List.fold_left
           (fun acc (phr, _junk, _output) ->
-            let new_output = execute phr in
+            let new_output = execute_in_env env phr in
             Printf.bprintf buf "# %s\n" phr;
             let r =
               Option.to_list new_output.stdout
@@ -609,15 +636,17 @@ module Make (S : S) = struct
       in
       IdlM.ErrM.return result
 
-  let exec_toplevel (phrase : string) =
-    try handle_toplevel phrase
+  let exec_toplevel env_id (phrase : string) =
+    let env = resolve_env env_id in
+    try handle_toplevel env phrase
     with e ->
       Logs.info (fun m -> m "Error: %s" (Printexc.to_string e));
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
-  let execute (phrase : string) =
-    let result = execute phrase in
+  let execute env_id (phrase : string) =
+    let env = resolve_env env_id in
+    let result = execute_in_env env phrase in
     IdlM.ErrM.return result
 
   (** {3 Merlin Integration}
@@ -736,11 +765,8 @@ module Make (S : S) = struct
         Some (from, to_, wdispatch source query)
   end
 
-  module StringSet = Set.Make (String)
-
-  let failed_cells = ref StringSet.empty
-
-  let complete_prefix id deps is_toplevel source position =
+  let complete_prefix env_id id deps is_toplevel source position =
+    let _env = resolve_env env_id in  (* Reserved for future use *)
     try
       Logs.info (fun m -> m "completing for id: %s" (match id with Some x -> x | None -> "(none)"));
 
@@ -807,7 +833,7 @@ module Make (S : S) = struct
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
-  let add_cmi id deps source =
+  let add_cmi execution_env id deps source =
     Logs.info (fun m -> m "add_cmi");
     let dep_modules = List.map modname_of_id deps in
     let loc = Location.none in
@@ -836,13 +862,13 @@ module Make (S : S) = struct
           Logs.info (fun m -> m "About to type_implementation");
           let _ = Typemod.type_implementation unit_info env ast in
           let b = Sys.file_exists (prefix ^ ".cmi") in
-          failed_cells := StringSet.remove id !failed_cells;
+          Environment.remove_failed_cell execution_env id;
           Logs.info (fun m -> m "file_exists: %s = %b" (prefix ^ ".cmi") b));
       Ocaml_typing.Cmi_cache.clear ()
     with
     | Env.Error _ as exn ->
         Logs.err (fun m -> m "Env.Error: %a" Location.report_exception exn);
-        failed_cells := StringSet.add id !failed_cells;
+        Environment.add_failed_cell execution_env id;
         ()
     | exn ->
         let s = Printexc.to_string exn in
@@ -850,7 +876,7 @@ module Make (S : S) = struct
         Logs.err (fun m -> m "Backtrace: %s" (Printexc.get_backtrace ()));
         let ppf = Format.err_formatter in
         let _ = Location.report_exception ppf exn in
-        failed_cells := StringSet.add id !failed_cells;
+        Environment.add_failed_cell execution_env id;
         ()
 
   let map_pos line1 pos =
@@ -869,10 +895,11 @@ module Make (S : S) = struct
       Ocaml_utils.Warnings.loc_end = map_pos line1 loc.loc_end;
     }
 
-  let query_errors id deps is_toplevel orig_source =
+  let query_errors env_id id deps is_toplevel orig_source =
+    let execution_env = resolve_env env_id in
     try
       let deps =
-        List.filter (fun dep -> not (StringSet.mem dep !failed_cells)) deps
+        List.filter (fun dep -> not (Environment.is_cell_failed execution_env dep)) deps
       in
       (* Logs.info (fun m -> m "About to mangle toplevel"); *)
       let line1, src = mangle_toplevel is_toplevel orig_source deps in
@@ -912,8 +939,8 @@ module Make (S : S) = struct
                      source;
                    })
       in
-      if List.length errors = 0 then add_cmi id deps src
-      else failed_cells := StringSet.add id !failed_cells;
+      if List.length errors = 0 then add_cmi execution_env id deps src
+      else Environment.add_failed_cell execution_env id;
 
       (* Logs.info (fun m -> m "Got to end"); *)
       IdlM.ErrM.return errors
@@ -922,10 +949,11 @@ module Make (S : S) = struct
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
-  let type_enclosing _id deps is_toplevel orig_source position =
+  let type_enclosing env_id _id deps is_toplevel orig_source position =
+    let execution_env = resolve_env env_id in
     try
       let deps =
-        List.filter (fun dep -> not (StringSet.mem dep !failed_cells)) deps
+        List.filter (fun dep -> not (Environment.is_cell_failed execution_env dep)) deps
       in
       let line1, src = mangle_toplevel is_toplevel orig_source deps in
       let src = line1 ^ src in
@@ -959,4 +987,36 @@ module Make (S : S) = struct
       Logs.info (fun m -> m "Error: %s" (Printexc.to_string e));
       IdlM.ErrM.return_err
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
+
+  (** {3 Environment Management RPCs} *)
+
+  let create_env env_id =
+    Lwt.catch
+      (fun () ->
+        Logs.info (fun m -> m "create_env(%s)" env_id);
+        let _env = Environment.create env_id in
+        Lwt.return (Ok ()))
+      (fun e ->
+        Lwt.return
+          (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
+
+  let destroy_env env_id =
+    Lwt.catch
+      (fun () ->
+        Logs.info (fun m -> m "destroy_env(%s)" env_id);
+        Environment.destroy env_id;
+        Lwt.return (Ok ()))
+      (fun e ->
+        Lwt.return
+          (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
+
+  let list_envs () =
+    Lwt.catch
+      (fun () ->
+        let envs = Environment.list () in
+        Logs.info (fun m -> m "list_envs() -> [%s]" (String.concat ", " envs));
+        Lwt.return (Ok envs))
+      (fun e ->
+        Lwt.return
+          (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
 end

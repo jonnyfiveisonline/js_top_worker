@@ -99,9 +99,12 @@ let start_server () =
   let open U in
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Logs.Info);
-  Server.exec execute;
-  Server.setup (IdlM.T.lift setup);
   Server.init (IdlM.T.lift init);
+  Server.create_env (IdlM.T.lift create_env);
+  Server.destroy_env (IdlM.T.lift destroy_env);
+  Server.list_envs (IdlM.T.lift list_envs);
+  Server.setup (IdlM.T.lift setup);
+  Server.exec execute;
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
@@ -128,7 +131,7 @@ let contains s substr =
 
 let run_toplevel rpc code =
   let ( let* ) = IdlM.ErrM.bind in
-  let* result = Client.exec_toplevel rpc ("# " ^ code) in
+  let* result = Client.exec_toplevel rpc "" ("# " ^ code) in
   IdlM.ErrM.return result.script
 
 let _ =
@@ -144,7 +147,7 @@ let _ =
   let test_sequence =
     (* Initialize *)
     let* _ = Client.init rpc init_config in
-    let* _ = Client.setup rpc () in
+    let* _ = Client.setup rpc "" in
 
     Printf.printf "--- Section 1: Basic PPX Preprocessing ---\n%!";
 

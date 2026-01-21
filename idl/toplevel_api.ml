@@ -192,6 +192,12 @@ type err = InternalError of string [@@deriving rpcty]
 
 type opt_id = string option [@@deriving rpcty]
 
+type env_id = string [@@deriving rpcty]
+(** Environment identifier. If empty string, uses the default environment. *)
+
+type env_id_list = string list [@@deriving rpcty]
+(** List of environment identifiers *)
+
 type dependencies = string list [@@deriving rpcty]
 (** The ids of the cells that are dependencies *)
 
@@ -221,6 +227,8 @@ module Make (R : RPC) = struct
   let unit_p = Param.mk Types.unit
   let phrase_p = Param.mk Types.string
   let id_p = Param.mk opt_id
+  let env_id_p = Param.mk ~name:"env_id" ~description:["Environment ID (empty string for default)"] env_id
+  let env_id_list_p = Param.mk env_id_list
   let dependencies_p = Param.mk dependencies
   let typecheck_result_p = Param.mk exec_result
   let exec_result_p = Param.mk exec_result
@@ -254,54 +262,85 @@ module Make (R : RPC) = struct
       [ "Initialise the toplevel. This must be called before any other API." ]
       (init_libs @-> returning unit_p err)
 
+  (** {2 Environment Management} *)
+
+  let create_env =
+    declare "create_env"
+      [
+        "Create a new isolated execution environment with the given ID.";
+        "Returns unit on success. The environment must be set up with";
+        "setup_env before use.";
+      ]
+      (env_id_p @-> returning unit_p err)
+
+  let destroy_env =
+    declare "destroy_env"
+      [
+        "Destroy an execution environment, freeing its resources.";
+        "The environment ID must exist.";
+      ]
+      (env_id_p @-> returning unit_p err)
+
+  let list_envs =
+    declare "list_envs"
+      [ "List all existing environment IDs." ]
+      (unit_p @-> returning env_id_list_p err)
+
   let setup =
     declare "setup"
       [
-        "Start the toplevel. Return value is the initial blurb ";
-        "printed when starting a toplevel. Note that the toplevel";
-        "must be initialised first.";
+        "Start the toplevel for the given environment. Return value is the";
+        "initial blurb printed when starting a toplevel. Note that the";
+        "toplevel must be initialised first. If env_id is None, uses the";
+        "default environment.";
       ]
-      (unit_p @-> returning exec_result_p err)
+      (env_id_p @-> returning exec_result_p err)
 
   let typecheck =
     declare "typecheck"
-      [ "Typecheck a phrase without actually executing it." ]
-      (phrase_p @-> returning typecheck_result_p err)
+      [
+        "Typecheck a phrase without actually executing it.";
+        "If env_id is None, uses the default environment.";
+      ]
+      (env_id_p @-> phrase_p @-> returning typecheck_result_p err)
 
   let exec =
     declare "exec"
       [
         "Execute a phrase using the toplevel. The toplevel must have been";
-        "Initialised first.";
+        "initialised first. If env_id is None, uses the default environment.";
       ]
-      (phrase_p @-> returning exec_result_p err)
+      (env_id_p @-> phrase_p @-> returning exec_result_p err)
 
   let exec_toplevel =
     declare "exec_toplevel"
       [
         "Execute a toplevel script. The toplevel must have been";
-        "Initialised first. Returns the updated toplevel script.";
+        "initialised first. Returns the updated toplevel script.";
+        "If env_id is None, uses the default environment.";
       ]
-      (toplevel_script_p @-> returning exec_toplevel_result_p err)
+      (env_id_p @-> toplevel_script_p @-> returning exec_toplevel_result_p err)
 
   let complete_prefix =
     declare "complete_prefix"
-      [ 
-        "Complete a prefix"
+      [
+        "Complete a prefix. If env_id is None, uses the default environment.";
       ]
-      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning completions_p err)
-  
+      (env_id_p @-> id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning completions_p err)
+
   let query_errors =
     declare "query_errors"
       [
-        "Query the errors in the given source"
+        "Query the errors in the given source.";
+        "If env_id is None, uses the default environment.";
       ]
-      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> returning error_list_p err)
+      (env_id_p @-> id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> returning error_list_p err)
 
   let type_enclosing =
     declare "type_enclosing"
       [
-        "Get the type of the enclosing expression"
+        "Get the type of the enclosing expression.";
+        "If env_id is None, uses the default environment.";
       ]
-      (id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning typed_enclosings_p err)
+      (env_id_p @-> id_p @-> dependencies_p @-> is_toplevel_p @-> source_p @-> position_p @-> returning typed_enclosings_p err)
 end

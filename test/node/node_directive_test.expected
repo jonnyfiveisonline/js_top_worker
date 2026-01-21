@@ -26,7 +26,7 @@ Number of children: 0
 node_directive_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
 node_directive_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
 node_directive_test.js: [INFO] init() finished
-node_directive_test.js: [INFO] setup() ...
+node_directive_test.js: [INFO] setup() for env default...
 node_directive_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_directive_test.js: [INFO] Fetching stdlib__Sys.cmi
@@ -34,7 +34,7 @@ node_directive_test.js: [INFO] Fetching stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_directive_test.js: [INFO] Setup complete
-node_directive_test.js: [INFO] setup() finished
+node_directive_test.js: [INFO] setup() finished for env default
 --- Section 1: Basic Execution ---
 [PASS] basic_eval: # 1 + 2;;
   - : int = 3

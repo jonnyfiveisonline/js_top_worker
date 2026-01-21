@@ -165,9 +165,12 @@ let start_server () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Logs.Info);
   (* let pid = Unix.getpid () in *)
-  Server.exec execute;
-  Server.setup (IdlM.T.lift setup);
   Server.init (IdlM.T.lift init);
+  Server.create_env (IdlM.T.lift create_env);
+  Server.destroy_env (IdlM.T.lift destroy_env);
+  Server.list_envs (IdlM.T.lift list_envs);
+  Server.setup (IdlM.T.lift setup);
+  Server.exec execute;
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;

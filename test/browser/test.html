@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>js_top_worker_client Browser Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    #status { margin-bottom: 20px; }
+    .pass { color: green; }
+    .fail { color: red; }
+  </style>
+</head>
+<body>
+  <h1>js_top_worker_client Browser Test</h1>
+  <div id="status">Running tests...</div>
+  <pre id="log"></pre>
+
+  <script>
+    // Capture console.log for display
+    const logEl = document.getElementById('log');
+    const originalLog = console.log;
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const text = args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ');
+      logEl.textContent += text + '\n';
+
+      // Update status when done
+      if (window.testResults && window.testResults.done) {
+        const status = document.getElementById('status');
+        const passed = window.testResults.passed;
+        const failed = window.testResults.failed;
+        if (failed === 0) {
+          status.innerHTML = '<span class="pass">All ' + passed + ' tests passed!</span>';
+        } else {
+          status.innerHTML = '<span class="fail">' + failed + ' tests failed</span> (' + passed + ' passed)';
+        }
+      }
+    };
+  </script>
+  <script src="client_test.bc.js"></script>
+</body>
+</html>

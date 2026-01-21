@@ -90,9 +90,12 @@ let run () =
     let _ = test () in
     Logs.set_reporter (Logs_browser.console_reporter ());
     Logs.set_level (Some Logs.Debug);
-    Server.exec execute;
-    Server.setup (Impl.IdlM.T.lift setup);
     Server.init (Impl.IdlM.T.lift init);
+    Server.create_env (Impl.IdlM.T.lift create_env);
+    Server.destroy_env (Impl.IdlM.T.lift destroy_env);
+    Server.list_envs (Impl.IdlM.T.lift list_envs);
+    Server.setup (Impl.IdlM.T.lift setup);
+    Server.exec execute;
     Server.typecheck typecheck_phrase;
     Server.complete_prefix complete_prefix;
     Server.query_errors query_errors;

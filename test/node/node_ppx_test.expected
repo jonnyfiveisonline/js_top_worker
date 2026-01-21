@@ -39,7 +39,7 @@ node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
 node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
 node_ppx_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
 node_ppx_test.js: [INFO] init() finished
-node_ppx_test.js: [INFO] setup() ...
+node_ppx_test.js: [INFO] setup() for env default...
 node_ppx_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_ppx_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Format.cmi
@@ -49,7 +49,7 @@ node_ppx_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_ppx_test.js: [INFO] Setup complete
-node_ppx_test.js: [INFO] setup() finished
+node_ppx_test.js: [INFO] setup() finished for env default
 --- Section 1: Basic PPX Preprocessing ---
 [PASS] basic_no_ppx: # let x = 1 + 2;;
   val x : int = 3

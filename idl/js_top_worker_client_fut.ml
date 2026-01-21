@@ -78,18 +78,21 @@ module W = struct
   type exec_result = Toplevel_api_gen.exec_result
 
   let init rpc a = Wraw.init rpc a |> Rpc_fut.T.get
-  let setup rpc a = Wraw.setup rpc a |> Rpc_fut.T.get
-  let typecheck rpc a = Wraw.typecheck rpc a |> Rpc_fut.T.get
-  let exec rpc a = Wraw.exec rpc a |> Rpc_fut.T.get
+  let create_env rpc env_id = Wraw.create_env rpc env_id |> Rpc_fut.T.get
+  let destroy_env rpc env_id = Wraw.destroy_env rpc env_id |> Rpc_fut.T.get
+  let list_envs rpc = Wraw.list_envs rpc () |> Rpc_fut.T.get
+  let setup rpc env_id = Wraw.setup rpc env_id |> Rpc_fut.T.get
+  let typecheck rpc env_id phrase = Wraw.typecheck rpc env_id phrase |> Rpc_fut.T.get
+  let exec rpc env_id phrase = Wraw.exec rpc env_id phrase |> Rpc_fut.T.get
 
-  let query_errors rpc id deps is_toplevel doc =
-    Wraw.query_errors rpc id deps is_toplevel doc |> Rpc_fut.T.get
+  let query_errors rpc env_id id deps is_toplevel doc =
+    Wraw.query_errors rpc env_id id deps is_toplevel doc |> Rpc_fut.T.get
 
-  let exec_toplevel rpc doc = Wraw.exec_toplevel rpc doc |> Rpc_fut.T.get
+  let exec_toplevel rpc env_id doc = Wraw.exec_toplevel rpc env_id doc |> Rpc_fut.T.get
 
-  let complete_prefix rpc id deps is_toplevel doc pos =
-    Wraw.complete_prefix rpc id deps is_toplevel doc pos |> Rpc_fut.T.get
+  let complete_prefix rpc env_id id deps is_toplevel doc pos =
+    Wraw.complete_prefix rpc env_id id deps is_toplevel doc pos |> Rpc_fut.T.get
 
-  let type_enclosing rpc id deps is_toplevel doc pos =
-    Wraw.type_enclosing rpc id deps is_toplevel doc pos |> Rpc_fut.T.get
+  let type_enclosing rpc env_id id deps is_toplevel doc pos =
+    Wraw.type_enclosing rpc env_id id deps is_toplevel doc pos |> Rpc_fut.T.get
 end

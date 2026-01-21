@@ -82,9 +82,12 @@ let start_server () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Logs.Info);
   (* let pid = Unix.getpid () in *)
-  Server.exec execute;
-  Server.setup (IdlM.T.lift setup);
   Server.init (IdlM.T.lift init);
+  Server.create_env (IdlM.T.lift create_env);
+  Server.destroy_env (IdlM.T.lift destroy_env);
+  Server.list_envs (IdlM.T.lift list_envs);
+  Server.setup (IdlM.T.lift setup);
+  Server.exec execute;
   Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
@@ -105,17 +108,17 @@ let _ =
   let x =
     let open Client in
     let* _ = init rpc init_config in
-    let* o = setup rpc () in
+    let* o = setup rpc "" in
     Logs.info (fun m ->
         m "setup output: %s" (Option.value ~default:"" o.stdout));
-    let* _ = query_errors rpc (Some "c1") [] false "type xxxx = int;;\n" in
+    let* _ = query_errors rpc "" (Some "c1") [] false "type xxxx = int;;\n" in
     let* o1 =
-      query_errors rpc (Some "c2") [ "c1" ] false "type yyy = xxx;;\n"
+      query_errors rpc "" (Some "c2") [ "c1" ] false "type yyy = xxx;;\n"
     in
     Logs.info (fun m -> m "Number of errors: %d (should be 1)" (List.length o1));
-    let* _ = query_errors rpc (Some "c1") [] false "type xxx = int;;\n" in
+    let* _ = query_errors rpc "" (Some "c1") [] false "type xxx = int;;\n" in
     let* o2 =
-      query_errors rpc (Some "c2") [ "c1" ] false "type yyy = xxx;;\n"
+      query_errors rpc "" (Some "c2") [ "c1" ] false "type yyy = xxx;;\n"
     in
     Logs.info (fun m ->
         m "Number of errors1: %d (should be 1)" (List.length o1));
@@ -125,7 +128,7 @@ let _ =
     (* Test completion for List.leng *)
     let* completions1 =
       let text = "let _ = List.leng" in
-      Client.complete_prefix rpc (Some "c_comp1") [] false text
+      Client.complete_prefix rpc "" (Some "c_comp1") [] false text
         (Offset (String.length text))
     in
     Logs.info (fun m ->
@@ -151,7 +154,7 @@ let _ =
     (* Test completion for List. (should show all List module functions) *)
     let* completions2 =
       let text = "# let _ = List." in
-      Client.complete_prefix rpc (Some "c_comp2") [] true text
+      Client.complete_prefix rpc "" (Some "c_comp2") [] true text
         (Offset (String.length text))
     in
     Logs.info (fun m ->
@@ -177,7 +180,7 @@ let _ =
     (* Test completion for partial identifier *)
     let* completions3 =
       let text = "# let _ = ma" in
-      Client.complete_prefix rpc (Some "c_comp3") [] true text
+      Client.complete_prefix rpc "" (Some "c_comp3") [] true text
         (Offset (String.length text))
     in
     Logs.info (fun m ->
@@ -202,7 +205,7 @@ let _ =
     (* Test completion in non-toplevel context *)
     let* completions4 =
       let text = "let _ = List.leng" in
-      Client.complete_prefix rpc (Some "c_comp4") [] false text
+      Client.complete_prefix rpc "" (Some "c_comp4") [] false text
         (Offset (String.length text))
     in
     Logs.info (fun m ->
@@ -228,7 +231,7 @@ let _ =
     (* Test completion using Logical position constructor *)
     let* completions5 =
       let text = "# let _ = List.leng\n   let foo=1.0;;" in
-      Client.complete_prefix rpc (Some "c_comp5") [] true text
+      Client.complete_prefix rpc "" (Some "c_comp5") [] true text
         (Logical (1, 16))
     in
     Logs.info (fun m ->
@@ -254,7 +257,7 @@ let _ =
     (* Test toplevel completion with variable binding *)
     let* completions6 =
       let s = "# let my_var = 42;;\n# let x = 1 + my_v" in
-      Client.complete_prefix rpc (Some "c_comp6") [] true
+      Client.complete_prefix rpc "" (Some "c_comp6") [] true
         s
         (Offset (String.length s))
     in
@@ -280,7 +283,7 @@ let _ =
 
     (* Test toplevel completion with function definition *)
     let* completions7 =
-      Client.complete_prefix rpc (Some "c_comp7") [] true
+      Client.complete_prefix rpc "" (Some "c_comp7") [] true
         "# let rec factorial n = if n <= 1 then 1 else n * facto"
         (Offset 55)
     in
@@ -306,7 +309,7 @@ let _ =
 
     (* Test toplevel completion with module paths *)
     let* completions8 =
-      Client.complete_prefix rpc (Some "c_comp8") [] true
+      Client.complete_prefix rpc "" (Some "c_comp8") [] true
         "# String.lengt"
         (Offset 14)
     in

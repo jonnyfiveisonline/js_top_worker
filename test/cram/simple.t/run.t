@@ -2,9 +2,9 @@
   unix_worker: [INFO] init()
   unix_worker: [INFO] init() finished
   N
-  unix_worker: [INFO] setup() ...
+  unix_worker: [INFO] setup() for env default...
   unix_worker: [INFO] Setup complete
-  unix_worker: [INFO] setup() finished
+  unix_worker: [INFO] setup() finished for env default
   {mime_vals:[];stderr:S(error while evaluating #enable "pretty";;
   error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.4.0
   Unknown directive enable.

@@ -1,0 +1,13 @@
+{
+  "name": "js_top_worker_browser_tests",
+  "version": "1.0.0",
+  "description": "Browser tests for js_top_worker_client",
+  "private": true,
+  "scripts": {
+    "test": "node run_tests.js",
+    "test:headed": "node run_tests.js --headed"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

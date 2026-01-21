@@ -36,16 +36,16 @@ let log_output (o : Toplevel_api_gen.exec_result) =
 let _ =
   let ( let* ) = Lwt_result.bind in
   let* rpc = initialise "_opam/worker.js" (fun _ -> log "Timeout") in
-  let* o = W.setup rpc () in
+  let* o = W.setup rpc "" in
   log_output o;
-  let* _o = W.query_errors rpc (Some "c1") [] false "type xxxx = int;;\n" in
+  let* _o = W.query_errors rpc "" (Some "c1") [] false "type xxxx = int;;\n" in
   let* _o2 =
-    W.query_errors rpc (Some "c2") [ "c1" ] true
+    W.query_errors rpc "" (Some "c2") [ "c1" ] true
       "# type yyy = xxx;;\n  type yyy = xxx\n"
   in
-  let* _o = W.query_errors rpc (Some "c1") [] false "type xxx = int;;\n" in
+  let* _o = W.query_errors rpc "" (Some "c1") [] false "type xxx = int;;\n" in
   let* _o2 =
-    W.query_errors rpc (Some "c2") [ "c1" ] true
+    W.query_errors rpc "" (Some "c2") [ "c1" ] true
       "# type yyy = xxx (* With a comment *);;\n  type yyy = xxx\n"
   in
 

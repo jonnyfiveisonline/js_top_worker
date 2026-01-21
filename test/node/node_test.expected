@@ -37,7 +37,7 @@ node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
 node_test.js: [INFO] init() finished
-node_test.js: [INFO] setup() ...
+node_test.js: [INFO] setup() for env default...
 node_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Format.cmi
@@ -92,7 +92,7 @@ node_test.js: [INFO] async_get: _opam/lib/base/shadow_stdlib/shadow_stdlib.cmi
 node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/base_internalhash_types/
 node_test.js: [INFO]   toplevel modules: Base_internalhash_types
 node_test.js: [INFO] async_get: _opam/lib/base/base_internalhash_types/base_internalhash_types.cmi
-node_test.js: [INFO] setup() finished
+node_test.js: [INFO] setup() finished for env default
 node_test.js: [INFO] setup output: OCaml version 5.4.0
 Unknown directive enable.
 Unknown directive disable.
