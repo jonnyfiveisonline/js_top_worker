@@ -1,0 +1,59 @@
+=== Node.js MIME Infrastructure Tests ===
+
+node_mime_test.js: [INFO] init()
+Initializing findlib
+Parsed uri: lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
+Parsed uri: lib/ocaml/stdlib/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
+node_mime_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
+node_mime_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_mime_test.js: [INFO] init() finished
+node_mime_test.js: [INFO] setup() for env default...
+node_mime_test.js: [INFO] Fetching stdlib__Format.cmi
+
+node_mime_test.js: [INFO] Fetching stdlib__Sys.cmi
+
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+node_mime_test.js: [INFO] Setup complete
+node_mime_test.js: [INFO] setup() finished for env default
+--- Section 1: exec_result Has mime_vals Field ---
+[PASS] has_mime_vals_field: exec_result has mime_vals field
+[PASS] mime_vals_is_list: mime_vals is a list (length=0)
+[PASS] mime_vals_empty_no_output: mime_vals is empty when no MIME output
+
+--- Section 2: MIME Type Definitions ---
+[PASS] mime_type_field: mime_val has mime_type field
+[PASS] encoding_noencoding: Noencoding variant works
+[PASS] data_field: mime_val has data field
+[PASS] encoding_base64: Base64 variant works
+
+--- Section 3: Multiple Executions ---
+[PASS] r1_mime_empty: First exec: mime_vals empty
+[PASS] r2_mime_empty: Second exec: mime_vals empty
+[PASS] r3_mime_empty: Third exec: mime_vals empty
+
+--- Section 4: exec_toplevel Has mime_vals ---
+[PASS] toplevel_has_mime_vals: exec_toplevel_result has mime_vals field
+[PASS] toplevel_mime_vals_list: toplevel mime_vals is a list (length=0)
+
+=== Results: 12/12 tests passed ===
+SUCCESS: All MIME infrastructure tests passed!
