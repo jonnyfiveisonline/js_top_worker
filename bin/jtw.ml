@@ -186,8 +186,8 @@ let opam verbose output_dir_str switch libraries no_worker path deps_file =
         Util.cp meta_file dest)
       meta_rels;
 
-    (* Generate findlib_index as JSON with packages and deps fields *)
-    let packages_json =
+    (* Generate findlib_index as JSON with metas field *)
+    let metas_json =
       List.map
         (fun (meta_file, d) ->
           let file = Fpath.filename meta_file in
@@ -195,10 +195,9 @@ let opam verbose output_dir_str switch libraries no_worker path deps_file =
           `String (Fpath.to_string rel_path))
         meta_rels
     in
-    let deps_json = List.map (fun d -> `String d) dep_paths in
-    let findlib_json =
-      `Assoc [("packages", `List packages_json); ("deps", `List deps_json)]
-    in
+    (* TODO: dep_paths should also contribute META paths once we have full universe info *)
+    let _ = dep_paths in
+    let findlib_json = `Assoc [("metas", `List metas_json)] in
     Out_channel.with_open_bin
       Fpath.(output_dir / "findlib_index" |> to_string)
       (fun oc -> Printf.fprintf oc "%s\n" (Yojson.Safe.to_string findlib_json));
@@ -275,7 +274,8 @@ let opam verbose output_dir_str switch libraries no_worker path deps_file =
   `Ok ()
 
 (** Generate a single package's universe directory.
-    Returns the relative path for use in the root index. *)
+    Returns (pkg_path, meta_path) where meta_path is the full path to META
+    relative to the output_dir root. *)
 let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
   (* Use package name as directory path *)
   let pkg_path = pkg in
@@ -377,14 +377,9 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
     | Error _ -> ())
     all_pkg_dirs;
 
-  (* Generate findlib_index with deps *)
-  let packages_json = [`String Fpath.(v "lib" // meta_rel / "META" |> to_string)] in
-  let deps_json = List.map (fun d -> `String d) pkg_deps in
-  let findlib_json = `Assoc [("packages", `List packages_json); ("deps", `List deps_json)] in
-  Out_channel.with_open_bin Fpath.(pkg_output_dir / "findlib_index" |> to_string)
-    (fun oc -> Printf.fprintf oc "%s\n" (Yojson.Safe.to_string findlib_json));
-
-  pkg_path
+  (* Return pkg_path and the META path relative to pkg_path *)
+  let local_meta_path = Fpath.(v "lib" // meta_rel / "META" |> to_string) in
+  (pkg_path, local_meta_path, pkg_deps)
 
 let opam_all verbose output_dir_str switch libraries no_worker =
   Opam.switch := switch;
@@ -420,25 +415,48 @@ let opam_all verbose output_dir_str switch libraries no_worker =
     Hashtbl.add dep_map pkg deps)
     all_packages;
 
-  (* Generate each package *)
-  let pkg_paths = List.map (fun pkg ->
+  (* Generate each package and collect results *)
+  let pkg_results = List.map (fun pkg ->
     Format.eprintf "Generating %s...\n%!" pkg;
     let pkg_deps = Hashtbl.find dep_map pkg in
-    (* Deps are package names, which are also the paths in our simple scheme *)
-    let dep_paths = pkg_deps in
-    generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps:dep_paths)
+    generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps)
     all_packages
   in
 
-  (* Generate root findlib_index *)
-  let root_index = `Assoc [
-    ("packages", `List []);
-    ("deps", `List (List.map (fun p -> `String p) pkg_paths))
-  ] in
+  (* Build a map from package name to full META path *)
+  let meta_path_map = Hashtbl.create 64 in
+  List.iter (fun (pkg_path, local_meta_path, _deps) ->
+    let full_meta_path = pkg_path ^ "/" ^ local_meta_path in
+    Hashtbl.add meta_path_map pkg_path full_meta_path)
+    pkg_results;
+
+  (* Generate findlib_index for each package with correct META paths *)
+  List.iter (fun (pkg_path, local_meta_path, deps) ->
+    let this_meta = pkg_path ^ "/" ^ local_meta_path in
+    let dep_metas = List.filter_map (fun dep ->
+      match Hashtbl.find_opt meta_path_map dep with
+      | Some path -> Some path
+      | None ->
+          Format.eprintf "Warning: no META path found for dep %s\n%!" dep;
+          None)
+      deps
+    in
+    let all_metas = this_meta :: dep_metas in
+    let findlib_json = `Assoc [("metas", `List (List.map (fun s -> `String s) all_metas))] in
+    Out_channel.with_open_bin Fpath.(output_dir / pkg_path / "findlib_index" |> to_string)
+      (fun oc -> Printf.fprintf oc "%s\n" (Yojson.Safe.to_string findlib_json)))
+    pkg_results;
+
+  (* Generate root findlib_index with all META paths *)
+  let all_metas = List.map (fun (pkg_path, local_meta_path, _) ->
+    pkg_path ^ "/" ^ local_meta_path)
+    pkg_results
+  in
+  let root_index = `Assoc [("metas", `List (List.map (fun s -> `String s) all_metas))] in
   Out_channel.with_open_bin Fpath.(output_dir / "findlib_index" |> to_string)
     (fun oc -> Printf.fprintf oc "%s\n" (Yojson.Safe.to_string root_index));
 
-  Format.eprintf "Generated root findlib_index with %d packages\n%!" (List.length pkg_paths);
+  Format.eprintf "Generated root findlib_index with %d META files\n%!" (List.length pkg_results);
 
   (* Generate worker.js if requested *)
   let () = if no_worker then () else Mk_backend.mk switch output_dir in
