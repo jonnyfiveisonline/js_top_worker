@@ -41,7 +41,7 @@
  (targets
   (dir _opam))
  (action
-  (run jtw opam base ppx_deriving.runtime --no-worker -o _opam)))
+  (run jtw opam base ppx_deriving.show ppx_deriving.eq ppx_deriving.runtime --no-worker -o _opam)))
 
 (rule
  (deps _opam)
@@ -121,6 +121,7 @@
   (diff node_directive_test.expected node_directive_test.out)))
 
 ; PPX test executable
+; Note: ppx_deriving is NOT statically linked - it's dynamically loaded via #require
 (executable
  (name node_ppx_test)
  (modes byte)
@@ -139,10 +140,7 @@
   rpclib.json
   findlib.top
   js_of_ocaml-lwt
-  zarith_stubs_js
-  ppx_deriving.show
-  ppx_deriving.eq
-  ppx_deriving.runtime))
+  zarith_stubs_js))
 
 (rule
  (targets node_ppx_test.js)

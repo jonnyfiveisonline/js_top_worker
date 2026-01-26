@@ -32,9 +32,12 @@
 
 (executable
  (name worker)
- (modes byte)
+ (modes byte js)
  (modules worker)
  (link_flags (-linkall))
+ (js_of_ocaml
+  (javascript_files ../lib/stubs.js)
+  (flags --effects=disabled --toplevel +toplevel.js +dynlink.js))
  (libraries js_top_worker-web logs.browser mime_printer tyxml))
 
 (executable
@@ -65,12 +68,15 @@
  (targets
   (dir _opam))
  (action
-  (run jtw opam -o _opam stringext core)))
+  (run jtw opam -o _opam str stringext mime_printer)))
 
 (alias
  (name default)
  (deps
   index.html
+  demo.html
+  demo.js
+  README.md
   example.bc.js
   example2.bc.js
   example3.bc.js

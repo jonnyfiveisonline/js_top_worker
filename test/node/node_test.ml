@@ -88,7 +88,6 @@ let start_server () =
   Server.list_envs (IdlM.T.lift list_envs);
   Server.setup (IdlM.T.lift setup);
   Server.exec execute;
-  Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
@@ -103,7 +102,7 @@ let _ =
   let ( let* ) = IdlM.ErrM.bind in
   let init_config =
     Js_top_worker_rpc.Toplevel_api_gen.
-      { stdlib_dcs = None; findlib_requires = [ "base" ]; execute = true }
+      { stdlib_dcs = None; findlib_requires = [ "base" ]; findlib_index = None; execute = true }
   in
   let x =
     let open Client in

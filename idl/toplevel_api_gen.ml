@@ -1974,6 +1974,9 @@ type init_config =
   findlib_requires: string list [@ocaml.doc " Findlib packages to require "];
   stdlib_dcs: string option
     [@ocaml.doc " URL to the dynamic cmis for the OCaml standard library "];
+  findlib_index: string option
+    [@ocaml.doc
+      " URL to the findlib_index file. Defaults to \"findlib_index\" "];
   execute: bool
     [@ocaml.doc " Whether this session should support execution or not. "]}
 [@@deriving rpcty]
@@ -2003,6 +2006,18 @@ include
         Rpc.Types.fget = (fun _r -> _r.stdlib_dcs);
         Rpc.Types.fset = (fun v _s -> { _s with stdlib_dcs = v })
       }
+    and init_config_findlib_index : (_, init_config) Rpc.Types.field =
+      {
+        Rpc.Types.fname = "findlib_index";
+        Rpc.Types.field =
+          (Rpc.Types.Option (let open Rpc.Types in Basic String));
+        Rpc.Types.fdefault = None;
+        Rpc.Types.fdescription =
+          ["URL to the findlib_index file. Defaults to \"findlib_index\""];
+        Rpc.Types.fversion = None;
+        Rpc.Types.fget = (fun _r -> _r.findlib_index);
+        Rpc.Types.fset = (fun v _s -> { _s with findlib_index = v })
+      }
     and init_config_execute : (_, init_config) Rpc.Types.field =
       {
         Rpc.Types.fname = "execute";
@@ -2020,6 +2035,7 @@ include
            Rpc.Types.fields =
              [Rpc.Types.BoxedField init_config_findlib_requires;
              Rpc.Types.BoxedField init_config_stdlib_dcs;
+             Rpc.Types.BoxedField init_config_findlib_index;
              Rpc.Types.BoxedField init_config_execute];
            Rpc.Types.sname = "init_config";
            Rpc.Types.version = None;
@@ -2030,23 +2046,31 @@ include
                      (let open Rpc.Types in Basic Bool))
                     >>=
                     (fun init_config_execute ->
-                       (getter.Rpc.Types.field_get "stdlib_dcs"
+                       (getter.Rpc.Types.field_get "findlib_index"
                           (Rpc.Types.Option
                              (let open Rpc.Types in Basic String)))
                          >>=
-                         (fun init_config_stdlib_dcs ->
-                            (getter.Rpc.Types.field_get "findlib_requires"
-                               (Rpc.Types.List
+                         (fun init_config_findlib_index ->
+                            (getter.Rpc.Types.field_get "stdlib_dcs"
+                               (Rpc.Types.Option
                                   (let open Rpc.Types in Basic String)))
                               >>=
-                              (fun init_config_findlib_requires ->
-                                 return
-                                   {
-                                     findlib_requires =
-                                       init_config_findlib_requires;
-                                     stdlib_dcs = init_config_stdlib_dcs;
-                                     execute = init_config_execute
-                                   }))))
+                              (fun init_config_stdlib_dcs ->
+                                 (getter.Rpc.Types.field_get
+                                    "findlib_requires"
+                                    (Rpc.Types.List
+                                       (let open Rpc.Types in Basic String)))
+                                   >>=
+                                   (fun init_config_findlib_requires ->
+                                      return
+                                        {
+                                          findlib_requires =
+                                            init_config_findlib_requires;
+                                          stdlib_dcs = init_config_stdlib_dcs;
+                                          findlib_index =
+                                            init_config_findlib_index;
+                                          execute = init_config_execute
+                                        })))))
          } : init_config Rpc.Types.structure)
     and init_config =
       {
@@ -2056,6 +2080,7 @@ include
       }
     let _ = init_config_findlib_requires
     and _ = init_config_stdlib_dcs
+    and _ = init_config_findlib_index
     and _ = init_config_execute
     and _ = typ_of_init_config
     and _ = init_config
@@ -2189,14 +2214,15 @@ module Make(R:RPC) =
         }
     let implementation = implement description
     let unit_p = Param.mk Types.unit
-    let phrase_p = Param.mk Types.string
+    let phrase_p =
+      Param.mk ~name:"string" ~description:["The OCaml phrase to execute"]
+        Types.string
     let id_p = Param.mk opt_id
     let env_id_p =
       Param.mk ~name:"env_id"
         ~description:["Environment ID (empty string for default)"] env_id
     let env_id_list_p = Param.mk env_id_list
     let dependencies_p = Param.mk dependencies
-    let typecheck_result_p = Param.mk exec_result
     let exec_result_p = Param.mk exec_result
     let source_p = Param.mk source
     let position_p = Param.mk msource_position
@@ -2238,11 +2264,6 @@ module Make(R:RPC) =
         "initial blurb printed when starting a toplevel. Note that the";
         "toplevel must be initialised first. If env_id is None, uses the";
         "default environment."] (env_id_p @-> (returning exec_result_p err))
-    let typecheck =
-      declare "typecheck"
-        ["Typecheck a phrase without actually executing it.";
-        "If env_id is None, uses the default environment."]
-        (env_id_p @-> (phrase_p @-> (returning typecheck_result_p err)))
     let exec =
       declare "exec"
         ["Execute a phrase using the toplevel. The toplevel must have been";

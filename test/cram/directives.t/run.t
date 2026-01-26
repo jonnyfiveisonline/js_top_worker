@@ -9,17 +9,18 @@ References:
   $ unix_worker &
   unix_worker: [INFO] init()
   unix_worker: [INFO] init() finished
+  unix_worker: [INFO] init()
+  unix_worker: [INFO] init() finished
   unix_worker: [INFO] setup() for env default...
   unix_worker: [INFO] Setup complete
   unix_worker: [INFO] setup() finished for env default
+  unix_worker: [INFO] setup() for env default...
+  unix_worker: [INFO] setup() already done for env default
   $ sleep 2
   $ unix_client init '{ findlib_requires:[], execute: true }'
   N
   $ unix_client setup ''
-  {mime_vals:[];stderr:S(error while evaluating #enable "pretty";;
-  error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.4.0
-  Unknown directive enable.
-  Unknown directive disable.)}
+  {mime_vals:[];stderr:S(Environment already set up)}
 
 ==============================================
 SECTION 1: Basic Code Execution (Baseline)
@@ -389,6 +390,12 @@ SECTION 8: #help
     #show_val <ident>
       Print the signature of the corresponding value.
     
+                                  Findlib
+    #require <str>
+      Load a package (js_top_worker)
+    #require <str>
+      Load a package (js_top_worker)
+    
                                   Pretty-printing
     #install_printer <ident>
       Registers a printer for values of a certain type.
@@ -429,7 +436,6 @@ SECTION 8: #help
     #camlp4r
     #list
     #predicates <str>
-    #require <str>
     #thread)}
 
 ==============================================
@@ -482,7 +488,9 @@ SECTION 11: Findlib #require
 
   $ unix_client exec_toplevel '' '# #require "str";;'
   {mime_vals:[];parts:[];script:S(# #require "str";;
-    /home/node/.opam/default/lib/ocaml/str: added to search path)}
+    unix_worker: [INFO] Custom #require: loading str
+    /home/node/.opam/default/lib/ocaml/str: added to search path
+    unix_worker: [INFO] Custom #require: str loaded)}
 
   $ unix_client exec_toplevel '' '# Str.regexp "test";;'
   {mime_vals:[];parts:[];script:S(# Str.regexp "test";;
@@ -762,6 +770,19 @@ SECTION 12: Findlib #list
     ppx_compare.runtime-lib (version: v0.17.0)
     ppx_custom_printf   (version: v0.17.0)
     ppx_derivers        (version: n/a)
+    ppx_deriving        (version: n/a)
+    ppx_deriving.api    (version: 6.1.1)
+    ppx_deriving.create (version: 6.1.1)
+    ppx_deriving.enum   (version: 6.1.1)
+    ppx_deriving.eq     (version: 6.1.1)
+    ppx_deriving.fold   (version: 6.1.1)
+    ppx_deriving.iter   (version: 6.1.1)
+    ppx_deriving.make   (version: 6.1.1)
+    ppx_deriving.map    (version: 6.1.1)
+    ppx_deriving.ord    (version: 6.1.1)
+    ppx_deriving.runtime (version: 6.1.1)
+    ppx_deriving.show   (version: 6.1.1)
+    ppx_deriving.std    (version: 6.1.1)
     ppx_deriving_rpc    (version: 10.0.0)
     ppx_diff            (version: n/a)
     ppx_diff.diffable   (version: v0.17.1)
@@ -945,7 +966,9 @@ Unknown directive:
 
   $ unix_client exec_toplevel '' '# #require "nonexistent_package_12345";;'
   {mime_vals:[];parts:[];script:S(# #require "nonexistent_package_12345";;
-    No such package: nonexistent_package_12345)}
+    unix_worker: [INFO] Custom #require: loading nonexistent_package_12345
+    No such package: nonexistent_package_12345
+    unix_worker: [INFO] Custom #require: nonexistent_package_12345 loaded)}
 
 #use non-existent file:
 

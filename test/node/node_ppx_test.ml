@@ -98,7 +98,6 @@ let start_server () =
   Server.list_envs (IdlM.T.lift list_envs);
   Server.setup (IdlM.T.lift setup);
   Server.exec execute;
-  Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
@@ -134,7 +133,7 @@ let _ =
   let ( let* ) = IdlM.ErrM.bind in
 
   let init_config =
-    { stdlib_dcs = None; findlib_requires = []; execute = true }
+    { stdlib_dcs = None; findlib_requires = []; findlib_index = None; execute = true }
   in
 
   let test_sequence =
@@ -142,10 +141,19 @@ let _ =
     let* _ = Client.init rpc init_config in
     let* _ = Client.setup rpc "" in
 
-    (* Load ppx_deriving.runtime so generated code can reference it *)
-    let* r = run_toplevel rpc "#require \"ppx_deriving.runtime\";;" in
-    Printf.printf "Loading ppx_deriving.runtime: %s\n%!"
-      (if contains r "Error" then "FAILED" else "OK");
+    Printf.printf "--- Loading PPX dynamically ---\n%!";
+
+    (* Dynamically load ppx_deriving.show - this should:
+       1. Load the PPX deriver (registers with ppxlib)
+       2. Auto-load ppx_deriving.runtime (via findlibish -ppx_driver predicate) *)
+    let* r = run_toplevel rpc "#require \"ppx_deriving.show\";;" in
+    test "load_ppx_show" (not (contains r "Error"))
+      (if contains r "Error" then r else "ppx_deriving.show loaded");
+
+    (* Also load eq deriver *)
+    let* r = run_toplevel rpc "#require \"ppx_deriving.eq\";;" in
+    test "load_ppx_eq" (not (contains r "Error"))
+      (if contains r "Error" then r else "ppx_deriving.eq loaded");
 
     Printf.printf "\n--- Section 1: ppx_deriving.show ---\n%!";
 

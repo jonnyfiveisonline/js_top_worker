@@ -2,8 +2,50 @@
 
 node_ppx_test.js: [INFO] init()
 Initializing findlib
+Parsed uri: lib/stdlib-shims/META
+Reading library: stdlib-shims
+Number of children: 0
 Parsed uri: lib/sexplib0/META
 Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ppxlib/META
+Reading library: ppxlib
+Number of children: 11
+Found child: __private__
+Reading library: ppxlib.__private__
+Number of children: 1
+Found child: ppx_foo_deriver
+Reading library: ppxlib.__private__.ppx_foo_deriver
+Number of children: 0
+Found child: ast
+Reading library: ppxlib.ast
+Number of children: 0
+Found child: astlib
+Reading library: ppxlib.astlib
+Number of children: 0
+Found child: metaquot
+Reading library: ppxlib.metaquot
+Number of children: 0
+Found child: metaquot_lifters
+Reading library: ppxlib.metaquot_lifters
+Number of children: 0
+Found child: print_diff
+Reading library: ppxlib.print_diff
+Number of children: 0
+Found child: runner
+Reading library: ppxlib.runner
+Number of children: 0
+Found child: runner_as_ppx
+Reading library: ppxlib.runner_as_ppx
+Number of children: 0
+Found child: stdppx
+Reading library: ppxlib.stdppx
+Number of children: 0
+Found child: traverse
+Reading library: ppxlib.traverse
+Number of children: 0
+Found child: traverse_builtins
+Reading library: ppxlib.traverse_builtins
 Number of children: 0
 Parsed uri: lib/ppx_deriving/META
 Reading library: ppx_deriving
@@ -44,11 +86,50 @@ Number of children: 0
 Found child: std
 Reading library: ppx_deriving.std
 Number of children: 0
+Parsed uri: lib/ppx_derivers/META
+Reading library: ppx_derivers
+Number of children: 0
 Parsed uri: lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel
 Number of children: 0
 Parsed uri: lib/ocaml/stdlib/META
 Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/ocaml/compiler-libs/META
+Reading library: compiler-libs
+Number of children: 5
+Found child: common
+Reading library: compiler-libs.common
+Number of children: 0
+Found child: bytecomp
+Reading library: compiler-libs.bytecomp
+Number of children: 0
+Found child: optcomp
+Reading library: compiler-libs.optcomp
+Number of children: 0
+Found child: toplevel
+Reading library: compiler-libs.toplevel
+Number of children: 0
+Found child: native-toplevel
+Reading library: compiler-libs.native-toplevel
+Number of children: 0
+Parsed uri: lib/ocaml-compiler-libs/META
+Reading library: ocaml-compiler-libs
+Number of children: 5
+Found child: bytecomp
+Reading library: ocaml-compiler-libs.bytecomp
+Number of children: 0
+Found child: common
+Reading library: ocaml-compiler-libs.common
+Number of children: 0
+Found child: optcomp
+Reading library: ocaml-compiler-libs.optcomp
+Number of children: 0
+Found child: shadow
+Reading library: ocaml-compiler-libs.shadow
+Number of children: 0
+Found child: toplevel
+Reading library: ocaml-compiler-libs.toplevel
 Number of children: 0
 Parsed uri: lib/base/META
 Reading library: base
@@ -74,8 +155,42 @@ error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_ppx_test.js: [INFO] Setup complete
 node_ppx_test.js: [INFO] setup() finished for env default
-/home/node/.opam/default/lib/ppx_deriving/runtime: added to search path
-Loading ppx_deriving.runtime: OK
+--- Loading PPX dynamically ---
+node_ppx_test.js: [INFO] Custom #require: loading ppx_deriving.show
+Loading package ppx_deriving.show
+lib.dir: show
+Loading package ppx_deriving.runtime
+lib.dir: runtime
+uri: lib/ppx_deriving/runtime/dynamic_cmis.json
+importScripts: lib/ppx_deriving/runtime/ppx_deriving_runtime.cma.js
+Finished loading package ppx_deriving.runtime
+Loading package ppx_deriving
+lib.dir: None
+uri: lib/ppx_deriving/dynamic_cmis.json
+Failed to unmarshal dynamic_cms from url lib/ppx_deriving/dynamic_cmis.json: Failed to fetch dynamic cmis
+uri: lib/ppx_deriving/show/dynamic_cmis.json
+importScripts: lib/ppx_deriving/show/ppx_deriving_show.cma.js
+Finished loading package ppx_deriving.show
+node_ppx_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ppx_deriving/show/
+node_ppx_test.js: [INFO]   toplevel modules: Ppx_deriving_show
+node_ppx_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ppx_deriving/runtime/
+node_ppx_test.js: [INFO]   toplevel modules: Ppx_deriving_runtime
+node_ppx_test.js: [INFO] Custom #require: ppx_deriving.show loaded
+[PASS] load_ppx_show: ppx_deriving.show loaded
+node_ppx_test.js: [INFO] Custom #require: loading ppx_deriving.eq
+Loading package ppx_deriving.eq
+lib.dir: eq
+Loading package ppx_deriving
+lib.dir: None
+uri: lib/ppx_deriving/dynamic_cmis.json
+Failed to unmarshal dynamic_cms from url lib/ppx_deriving/dynamic_cmis.json: Failed to fetch dynamic cmis
+uri: lib/ppx_deriving/eq/dynamic_cmis.json
+importScripts: lib/ppx_deriving/eq/ppx_deriving_eq.cma.js
+Finished loading package ppx_deriving.eq
+node_ppx_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ppx_deriving/eq/
+node_ppx_test.js: [INFO]   toplevel modules: Ppx_deriving_eq
+node_ppx_test.js: [INFO] Custom #require: ppx_deriving.eq loaded
+[PASS] load_ppx_eq: ppx_deriving.eq loaded
 
 --- Section 1: ppx_deriving.show ---
 [PASS] show_type_defined: type color defined
@@ -131,5 +246,5 @@ Error: Unbound value M.show_t
 Hint:   Did you mean M.show?
 [PASS] module_show_works: # M.show_t M.A;;
 
-=== Results: 23/23 tests passed ===
+=== Results: 25/25 tests passed ===
 SUCCESS: All PPX tests passed!

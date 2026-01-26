@@ -1,3 +1,0 @@
-(test
- (name test_cbor)
- (libraries js_top_worker-rpc rpclib cbort))

@@ -14,6 +14,7 @@ let initialise s callback =
         {
           stdlib_dcs = None;
           findlib_requires = [ "stringext" ];
+          findlib_index = None;
           execute = true;
         }
   in

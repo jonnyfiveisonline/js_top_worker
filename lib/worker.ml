@@ -9,11 +9,9 @@ module Server = Toplevel_api_gen.Make (Impl.IdlM.GenServer ())
    thread" keeping the page responsive. *)
 
 let server process e =
-  (* Jslib.log "Worker received: %s" e; *)
-  let id, call = Transport.Cbor.id_and_call_of_string e in
+  let id, call = Transport.Json.id_and_call_of_string e in
   Lwt.bind (process call) (fun response ->
-      let rtxt = Transport.Cbor.string_of_response ~id response in
-      (* Jslib.log "Worker sending CBOR response"; *)
+      let rtxt = Transport.Json.string_of_response ~id response in
       Js_of_ocaml.Worker.post_message (Js_of_ocaml.Js.string rtxt);
       Lwt.return ())
 
@@ -53,12 +51,22 @@ module S : Impl.S = struct
 
   let sync_get = Jslib.sync_get
   let async_get = Jslib.async_get
-  let create_file = Js_of_ocaml.Sys_js.create_file
+
+  (* Idempotent create_file that ignores "file already exists" errors.
+     This is needed because multiple .cma.js files compiled with --toplevel
+     may embed the same CMI files, and when loaded via import_scripts they
+     all try to register those CMIs. *)
+  let create_file ~name ~content =
+    try Js_of_ocaml.Sys_js.create_file ~name ~content
+    with Sys_error _ -> ()
 
   let get_stdlib_dcs uri =
     Findlibish.fetch_dynamic_cmis sync_get uri |> Result.to_list
 
-  let import_scripts = Js_of_ocaml.Worker.import_scripts
+  let import_scripts urls =
+    (* Map relative URLs to absolute using the global base URL *)
+    let absolute_urls = List.map Jslib.map_url urls in
+    Js_of_ocaml.Worker.import_scripts absolute_urls
   let findlib_init = Findlibish.init async_get
 
   let require b v = function
@@ -96,7 +104,6 @@ let run () =
     Server.list_envs (Impl.IdlM.T.lift list_envs);
     Server.setup (Impl.IdlM.T.lift setup);
     Server.exec execute;
-    Server.typecheck typecheck_phrase;
     Server.complete_prefix complete_prefix;
     Server.query_errors query_errors;
     Server.type_enclosing type_enclosing;
@@ -105,7 +112,7 @@ let run () =
     Js_of_ocaml.Worker.set_onmessage (fun x ->
         let s = Js_of_ocaml.Js.to_string x in
         Jslib.log "Worker received: %s" s;
-        ignore (server rpc_fn s));
+        Lwt.async (fun () -> server rpc_fn s));
     Console.console##log (Js.string "All finished")
   with e ->
     Console.console##log (Js.string ("Exception: " ^ Printexc.to_string e))

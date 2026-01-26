@@ -47,7 +47,6 @@ let run () =
   Server.exec execute;
   Server.setup (Impl.IdlM.T.lift setup);
   Server.init (Impl.IdlM.T.lift init);
-  Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;

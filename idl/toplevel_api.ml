@@ -186,6 +186,7 @@ type cma = {
 type init_config = {
   findlib_requires : string list; (** Findlib packages to require *)
   stdlib_dcs : string option; (** URL to the dynamic cmis for the OCaml standard library *)
+  findlib_index : string option; (** URL to the findlib_index file. Defaults to "findlib_index" *)
   execute : bool (** Whether this session should support execution or not. *)
 } [@@deriving rpcty]
 type err = InternalError of string [@@deriving rpcty]
@@ -225,12 +226,11 @@ module Make (R : RPC) = struct
 
   let implementation = implement description
   let unit_p = Param.mk Types.unit
-  let phrase_p = Param.mk Types.string
+  let phrase_p = Param.mk ~name:"string" ~description:["The OCaml phrase to execute"] Types.string
   let id_p = Param.mk opt_id
   let env_id_p = Param.mk ~name:"env_id" ~description:["Environment ID (empty string for default)"] env_id
   let env_id_list_p = Param.mk env_id_list
   let dependencies_p = Param.mk dependencies
-  let typecheck_result_p = Param.mk exec_result
   let exec_result_p = Param.mk exec_result
 
   let source_p = Param.mk source
@@ -295,14 +295,6 @@ module Make (R : RPC) = struct
         "default environment.";
       ]
       (env_id_p @-> returning exec_result_p err)
-
-  let typecheck =
-    declare "typecheck"
-      [
-        "Typecheck a phrase without actually executing it.";
-        "If env_id is None, uses the default environment.";
-      ]
-      (env_id_p @-> phrase_p @-> returning typecheck_result_p err)
 
   let exec =
     declare "exec"

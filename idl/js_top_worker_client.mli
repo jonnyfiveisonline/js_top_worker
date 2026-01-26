@@ -52,10 +52,6 @@ module W : sig
       uses the default environment. Return value is the initial blurb printed
       when starting a toplevel. Note that the toplevel must be initialised first. *)
 
-  val typecheck : rpc -> string -> string -> (exec_result, err) result Lwt.t
-  (** Typecheck a phrase using the toplevel. If [env_id] is empty string, uses the
-      default environment. The toplevel must have been initialised first. *)
-
   val exec : rpc -> string -> string -> (exec_result, err) result Lwt.t
   (** Execute a phrase using the toplevel. If [env_id] is empty string, uses the
       default environment. The toplevel must have been initialised first. *)

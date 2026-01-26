@@ -1,13 +1,60 @@
 node_test.js: [INFO] init()
 Initializing findlib
 node_test.js: [INFO] async_get: _opam/findlib_index
+node_test.js: [INFO] async_get: _opam/lib/stdlib-shims/META
 node_test.js: [INFO] async_get: _opam/lib/sexplib0/META
+node_test.js: [INFO] async_get: _opam/lib/ppxlib/META
 node_test.js: [INFO] async_get: _opam/lib/ppx_deriving/META
+node_test.js: [INFO] async_get: _opam/lib/ppx_derivers/META
 node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/META
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
+node_test.js: [INFO] async_get: _opam/lib/ocaml/compiler-libs/META
+node_test.js: [INFO] async_get: _opam/lib/ocaml-compiler-libs/META
 node_test.js: [INFO] async_get: _opam/lib/base/META
+Parsed uri: lib/stdlib-shims/META
+Reading library: stdlib-shims
+Number of children: 0
 Parsed uri: lib/sexplib0/META
 Reading library: sexplib0
+Number of children: 0
+Parsed uri: lib/ppxlib/META
+Reading library: ppxlib
+Number of children: 11
+Found child: __private__
+Reading library: ppxlib.__private__
+Number of children: 1
+Found child: ppx_foo_deriver
+Reading library: ppxlib.__private__.ppx_foo_deriver
+Number of children: 0
+Found child: ast
+Reading library: ppxlib.ast
+Number of children: 0
+Found child: astlib
+Reading library: ppxlib.astlib
+Number of children: 0
+Found child: metaquot
+Reading library: ppxlib.metaquot
+Number of children: 0
+Found child: metaquot_lifters
+Reading library: ppxlib.metaquot_lifters
+Number of children: 0
+Found child: print_diff
+Reading library: ppxlib.print_diff
+Number of children: 0
+Found child: runner
+Reading library: ppxlib.runner
+Number of children: 0
+Found child: runner_as_ppx
+Reading library: ppxlib.runner_as_ppx
+Number of children: 0
+Found child: stdppx
+Reading library: ppxlib.stdppx
+Number of children: 0
+Found child: traverse
+Reading library: ppxlib.traverse
+Number of children: 0
+Found child: traverse_builtins
+Reading library: ppxlib.traverse_builtins
 Number of children: 0
 Parsed uri: lib/ppx_deriving/META
 Reading library: ppx_deriving
@@ -48,11 +95,50 @@ Number of children: 0
 Found child: std
 Reading library: ppx_deriving.std
 Number of children: 0
+Parsed uri: lib/ppx_derivers/META
+Reading library: ppx_derivers
+Number of children: 0
 Parsed uri: lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel
 Number of children: 0
 Parsed uri: lib/ocaml/stdlib/META
 Reading library: stdlib
+Number of children: 0
+Parsed uri: lib/ocaml/compiler-libs/META
+Reading library: compiler-libs
+Number of children: 5
+Found child: common
+Reading library: compiler-libs.common
+Number of children: 0
+Found child: bytecomp
+Reading library: compiler-libs.bytecomp
+Number of children: 0
+Found child: optcomp
+Reading library: compiler-libs.optcomp
+Number of children: 0
+Found child: toplevel
+Reading library: compiler-libs.toplevel
+Number of children: 0
+Found child: native-toplevel
+Reading library: compiler-libs.native-toplevel
+Number of children: 0
+Parsed uri: lib/ocaml-compiler-libs/META
+Reading library: ocaml-compiler-libs
+Number of children: 5
+Found child: bytecomp
+Reading library: ocaml-compiler-libs.bytecomp
+Number of children: 0
+Found child: common
+Reading library: ocaml-compiler-libs.common
+Number of children: 0
+Found child: optcomp
+Reading library: ocaml-compiler-libs.optcomp
+Number of children: 0
+Found child: shadow
+Reading library: ocaml-compiler-libs.shadow
+Number of children: 0
+Found child: toplevel
+Reading library: ocaml-compiler-libs.toplevel
 Number of children: 0
 Parsed uri: lib/base/META
 Reading library: base

@@ -45,7 +45,7 @@ let test_init_and_setup rpc =
   let* () =
     W.init rpc
       Toplevel_api_gen.
-        { stdlib_dcs = None; findlib_requires = []; execute = true }
+        { stdlib_dcs = None; findlib_requires = []; findlib_index = None; execute = true }
   in
   add_result "init" true "Initialized successfully";
   let* _o = W.setup rpc "" in
@@ -75,18 +75,6 @@ let test_exec_with_output rpc =
     (Printf.sprintf "stdout=%s" (Option.value ~default:"(none)" o.stdout));
   Lwt.return (Ok ())
 
-let test_typecheck rpc =
-  let ( let* ) = Lwt_result.bind in
-  (* Valid code should typecheck *)
-  let* o1 = W.typecheck rpc "" "let f x = x + 1;;" in
-  let valid_ok = Option.is_none o1.stderr in
-  add_result "typecheck_valid" valid_ok "Valid code typechecks";
-  (* Invalid code should produce error *)
-  let* o2 = W.typecheck rpc "" "let f x = x + \"string\";;" in
-  let invalid_has_error = Option.is_some o2.stderr || Option.is_some o2.highlight in
-  add_result "typecheck_invalid" invalid_has_error "Invalid code produces error";
-  Lwt.return (Ok ())
-
 let test_query_errors rpc =
   let ( let* ) = Lwt_result.bind in
   (* Test that query_errors RPC call works - result depends on context *)
@@ -107,7 +95,6 @@ let run_tests worker_url =
     let* () = test_init_and_setup rpc in
     let* () = test_exec rpc in
     let* () = test_exec_with_output rpc in
-    let* () = test_typecheck rpc in
     let* () = test_query_errors rpc in
     Lwt.return (Ok ())
   in

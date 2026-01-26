@@ -1,7 +1,7 @@
 (** Transport abstraction for RPC encoding.
 
-    This module provides a common interface for encoding/decoding RPC messages,
-    allowing switching between JSON and CBOR transports. *)
+    This module provides a common interface for encoding/decoding RPC messages.
+    Uses JSON-RPC for browser compatibility. *)
 
 (** Transport signature defining the encoding/decoding interface. *)
 module type S = sig
@@ -20,15 +20,6 @@ module type S = sig
       @raise Failure if decoding fails. *)
 end
 
-(** JSON-RPC transport (existing protocol).
+(** JSON-RPC transport.
     Uses the standard JSON-RPC 2.0 encoding from [rpclib.json]. *)
 module Json : S
-
-(** CBOR transport (compact binary protocol).
-    Uses {!Rpc_cbor} for type-safe binary encoding. *)
-module Cbor : S
-
-(** Auto-detecting transport.
-    Uses CBOR for encoding but can decode either JSON or CBOR responses.
-    Useful for gradual migration or mixed-protocol environments. *)
-module Auto : S

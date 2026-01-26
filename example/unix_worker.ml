@@ -171,7 +171,6 @@ let start_server () =
   Server.list_envs (IdlM.T.lift list_envs);
   Server.setup (IdlM.T.lift setup);
   Server.exec execute;
-  Server.typecheck typecheck_phrase;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
@@ -179,9 +178,9 @@ let start_server () =
   let rpc_fn = IdlM.server Server.implementation in
   let process x =
     let open Lwt in
-    let _, call = Js_top_worker_rpc.Transport.Cbor.id_and_call_of_string (Bytes.unsafe_to_string x) in
+    let _, call = Js_top_worker_rpc.Transport.Json.id_and_call_of_string (Bytes.unsafe_to_string x) in
     rpc_fn call >>= fun response ->
-    Js_top_worker_rpc.Transport.Cbor.string_of_response ~id:(Rpc.Int 0L) response |> return
+    Js_top_worker_rpc.Transport.Json.string_of_response ~id:(Rpc.Int 0L) response |> return
   in
   serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath
 

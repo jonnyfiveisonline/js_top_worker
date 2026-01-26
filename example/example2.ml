@@ -11,7 +11,7 @@ let initialise s callback =
   let* () =
     W.init rpc
       Toplevel_api_gen.
-        { stdlib_dcs = None; findlib_requires = []; execute = true }
+        { stdlib_dcs = None; findlib_requires = []; findlib_index = None; execute = true }
   in
   Lwt.return (Ok rpc)
 

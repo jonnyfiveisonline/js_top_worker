@@ -1,9 +1,12 @@
 {
   "name": "Claude Code OCaml Sandbox",
-  "image": "ghcr.io/avsm/claude-ocaml-devcontainer:main",
+  "image": "ghcr.io/jonludlam/claude-ocaml-devcontainer:main",
   "runArgs": [
     "--cap-add=NET_ADMIN",
-    "--cap-add=NET_RAW"
+    "--cap-add=NET_RAW",
+    "--init",
+    "--ipc=host",
+    "--cap-add=SYS_ADMIN"
   ],
   "customizations": {
     "vscode": {
@@ -47,6 +50,5 @@
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh",
   "waitFor": "postStartCommand"
 }

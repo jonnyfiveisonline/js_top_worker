@@ -11,7 +11,21 @@ let map_url url =
     in
     Option.map Js.to_string x
   in
-  match global_rel_url with Some rel -> Filename.concat rel url | None -> url
+  match global_rel_url with
+  | Some rel ->
+      (* If url starts with /, it's relative to server root - just use the scheme/host *)
+      if String.length url > 0 && url.[0] = '/' then
+        (* Extract scheme://host from rel and append url *)
+        match String.index_opt rel ':' with
+        | Some colon_idx ->
+            let after_scheme = colon_idx + 3 in (* skip "://" *)
+            (match String.index_from_opt rel after_scheme '/' with
+             | Some slash_idx -> String.sub rel 0 slash_idx ^ url
+             | None -> rel ^ url)
+        | None -> url
+      else
+        Filename.concat rel url
+  | None -> url
 
 let sync_get url =
   let open Js_of_ocaml in
@@ -34,6 +48,7 @@ let sync_get url =
 let async_get url =
   let ( let* ) = Lwt.bind in
   let open Js_of_ocaml in
+  let url = map_url url in
   Console.console##log (Js.string ("Fetching: " ^ url));
   let* frame =
     Js_of_ocaml_lwt.XmlHttpRequest.perform_raw ~response_type:ArrayBuffer url

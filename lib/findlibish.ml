@@ -46,15 +46,27 @@ let rec read_libraries_from_pkg_defs ~library_name ~dir meta_uri pkg_expr =
   try
     Jslib.log "Reading library: %s" library_name;
     let pkg_defs = pkg_expr.Fl_metascanner.pkg_defs in
+    (* Try to find archive with various predicates.
+       PPX packages often only define archive(ppx_driver,byte), so we need to
+       check multiple predicate combinations to find the right archive. *)
     let archive_filename =
-      try Some (Fl_metascanner.lookup "archive" [ "byte" ] pkg_defs)
+      (* First try with ppx_driver,byte - this catches PPX libraries like ppx_deriving.show *)
+      try Some (Fl_metascanner.lookup "archive" [ "ppx_driver"; "byte" ] pkg_defs)
       with _ -> (
-        try Some (Fl_metascanner.lookup "archive" [ "native" ] pkg_defs)
-        with _ -> None)
+        (* Then try plain byte *)
+        try Some (Fl_metascanner.lookup "archive" [ "byte" ] pkg_defs)
+        with _ -> (
+          (* Then try native as fallback *)
+          try Some (Fl_metascanner.lookup "archive" [ "native" ] pkg_defs)
+          with _ -> None))
     in
 
+    (* Use -ppx_driver predicate for toplevel use - this ensures PPX packages
+       pull in their runtime dependencies (e.g., ppx_deriving.show requires
+       ppx_deriving.runtime when not using ppx_driver) *)
+    let predicates = ["-ppx_driver"] in
     let deps_str =
-      try Fl_metascanner.lookup "requires" [] pkg_defs with _ -> "" in
+      try Fl_metascanner.lookup "requires" predicates pkg_defs with _ -> "" in
     let deps = Astring.String.fields ~empty:false deps_str in
     let subdir =
       List.find_opt (fun d -> d.Fl_metascanner.def_var = "directory") pkg_defs
@@ -113,31 +125,30 @@ let fetch_dynamic_cmis sync_get url =
 
 let (let*) = Lwt.bind
 
-let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findlib_index : t Lwt.t =
-  Jslib.log "Initializing findlib";
-  let* findlib_txt = async_get findlib_index in
-  let findlib_metas =
-    match findlib_txt with
-    | Error (`Msg m) ->
-        Jslib.log "Error fetching findlib index: %s" m;
-        []
-    | Ok txt -> Astring.String.fields ~empty:false txt
-  in
-  let* metas =
-    Lwt_list.map_p
-      (fun x ->
-        let* res = async_get x in
-        match res with
-        | Error (`Msg m) ->
-            Jslib.log "Error fetching findlib meta %s: %s" x m;
-          Lwt.return_none
-        | Ok meta -> Lwt.return_some (x, meta))
-      findlib_metas
-  in
-  let metas = List.filter_map Fun.id metas in
-  List.filter_map
-    (fun (x, meta) ->
-      match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference x with
+(** Parse a findlib_index file (JSON or legacy text format) and return
+    the list of package paths and dependency universe paths *)
+let parse_findlib_index content =
+  (* Try JSON format first *)
+  try
+    let json = Yojson.Safe.from_string content in
+    let open Yojson.Safe.Util in
+    let packages = json |> member "packages" |> to_list |> List.map to_string in
+    let deps = json |> member "deps" |> to_list |> List.map to_string in
+    (packages, deps)
+  with _ ->
+    (* Fall back to legacy whitespace-separated format *)
+    let packages = Astring.String.fields ~empty:false content in
+    (packages, [])
+
+(** Load a single META file and parse it into a library *)
+let load_meta async_get meta_path =
+  let* res = async_get meta_path in
+  match res with
+  | Error (`Msg m) ->
+      Jslib.log "Error fetching findlib meta %s: %s" meta_path m;
+      Lwt.return_none
+  | Ok meta_content ->
+      match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference meta_path with
       | Ok uri -> (
           Jslib.log "Parsed uri: %s" (Uri.path uri);
           let path = Uri.path uri in
@@ -147,23 +158,77 @@ let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findli
               Fpath.parent file |> Fpath.basename
             else Fpath.get_ext file
           in
-
-          let lexing = Lexing.from_string meta in
+          let lexing = Lexing.from_string meta_content in
           try
             let meta = Fl_metascanner.parse_lexing lexing in
             let libraries =
               read_libraries_from_pkg_defs ~library_name:base_library_name
                 ~dir:None uri meta
             in
-            Result.to_option libraries
+            Lwt.return (Result.to_option libraries)
           with _ ->
             Jslib.log "Failed to parse meta: %s" (Uri.path uri);
-            None)
+            Lwt.return_none)
       | Error m ->
           Jslib.log "Failed to parse uri: %s" m;
-          None)
-    metas
-  |> flatten_libs |> Lwt.return
+          Lwt.return_none
+
+(** Resolve a relative path against a base URL's directory *)
+let resolve_url_relative ~base relative =
+  match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference base with
+  | Ok base_uri ->
+      let base_path = Uri.path base_uri in
+      let base_dir = Fpath.(v base_path |> parent |> to_string) in
+      let resolved = Filename.concat base_dir relative in
+      Uri.with_path base_uri resolved |> Uri.to_string
+  | Error _ -> relative
+
+(** Resolve a path from the URL root (for dependency universes) *)
+let resolve_url_from_root ~base path =
+  match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference base with
+  | Ok base_uri ->
+      let resolved = "/" ^ path in
+      Uri.with_path base_uri resolved |> Uri.to_string
+  | Error _ -> path
+
+let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findlib_index : t Lwt.t =
+  Jslib.log "Initializing findlib";
+  (* Track visited universes to avoid infinite loops *)
+  let visited = Hashtbl.create 16 in
+  let rec load_universe index_url =
+    if Hashtbl.mem visited index_url then
+      Lwt.return []
+    else begin
+      Hashtbl.add visited index_url ();
+      let* findlib_txt = async_get index_url in
+      match findlib_txt with
+      | Error (`Msg m) ->
+          Jslib.log "Error fetching findlib index %s: %s" index_url m;
+          Lwt.return []
+      | Ok content ->
+          let packages, deps = parse_findlib_index content in
+          Jslib.log "Loaded universe %s: %d packages, %d deps" index_url
+            (List.length packages) (List.length deps);
+          (* Resolve package paths relative to the index URL's directory *)
+          let resolved_packages =
+            List.map (fun p -> resolve_url_relative ~base:index_url p) packages
+          in
+          (* Load META files from this universe *)
+          let* local_libs =
+            Lwt_list.filter_map_p (load_meta async_get) resolved_packages
+          in
+          (* Recursively load dependency universes from root paths *)
+          let dep_index_urls =
+            List.map (fun dep ->
+              resolve_url_from_root ~base:index_url (Filename.concat dep "findlib_index"))
+              deps
+          in
+          let* dep_libs = Lwt_list.map_p load_universe dep_index_urls in
+          Lwt.return (local_libs @ List.flatten dep_libs)
+    end
+  in
+  let* all_libs = load_universe findlib_index in
+  Lwt.return (flatten_libs all_libs)
 
 let require ~import_scripts sync_get cmi_only v packages =
   let rec require dcss package :
@@ -187,7 +252,13 @@ let require ~import_scripts sync_get cmi_only v packages =
           let dep_dcs = List.fold_left require dcss lib.deps in
           let path = Fpath.(v (Uri.path lib.meta_uri) |> parent) in
           let dir =
-            match lib.dir with None -> path | Some d -> Fpath.(path // v d)
+            match lib.dir with
+            | None -> path
+            | Some "+" -> Fpath.parent path  (* "+" means parent dir in findlib *)
+            | Some d when String.length d > 0 && d.[0] = '^' ->
+                (* "^" prefix means relative to stdlib dir - treat as parent *)
+                Fpath.parent path
+            | Some d -> Fpath.(path // v d)
           in
           let dcs = Fpath.(dir / dcs_filename |> to_string) in
           let uri = Uri.with_path lib.meta_uri dcs in

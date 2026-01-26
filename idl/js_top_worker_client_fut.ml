@@ -32,12 +32,12 @@ let demux context msg =
       (* Js_of_ocaml.Console.console##log msg; *)
       let msg = Js_of_ocaml.Js.to_string msg in
       (* log (Printf.sprintf "Client received: %s" msg); *)
-      mv (Ok (Transport.Cbor.response_of_string msg))
+      mv (Ok (Transport.Json.response_of_string msg))
 
 let rpc : context -> Rpc.call -> Rpc.response Fut.t =
  fun context call ->
   let open Fut.Syntax in
-  let jv = Transport.Cbor.string_of_call call |> Js_of_ocaml.Js.string in
+  let jv = Transport.Json.string_of_call call |> Js_of_ocaml.Js.string in
   (* log (Printf.sprintf "Client sending: %s" jv); *)
   let v, mv = Fut.create () in
   let outstanding_execution =
@@ -82,7 +82,6 @@ module W = struct
   let destroy_env rpc env_id = Wraw.destroy_env rpc env_id |> Rpc_fut.T.get
   let list_envs rpc = Wraw.list_envs rpc () |> Rpc_fut.T.get
   let setup rpc env_id = Wraw.setup rpc env_id |> Rpc_fut.T.get
-  let typecheck rpc env_id phrase = Wraw.typecheck rpc env_id phrase |> Rpc_fut.T.get
   let exec rpc env_id phrase = Wraw.exec rpc env_id phrase |> Rpc_fut.T.get
 
   let query_errors rpc env_id id deps is_toplevel doc =

@@ -87,12 +87,13 @@ let mangle_toplevel is_toplevel orig_source deps =
 
 (** {2 PPX Preprocessing}
 
-    Handles PPX rewriter registration and application. Supports both:
+    Handles PPX rewriter registration and application. Supports:
     - Old-style [Ast_mapper] PPXs (e.g., [Ppx_js.mapper] for js_of_ocaml)
+    - [ppx_deriving]-based PPXs (registered via [Ppx_deriving.register])
     - Modern [ppxlib]-based PPXs (registered via [Ppxlib.Driver])
 
     The [Ppx_js.mapper] is registered by default to support js_of_ocaml
-    syntax extensions. *)
+    syntax extensions. Other PPXs can be dynamically loaded via [#require]. *)
 
 module JsooTopPpx = struct
   open Js_of_ocaml_compiler.Stdlib
@@ -117,12 +118,26 @@ module JsooTopPpx = struct
         let mapper = ppx_rewriter [] in
         mapper.signature mapper sg)
 
-  (** Apply all PPX transformations: old-style first, then ppxlib.
+  (** Apply ppx_deriving transformations using its mapper class.
+      This handles [@@deriving] attributes for dynamically loaded derivers. *)
+  let apply_ppx_deriving_structure str =
+    let mapper = new Ppx_deriving.mapper in
+    mapper#structure str
+
+  let apply_ppx_deriving_signature sg =
+    let mapper = new Ppx_deriving.mapper in
+    mapper#signature sg
+
+  (** Apply all PPX transformations in order:
+      1. Old-style Ast_mapper (e.g., Ppx_js)
+      2. ppx_deriving derivers
+      3. ppxlib-based PPXs
       Handles AST version conversion between compiler's Parsetree and ppxlib's internal AST. *)
   let preprocess_structure str =
     str
     |> apply_ast_mapper_rewriters_structure
     |> Ppxlib_ast.Selected_ast.of_ocaml Structure
+    |> apply_ppx_deriving_structure
     |> Ppxlib.Driver.map_structure
     |> Ppxlib_ast.Selected_ast.to_ocaml Structure
 
@@ -130,6 +145,7 @@ module JsooTopPpx = struct
     sg
     |> apply_ast_mapper_rewriters_signature
     |> Ppxlib_ast.Selected_ast.of_ocaml Signature
+    |> apply_ppx_deriving_signature
     |> Ppxlib.Driver.map_signature
     |> Ppxlib_ast.Selected_ast.to_ocaml Signature
 
@@ -175,6 +191,7 @@ module Make (S : S) = struct
   let requires : string list ref = ref []
   let path : string option ref = ref None
   let findlib_v : S.findlib_t Lwt.t option ref = ref None
+  let findlib_resolved : S.findlib_t option ref = ref None
   let execution_allowed = ref true
 
   (** {3 Environment Management}
@@ -214,6 +231,88 @@ module Make (S : S) = struct
         let res : bool = Toploop.use_silently Format.std_formatter (String s) in
         if not res then Format.eprintf "error while evaluating %s@." s)
       ()
+
+  (** {3 Custom Require Directive}
+
+      Replaces the standard findlib #require with one that loads JavaScript
+      archives via importScripts. This is necessary because in js_of_ocaml,
+      we can't use Topdirs.dir_load to load .cma files - we need to load
+      .cma.js files via importScripts instead. *)
+
+  let add_dynamic_cmis_sync dcs =
+    (* Synchronous version for #require directive.
+       Fetches and installs toplevel CMIs synchronously. *)
+    let furl = "file://" in
+    let l = String.length furl in
+    if String.length dcs.Toplevel_api_gen.dcs_url > l
+       && String.sub dcs.dcs_url 0 l = furl
+    then begin
+      let path = String.sub dcs.dcs_url l (String.length dcs.dcs_url - l) in
+      Topdirs.dir_directory path
+    end
+    else begin
+      (* Web URL - fetch CMIs synchronously *)
+      let fetch_sync filename =
+        let url = Filename.concat dcs.Toplevel_api_gen.dcs_url filename in
+        S.sync_get url
+      in
+      let path =
+        match !path with Some p -> p | None -> failwith "Path not set"
+      in
+      let to_cmi_filename name =
+        Printf.sprintf "%s.cmi" (String.uncapitalize_ascii name)
+      in
+      Logs.info (fun m -> m "Adding toplevel modules for dynamic cmis from %s" dcs.dcs_url);
+      Logs.info (fun m -> m "  toplevel modules: %s"
+        (String.concat ", " dcs.dcs_toplevel_modules));
+      (* Fetch and create toplevel module CMIs *)
+      List.iter
+        (fun name ->
+          let filename = to_cmi_filename name in
+          match fetch_sync filename with
+          | Some content ->
+              let fs_name = Filename.(concat path filename) in
+              (try S.create_file ~name:fs_name ~content with _ -> ())
+          | None -> ())
+        dcs.dcs_toplevel_modules;
+      (* Install on-demand loader for prefixed modules *)
+      if dcs.dcs_file_prefixes <> [] then begin
+        let open Persistent_env.Persistent_signature in
+        let old_loader = !load in
+        load := fun ~allow_hidden ~unit_name ->
+          let filename = to_cmi_filename unit_name in
+          let fs_name = Filename.(concat path filename) in
+          if (not (Sys.file_exists fs_name))
+             && List.exists
+                  (fun prefix -> String.starts_with ~prefix filename)
+                  dcs.dcs_file_prefixes
+          then begin
+            Logs.info (fun m -> m "Fetching %s\n%!" filename);
+            match fetch_sync filename with
+            | Some content ->
+                (try S.create_file ~name:fs_name ~content with _ -> ())
+            | None -> ()
+          end;
+          old_loader ~allow_hidden ~unit_name
+      end
+    end
+
+  let register_require_directive () =
+    let require_handler pkg =
+      Logs.info (fun m -> m "Custom #require: loading %s" pkg);
+      match !findlib_resolved with
+      | None ->
+          Format.eprintf "Error: findlib not initialized@."
+      | Some v ->
+          let cmi_only = not !execution_allowed in
+          let dcs_list = S.require cmi_only v [pkg] in
+          List.iter add_dynamic_cmis_sync dcs_list;
+          Logs.info (fun m -> m "Custom #require: %s loaded" pkg)
+    in
+    (* Replace the standard findlib #require directive with our custom one.
+       We use add_directive which will override the existing one. *)
+    let info = { Toploop.section = "Findlib"; doc = "Load a package (js_top_worker)" } in
+    Toploop.add_directive "require" (Toploop.Directive_string require_handler) info
 
   let setup functions () =
     let stdout_buff = Buffer.create 100 in
@@ -276,30 +375,10 @@ module Make (S : S) = struct
         Some loc
     | _ -> None
 
-  (** {3 Phrase Execution} *)
+  (** {3 Phrase Execution}
 
-  let execute printval ?pp_code ?highlight_location pp_answer s =
-    let s =
-      let l = String.length s in
-      if String.sub s (l - 2) 2 = ";;" then s else s ^ ";;"
-    in
-    let lb = Lexing.from_function (refill_lexbuf s (ref 0) pp_code) in
-    (try
-       while true do
-         try
-           let phr = !Toploop.parse_toplevel_phrase lb in
-           let phr = JsooTopPpx.preprocess_phrase phr in
-           ignore (Toploop.execute_phrase printval pp_answer phr : bool)
-         with
-         | End_of_file -> raise End_of_file
-         | x ->
-             (match highlight_location with
-             | None -> ()
-             | Some f -> ( match loc x with None -> () | Some loc -> f loc));
-             Errors.report_error Format.err_formatter x
-       done
-     with End_of_file -> ());
-    flush_all ()
+      Executes OCaml phrases in an environment, capturing all output.
+      Handles parsing, PPX preprocessing, and execution with error reporting. *)
 
   let execute_in_env env phrase =
     let code_buff = Buffer.create 100 in
@@ -307,7 +386,7 @@ module Make (S : S) = struct
     let pp_code = Format.formatter_of_buffer code_buff in
     let pp_result = Format.formatter_of_buffer res_buff in
     let highlighted = ref None in
-    let highlight_location loc =
+    let set_highlight loc =
       let _file1, line1, col1 = Location.get_pos_info loc.Location.loc_start in
       let _file2, line2, col2 = Location.get_pos_info loc.Location.loc_end in
       highlighted := Some Toplevel_api_gen.{ line1; col1; line2; col2 }
@@ -316,10 +395,30 @@ module Make (S : S) = struct
     Buffer.clear res_buff;
     Buffer.clear stderr_buff;
     Buffer.clear stdout_buff;
+    let phrase =
+      let l = String.length phrase in
+      if l >= 2 && String.sub phrase (l - 2) 2 = ";;" then phrase
+      else phrase ^ ";;"
+    in
     let o, () =
       Environment.with_env env (fun () ->
         S.capture
-          (fun () -> execute true ~pp_code ~highlight_location pp_result phrase)
+          (fun () ->
+            let lb = Lexing.from_function (refill_lexbuf phrase (ref 0) (Some pp_code)) in
+            (try
+               while true do
+                 try
+                   let phr = !Toploop.parse_toplevel_phrase lb in
+                   let phr = JsooTopPpx.preprocess_phrase phr in
+                   ignore (Toploop.execute_phrase true pp_result phr : bool)
+                 with
+                 | End_of_file -> raise End_of_file
+                 | x ->
+                     (match loc x with Some l -> set_highlight l | None -> ());
+                     Errors.report_error Format.err_formatter x
+               done
+             with End_of_file -> ());
+            flush_all ())
           ())
     in
     let mime_vals = Mime_printer.get () in
@@ -412,7 +511,7 @@ module Make (S : S) = struct
         Logs.info (fun m -> m "Fetching %s\n%!" filename);
         match fetch_sync filename with
         | Some x ->
-            S.create_file ~name:fs_name ~content:x;
+            (try S.create_file ~name:fs_name ~content:x with _ -> ());
             (* At this point we need to tell merlin that the dir contents
                  have changed *)
             if s = "merl" then reset_dirs () else reset_dirs_comp ()
@@ -450,7 +549,8 @@ module Make (S : S) = struct
         Logs.info (fun m -> m "init()");
         path := Some S.path;
 
-        findlib_v := Some (S.findlib_init "findlib_index");
+        let findlib_path = Option.value ~default:"findlib_index" init_libs.findlib_index in
+        findlib_v := Some (S.findlib_init findlib_path);
 
         let stdlib_dcs =
           match init_libs.stdlib_dcs with
@@ -517,6 +617,10 @@ module Make (S : S) = struct
             match !findlib_v with
             | Some v ->
               let* v = v in
+              (* Store the resolved findlib value for use by #require directive *)
+              findlib_resolved := Some v;
+              (* Register our custom #require directive that uses findlibish *)
+              register_require_directive ();
               Lwt.return (S.require (not !execution_allowed) v !requires)
             | None -> Lwt.return []
           in
@@ -540,63 +644,6 @@ module Make (S : S) = struct
       (fun e ->
         Lwt.return
           (Error (Toplevel_api_gen.InternalError (Printexc.to_string e))))
-
-  let typecheck_phrase env_id phr =
-    let env = resolve_env env_id in
-    let res_buff = Buffer.create 100 in
-    let pp_result = Format.formatter_of_buffer res_buff in
-    let highlighted = ref None in
-    let highlight_location loc =
-      let _file1, line1, col1 = Location.get_pos_info loc.Location.loc_start in
-      let _file2, line2, col2 = Location.get_pos_info loc.Location.loc_end in
-      highlighted := Some Toplevel_api_gen.{ line1; col1; line2; col2 }
-    in
-    Buffer.clear res_buff;
-    Buffer.clear stderr_buff;
-    Buffer.clear stdout_buff;
-    Environment.with_env env (fun () ->
-      try
-        let lb = Lexing.from_function (refill_lexbuf phr (ref 0) None) in
-        let phr = !Toploop.parse_toplevel_phrase lb in
-        let phr = JsooTopPpx.preprocess_phrase phr in
-        match phr with
-        | Parsetree.Ptop_def sstr ->
-            let oldenv = !Toploop.toplevel_env in
-            Typecore.reset_delayed_checks ();
-            let str, sg, sn, _, newenv =
-              Typemod.type_toplevel_phrase oldenv sstr
-            in
-            let sg' = Typemod.Signature_names.simplify newenv sn sg in
-            ignore (Includemod.signatures ~mark:true oldenv sg sg');
-            Typecore.force_delayed_checks ();
-            Printtyped.implementation pp_result str;
-            Format.pp_print_flush pp_result ();
-            Warnings.check_fatal ();
-            flush_all ();
-            IdlM.ErrM.return
-              Toplevel_api_gen.
-                {
-                  stdout = buff_opt stdout_buff;
-                  stderr = buff_opt stderr_buff;
-                  sharp_ppf = None;
-                  caml_ppf = buff_opt res_buff;
-                  highlight = !highlighted;
-                  mime_vals = [];
-                }
-        | _ -> failwith "Typechecking"
-      with x ->
-        (match loc x with None -> () | Some loc -> highlight_location loc);
-        Errors.report_error Format.err_formatter x;
-        IdlM.ErrM.return
-          Toplevel_api_gen.
-            {
-              stdout = buff_opt stdout_buff;
-              stderr = buff_opt stderr_buff;
-              sharp_ppf = None;
-              caml_ppf = buff_opt res_buff;
-              highlight = !highlighted;
-              mime_vals = [];
-            })
 
   let handle_toplevel env stripped =
     if String.length stripped < 2 || stripped.[0] <> '#' || stripped.[1] <> ' '
@@ -645,8 +692,10 @@ module Make (S : S) = struct
         (Toplevel_api_gen.InternalError (Printexc.to_string e))
 
   let execute env_id (phrase : string) =
+    Logs.info (fun m -> m "execute() for env_id=%s" env_id);
     let env = resolve_env env_id in
     let result = execute_in_env env phrase in
+    Logs.info (fun m -> m "execute() done for env_id=%s" env_id);
     IdlM.ErrM.return result
 
   (** {3 Merlin Integration}
@@ -880,11 +929,13 @@ module Make (S : S) = struct
         ()
 
   let map_pos line1 pos =
+    (* Only subtract line number when there's actually a prepended line *)
+    let line_offset = if line1 = "" then 0 else 1 in
     Lexing.
       {
         pos with
         pos_bol = pos.pos_bol - String.length line1;
-        pos_lnum = pos.pos_lnum - 1;
+        pos_lnum = pos.pos_lnum - line_offset;
         pos_cnum = pos.pos_cnum - String.length line1;
       }
 
@@ -901,10 +952,9 @@ module Make (S : S) = struct
       let deps =
         List.filter (fun dep -> not (Environment.is_cell_failed execution_env dep)) deps
       in
-      (* Logs.info (fun m -> m "About to mangle toplevel"); *)
       let line1, src = mangle_toplevel is_toplevel orig_source deps in
-      let id = Option.get id in
-      let source = Merlin_kernel.Msource.make (line1 ^ src) in
+      let full_source = line1 ^ src in
+      let source = Merlin_kernel.Msource.make full_source in
       let query =
         Query_protocol.Errors { lexing = true; parsing = true; typing = true }
       in
@@ -922,7 +972,6 @@ module Make (S : S) = struct
                let loc =
                  map_loc line1 (Ocaml_parsing.Location.loc_of_report error)
                in
-
                let main =
                  Format.asprintf "@[%a@]" Ocaml_parsing.Location.print_main
                    error
@@ -939,8 +988,12 @@ module Make (S : S) = struct
                      source;
                    })
       in
-      if List.length errors = 0 then add_cmi execution_env id deps src
-      else Environment.add_failed_cell execution_env id;
+      (* Only track cell CMIs when id is provided (notebook mode) *)
+      (match id with
+       | Some cell_id ->
+         if List.length errors = 0 then add_cmi execution_env cell_id deps src
+         else Environment.add_failed_cell execution_env cell_id
+       | None -> ());
 
       (* Logs.info (fun m -> m "Got to end"); *)
       IdlM.ErrM.return errors
