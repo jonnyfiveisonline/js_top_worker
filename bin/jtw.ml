@@ -381,13 +381,21 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
   let local_meta_path = Fpath.(v "lib" // meta_rel / "META" |> to_string) in
   (pkg_path, local_meta_path, pkg_deps)
 
-let opam_all verbose output_dir_str switch libraries no_worker =
+let opam_all verbose output_dir_str switch libraries no_worker all_pkgs =
   Opam.switch := switch;
 
   (* Get all packages and their dependencies *)
-  let all_packages = match Ocamlfind.deps libraries with
-    | Ok l -> "stdlib" :: l
-    | Error (`Msg m) -> failwith ("Failed to find libs: " ^ m)
+  let all_packages =
+    if all_pkgs then
+      (* Build all installed packages *)
+      Ocamlfind.all ()
+    else if libraries = [] then
+      (* No packages specified, just stdlib *)
+      ["stdlib"]
+    else
+      match Ocamlfind.deps libraries with
+      | Ok l -> "stdlib" :: l
+      | Error (`Msg m) -> failwith ("Failed to find libs: " ^ m)
   in
 
   (* Remove duplicates and sort *)
@@ -523,9 +531,13 @@ let opam_all_cmd =
     let doc = "Opam switch to use" in
     Arg.(value & opt (some string) None & info [ "switch" ] ~doc)
   in
+  let all_pkgs =
+    let doc = "Build all installed packages (from ocamlfind list)" in
+    Arg.(value & flag & info [ "all" ] ~doc)
+  in
   let info = Cmd.info "opam-all" ~doc:"Generate universes for all packages and their dependencies" in
   Cmd.v info
-    Term.(ret (const opam_all $ verbose $ output_dir $ switch $ libraries $ no_worker))
+    Term.(ret (const opam_all $ verbose $ output_dir $ switch $ libraries $ no_worker $ all_pkgs))
 
 let main_cmd =
   let doc = "An odoc notebook tool" in
