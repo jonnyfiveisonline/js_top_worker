@@ -1,3 +1,26 @@
+(** Try to relativize a path against findlib_dir. If the result contains
+    ".." (indicating the path is in a different tree), fall back to extracting
+    the path components after "lib" directory. *)
+let relativize_or_fallback ~findlib_dir path =
+  (* First try standard relativize *)
+  let rel = match Fpath.relativize ~root:findlib_dir path with
+    | Some rel -> rel
+    | None -> path (* shouldn't happen for absolute paths, but fallback *)
+  in
+  (* If the result contains "..", use fallback instead *)
+  let segs = Fpath.segs rel in
+  if List.mem ".." segs then begin
+    (* Fallback: use path components after "lib" directory *)
+    let path_segs = Fpath.segs path in
+    let rec find_after_lib = function
+      | [] -> Fpath.v (Fpath.basename path)
+      | "lib" :: rest -> Fpath.v (String.concat Fpath.dir_sep rest)
+      | _ :: rest -> find_after_lib rest
+    in
+    find_after_lib path_segs
+  end else
+    rel
+
 let cmi_files dir =
   Bos.OS.Dir.fold_contents ~traverse:`None ~elements:`Files
     (fun path acc ->
@@ -22,7 +45,7 @@ let gen_cmis ?path_prefix cmis =
     in
     let prefixes = Util.StringSet.(of_list prefixes |> to_list) in
     let findlib_dir = Ocamlfind.findlib_dir () |> Fpath.v in
-    let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
+    let d = relativize_or_fallback ~findlib_dir dir in
     (* Include path_prefix in dcs_url so it's correct relative to HTTP root *)
     let dcs_url_path = match path_prefix with
       | Some prefix -> Fpath.(v prefix / "lib" // d)
@@ -154,7 +177,7 @@ let opam verbose output_dir_str switch libraries no_worker path deps_file =
 
     List.iter
       (fun (dir, files) ->
-        let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
+        let d = relativize_or_fallback ~findlib_dir dir in
         List.iter
           (fun f ->
             let dest_dir = Fpath.(output_dir / "lib" // d) in
@@ -215,7 +238,7 @@ let opam verbose output_dir_str switch libraries no_worker path deps_file =
             | Ok dir ->
                 let archives = Ocamlfind.archives sub_lib in
                 let archives = List.map (fun x -> Fpath.(dir / x)) archives in
-                let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
+                let d = relativize_or_fallback ~findlib_dir dir in
                 let dest = Fpath.(output_dir / "lib" // d) in
                 let (_ : (bool, _) result) = Bos.OS.Dir.create dest in
                 let compile_archive archive =
@@ -303,7 +326,7 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
   List.iter (fun dir ->
     match cmi_files dir with
     | Ok files ->
-        let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
+        let d = relativize_or_fallback ~findlib_dir dir in
         List.iter (fun f ->
           let dest_dir = Fpath.(pkg_output_dir / "lib" // d) in
           let dest = Fpath.(dest_dir / f) in
@@ -318,7 +341,7 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
 
   (* Copy META file *)
   let meta_file = Fpath.v (Ocamlfind.meta_file pkg) in
-  let meta_rel = Fpath.relativize ~root:findlib_dir meta_file |> Option.get |> Fpath.parent in
+  let meta_rel = relativize_or_fallback ~findlib_dir meta_file |> Fpath.parent in
   let meta_dest = Fpath.(pkg_output_dir / "lib" // meta_rel) in
   let _ = Bos.OS.Dir.create ~path:true meta_dest in
   Util.cp meta_file meta_dest;
@@ -332,7 +355,7 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
     | Ok lib_dir ->
         let archives = Ocamlfind.archives lib in
         let archives = List.map (fun x -> Fpath.(lib_dir / x)) archives in
-        let d = Fpath.relativize ~root:findlib_dir lib_dir |> Option.get in
+        let d = relativize_or_fallback ~findlib_dir lib_dir in
         let dest = Fpath.(pkg_output_dir / "lib" // d) in
         let _ = Bos.OS.Dir.create ~path:true dest in
         List.iter (fun archive ->
@@ -361,7 +384,7 @@ let generate_package_universe ~switch ~output_dir ~findlib_dir ~pkg ~pkg_deps =
           | x :: _ -> Some (x ^ "__")
           | _ -> None) hidden in
         let prefixes = Util.StringSet.(of_list prefixes |> to_list) in
-        let d = Fpath.relativize ~root:findlib_dir dir |> Option.get in
+        let d = relativize_or_fallback ~findlib_dir dir in
         (* Include pkg_path in dcs_url so it's correct relative to the HTTP root *)
         let dcs = {
           Js_top_worker_rpc.Toplevel_api_gen.dcs_url = Fpath.(v pkg_path / "lib" // d |> to_string);
