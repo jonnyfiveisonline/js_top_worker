@@ -11,10 +11,7 @@ References:
   $ unix_client init '{ findlib_requires:[], execute: true }'
   N
   $ unix_client setup ''
-  {mime_vals:[];stderr:S(error while evaluating #enable "pretty";;
-  error while evaluating #disable "shortvar";;);stdout:S(OCaml version 5.4.0
-  Unknown directive enable.
-  Unknown directive disable.)}
+  {mime_vals:[];stderr:S(Environment already set up)}
 
 ==============================================
 SECTION 1: Basic Code Execution (Baseline)
@@ -607,6 +604,8 @@ SECTION 12: Findlib #list
     js_top_worker       (version: 0.0.1)
     js_top_worker-bin   (version: n/a)
     js_top_worker-client (version: 0.0.1)
+    js_top_worker-client.__private__ (version: n/a)
+    js_top_worker-client.__private__.js_top_worker_client_msg (version: 0.0.1)
     js_top_worker-client_fut (version: 0.0.1)
     js_top_worker-rpc   (version: 0.0.1)
     js_top_worker-rpc.__private__ (version: n/a)
