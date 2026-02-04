@@ -148,7 +148,6 @@ node_directive_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib
 node_directive_test.js: [INFO]   toplevel modules: Std_exit, CamlinternalFormatBasics, CamlinternalLazy, CamlinternalMod, Stdlib, CamlinternalOO, CamlinternalFormat
 node_directive_test.js: [INFO] init() finished
 node_directive_test.js: [INFO] setup() for env default...
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=false, runtime_values_count=0)
 node_directive_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_directive_test.js: [INFO] Fetching stdlib__Sys.cmi
@@ -156,294 +155,28 @@ node_directive_test.js: [INFO] Fetching stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_directive_test.js: [INFO] Setup complete
-node_directive_test.js: [INFO] [ENV] Env.diff found 92 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 92 new bindings for env default
->> Fatal error: Continuation_already_taken unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Continuation_already_taken: Misc.Fatal_error
->> Fatal error: Division_by_zero unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Division_by_zero: Misc.Fatal_error
->> Fatal error: Failure unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Failure: Misc.Fatal_error
->> Fatal error: Match_failure unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Match_failure: Misc.Fatal_error
->> Fatal error: Invalid_argument unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Invalid_argument: Misc.Fatal_error
->> Fatal error: End_of_file unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture End_of_file: Misc.Fatal_error
->> Fatal error: Assert_failure unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Assert_failure: Misc.Fatal_error
->> Fatal error: Not_found unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Not_found: Misc.Fatal_error
->> Fatal error: Out_of_memory unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Out_of_memory: Misc.Fatal_error
->> Fatal error: Sys_blocked_io unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Sys_blocked_io: Misc.Fatal_error
->> Fatal error: Undefined_recursive_module unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Undefined_recursive_module: Misc.Fatal_error
->> Fatal error: Sys_error unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Sys_error: Misc.Fatal_error
->> Fatal error: Stack_overflow unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stack_overflow: Misc.Fatal_error
->> Fatal error: CamlinternalFormat unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
->> Fatal error: CamlinternalLazy unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
->> Fatal error: CamlinternalFormatBasics unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
->> Fatal error: CamlinternalOO unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
->> Fatal error: Stdlib unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
->> Fatal error: Std_exit unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
->> Fatal error: CamlinternalMod unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
->> Fatal error: CamlinternalFormat unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
->> Fatal error: CamlinternalLazy unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
->> Fatal error: CamlinternalFormatBasics unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
->> Fatal error: CamlinternalOO unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
->> Fatal error: Stdlib unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
->> Fatal error: Std_exit unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
->> Fatal error: CamlinternalMod unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
->> Fatal error: Stdlib__Array unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Array: Misc.Fatal_error
->> Fatal error: Stdlib__Atomic unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Atomic: Misc.Fatal_error
->> Fatal error: Stdlib__ArrayLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__ArrayLabels: Misc.Fatal_error
->> Fatal error: Stdlib__Bool unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Bool: Misc.Fatal_error
->> Fatal error: Stdlib__Bytes unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Bytes: Misc.Fatal_error
->> Fatal error: Stdlib__Buffer unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Buffer: Misc.Fatal_error
->> Fatal error: Stdlib__Bigarray unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Bigarray: Misc.Fatal_error
->> Fatal error: Stdlib__Arg unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Arg: Misc.Fatal_error
->> Fatal error: Stdlib__Callback unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Callback: Misc.Fatal_error
->> Fatal error: Stdlib__Complex unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Complex: Misc.Fatal_error
->> Fatal error: Stdlib__Char unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Char: Misc.Fatal_error
->> Fatal error: Stdlib__Digest unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Digest: Misc.Fatal_error
->> Fatal error: Stdlib__Dynarray unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Dynarray: Misc.Fatal_error
->> Fatal error: Stdlib__Domain unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Domain: Misc.Fatal_error
->> Fatal error: Stdlib__Condition unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Condition: Misc.Fatal_error
->> Fatal error: Stdlib__Either unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Either: Misc.Fatal_error
->> Fatal error: Stdlib__Filename unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Filename: Misc.Fatal_error
->> Fatal error: Stdlib__Ephemeron unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Ephemeron: Misc.Fatal_error
->> Fatal error: Stdlib__Format unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Format: Misc.Fatal_error
->> Fatal error: Stdlib__Gc unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Gc: Misc.Fatal_error
->> Fatal error: Stdlib__Fun unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Fun: Misc.Fatal_error
->> Fatal error: Stdlib__Float unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Float: Misc.Fatal_error
->> Fatal error: Stdlib__Effect unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Effect: Misc.Fatal_error
->> Fatal error: Stdlib__BytesLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__BytesLabels: Misc.Fatal_error
->> Fatal error: Stdlib__Iarray unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Iarray: Misc.Fatal_error
->> Fatal error: Stdlib__Int unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Int: Misc.Fatal_error
->> Fatal error: Stdlib__In_channel unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__In_channel: Misc.Fatal_error
->> Fatal error: Stdlib__Int64 unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Int64: Misc.Fatal_error
->> Fatal error: Stdlib__Lexing unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Lexing: Misc.Fatal_error
->> Fatal error: Stdlib__Lazy unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Lazy: Misc.Fatal_error
->> Fatal error: Stdlib__Int32 unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Int32: Misc.Fatal_error
->> Fatal error: Stdlib__ListLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__ListLabels: Misc.Fatal_error
->> Fatal error: Stdlib__Marshal unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Marshal: Misc.Fatal_error
->> Fatal error: Stdlib__Map unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Map: Misc.Fatal_error
->> Fatal error: Stdlib__Mutex unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Mutex: Misc.Fatal_error
->> Fatal error: Stdlib__Obj unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Obj: Misc.Fatal_error
->> Fatal error: Stdlib__Nativeint unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Nativeint: Misc.Fatal_error
->> Fatal error: Stdlib__MoreLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__MoreLabels: Misc.Fatal_error
->> Fatal error: Stdlib__List unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__List: Misc.Fatal_error
->> Fatal error: Stdlib__Option unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Option: Misc.Fatal_error
->> Fatal error: Stdlib__Pair unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Pair: Misc.Fatal_error
->> Fatal error: Stdlib__Out_channel unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Out_channel: Misc.Fatal_error
->> Fatal error: Stdlib__Pqueue unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Pqueue: Misc.Fatal_error
->> Fatal error: Stdlib__Printf unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Printf: Misc.Fatal_error
->> Fatal error: Stdlib__Printexc unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Printexc: Misc.Fatal_error
->> Fatal error: Stdlib__Parsing unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Parsing: Misc.Fatal_error
->> Fatal error: Stdlib__Random unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Random: Misc.Fatal_error
->> Fatal error: Stdlib__Result unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Result: Misc.Fatal_error
->> Fatal error: Stdlib__Repr unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Repr: Misc.Fatal_error
->> Fatal error: Stdlib__Semaphore unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Semaphore: Misc.Fatal_error
->> Fatal error: Stdlib__Set unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Set: Misc.Fatal_error
->> Fatal error: Stdlib__Seq unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Seq: Misc.Fatal_error
->> Fatal error: Stdlib__Scanf unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Scanf: Misc.Fatal_error
->> Fatal error: Stdlib__Queue unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Queue: Misc.Fatal_error
->> Fatal error: Stdlib__StdLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__StdLabels: Misc.Fatal_error
->> Fatal error: Stdlib__StringLabels unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__StringLabels: Misc.Fatal_error
->> Fatal error: Stdlib__String unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__String: Misc.Fatal_error
->> Fatal error: Stdlib__Type unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Type: Misc.Fatal_error
->> Fatal error: Stdlib__Weak unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Weak: Misc.Fatal_error
->> Fatal error: Stdlib__Unit unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Unit: Misc.Fatal_error
->> Fatal error: Stdlib__Uchar unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Uchar: Misc.Fatal_error
->> Fatal error: Stdlib__Sys unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Sys: Misc.Fatal_error
->> Fatal error: Stdlib__Stack unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Stack: Misc.Fatal_error
->> Fatal error: Stdlib__Oo unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Oo: Misc.Fatal_error
->> Fatal error: Stdlib__Hashtbl unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Stdlib__Hashtbl: Misc.Fatal_error
 node_directive_test.js: [INFO] setup() finished for env default
 --- Section 1: Basic Execution ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=0)
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] basic_eval: # 1 + 2;;
   - : int = 3
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=0)
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured x
 [PASS] let_binding: # let x = 42;;
   val x : int = 42
 
 --- Section 2: #show Directives ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=1)
-node_directive_test.js: [INFO] [ENV] Restoring 1 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=1)
-node_directive_test.js: [INFO] [ENV] Restoring 1 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured origin
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=2)
-node_directive_test.js: [INFO] [ENV] Restoring 2 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured MyMod/561
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=3)
-node_directive_test.js: [INFO] [ENV] Restoring 3 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured My_error/562
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_type_point: # #show point;;
   type point = { x : float; y : float; }
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_val_origin: # #show origin;;
   val origin : point
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_module: # #show MyMod;;
   module MyMod : sig type t = int val zero : int end
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_exception: # #show My_error;;
   exception My_error of string
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_type_list: # #show_type list;;
   type 'a list = [] | (::) of 'a * 'a list
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
 node_directive_test.js: [INFO] Fetching stdlib__List.cmi
 
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_val_list_map: # #show_val List.map;;
   val map : ('a -> 'b) -> 'a list -> 'b list
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_module_list: # #show_module List;;
   module List :
     sig
@@ -523,442 +256,70 @@ node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
       val to_seq : 'a list -> 'a Seq.t
       val of_seq : 'a Seq.t -> 'a list
     end
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_exception_not_found: # #show_exception Not_found;;
   exception Not_found
 
 --- Section 3: #print_depth and #print_length ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
-node_directive_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured nested
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=5)
-node_directive_test.js: [INFO] [ENV] Restoring 5 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=5)
-node_directive_test.js: [INFO] [ENV] Restoring 5 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] print_depth_truncated: # nested;;
   - : int list list list list = [[[...]]]
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=5)
-node_directive_test.js: [INFO] [ENV] Restoring 5 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=5)
-node_directive_test.js: [INFO] [ENV] Restoring 5 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] print_depth_full: # nested;;
   - : int list list list list = [[[[1; 2; 3]]]]
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=5)
-node_directive_test.js: [INFO] [ENV] Restoring 5 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured long_list
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] print_length_truncated: # long_list;;
   - : int list = [1; 2; ...]
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] print_length_full: # long_list;;
   - : int list = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10]
 
 --- Section 4: #install_printer / #remove_printer ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=6)
-node_directive_test.js: [INFO] [ENV] Restoring 6 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured pp_color
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] install_printer: # Red;;
   - : color = <color:red>
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] remove_printer: # Red;;
   - : color = Red
 
 --- Section 5: #warnings / #warn_error ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] warnings_disabled: # let _ = let unused = 1 in 2;;
   - : int = 2
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
 Line 1, characters 12-19:
 Warning 26 [unused-var]: unused variable unused2.
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] warnings_enabled: # let _ = let unused2 = 1 in 2;;
   - : int = 2
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
 
 Line 1, characters 12-19:
 Error (warning 26 [unused-var]): unused variable unused3.
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [FAIL] warn_error: # let _ = let unused3 = 1 in 2;;
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 
 --- Section 6: #rectypes ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
 
 Line 1, characters 0-23:
 Error: The type abbreviation t is cyclic:
          'a t = 'a t -> int,
          'a t -> int contains 'a t
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [FAIL] rectypes_before: # type 'a t = 'a t -> int;;
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] rectypes_after: # type 'a u = 'a u -> int;;
   type 'a u = 'a u -> int
 
 --- Section 7: #directory ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
->> Fatal error: Test_ocamlfind unbound at toplevel
-node_directive_test.js: [INFO] [ENV]   could not capture Test_ocamlfind: Misc.Fatal_error
 [PASS] directory_add: (no error)
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] directory_remove: (no error)
 
 --- Section 8: #help ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] help: # #help;;
   General
   #help
     Prints a list of all available directives, with corresponding argume...
 
 --- Section 9: #labels / #principal ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] labels_true: (no error)
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] labels_false: (no error)
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] principal_true: (no error)
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] principal_false: (no error)
 
 --- Section 10: Error Cases ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] unknown_directive: # #unknown_directive;;
   Unknown directive unknown_directive.
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_nonexistent: # #show nonexistent_value;;
   Unknown element.
 
 --- Section 11: Classes ---
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=7)
-node_directive_test.js: [INFO] [ENV] Restoring 7 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 3 new idents for default
-node_directive_test.js: [INFO] [ENV] Capturing 3 new bindings for env default
-node_directive_test.js: [INFO] [ENV]   captured counter/816
-node_directive_test.js: [INFO] [ENV]   captured counter/816
-node_directive_test.js: [INFO] [ENV]   captured counter/816
-node_directive_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=8)
-node_directive_test.js: [INFO] [ENV] Restoring 8 runtime values for env default
-node_directive_test.js: [INFO] [ENV]   setvalue MyMod/561
-node_directive_test.js: [INFO] [ENV]   setvalue My_error/562
-node_directive_test.js: [INFO] [ENV]   setvalue counter/816
-node_directive_test.js: [INFO] [ENV]   setvalue long_list
-node_directive_test.js: [INFO] [ENV]   setvalue nested
-node_directive_test.js: [INFO] [ENV]   setvalue origin
-node_directive_test.js: [INFO] [ENV]   setvalue pp_color
-node_directive_test.js: [INFO] [ENV]   setvalue x
-node_directive_test.js: [INFO] [ENV] Env.diff found 0 new idents for default
 [PASS] show_class: # #show_class counter;;
   class counter :
     object val mutable n : int method get : int method incr : unit end

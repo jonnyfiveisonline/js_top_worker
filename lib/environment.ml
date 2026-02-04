@@ -12,7 +12,7 @@ module StringSet = Set.Make (String)
 module StringMap = Map.Make (String)
 
 (* Debug logging - uses the Logs module which is configured in the worker *)
-let log_debug msg = Logs.info (fun m -> m "%s" msg)
+let log_debug msg = Logs.debug (fun m -> m "%s" msg)
 
 type id = string
 
@@ -75,11 +75,24 @@ let restore_runtime_values env_id values =
       log_debug (Printf.sprintf "[ENV]   setvalue %s failed: %s" name (Printexc.to_string e))
   ) values
 
+(** Check if an identifier is a value binding in the given environment.
+    Returns true for let-bindings, false for exceptions, modules, types, etc. *)
+let is_value_binding typing_env ident =
+  try
+    let path = Path.Pident ident in
+    let _ = Env.find_value path typing_env in
+    true
+  with Not_found -> false
+
 (** Capture runtime values for the given identifiers.
+    Only captures value bindings (not exceptions, modules, etc.).
     Returns an updated map with the new values. *)
-let capture_runtime_values env_id base_map idents =
-  if idents <> [] then
-    log_debug (Printf.sprintf "[ENV] Capturing %d new bindings for env %s" (List.length idents) env_id);
+let capture_runtime_values typing_env env_id base_map idents =
+  (* Filter to only value bindings to avoid "Fatal error" from Toploop.getvalue *)
+  let value_idents = List.filter (is_value_binding typing_env) idents in
+  if value_idents <> [] then
+    log_debug (Printf.sprintf "[ENV] Capturing %d value bindings for env %s (filtered from %d total)"
+      (List.length value_idents) env_id (List.length idents));
   List.fold_left (fun map ident ->
     let name = toplevel_name ident in
     try
@@ -89,7 +102,7 @@ let capture_runtime_values env_id base_map idents =
     with e ->
       log_debug (Printf.sprintf "[ENV]   could not capture %s: %s" name (Printexc.to_string e));
       map
-  ) base_map idents
+  ) base_map value_idents
 
 let with_env env f =
   log_debug (Printf.sprintf "[ENV] with_env called for %s (has_saved_env=%b, runtime_values_count=%d)"
@@ -116,18 +129,20 @@ let with_env env f =
     try f ()
     with exn ->
       (* Capture new bindings before re-raising *)
-      let new_idents = Env.diff saved_typing_env_before !Toploop.toplevel_env in
-      let updated_values = capture_runtime_values env.id env.runtime_values new_idents in
+      let current_typing_env = !Toploop.toplevel_env in
+      let new_idents = Env.diff saved_typing_env_before current_typing_env in
+      let updated_values = capture_runtime_values current_typing_env env.id env.runtime_values new_idents in
       env.runtime_values <- updated_values;
-      env.toplevel_env <- Some !Toploop.toplevel_env;
+      env.toplevel_env <- Some current_typing_env;
       Toploop.toplevel_env := saved_typing_env;
       raise exn
   in
 
   (* Capture new bindings that were added during execution *)
-  let new_idents = Env.diff saved_typing_env_before !Toploop.toplevel_env in
+  let current_typing_env = !Toploop.toplevel_env in
+  let new_idents = Env.diff saved_typing_env_before current_typing_env in
   log_debug (Printf.sprintf "[ENV] Env.diff found %d new idents for %s" (List.length new_idents) env.id);
-  let updated_values = capture_runtime_values env.id env.runtime_values new_idents in
+  let updated_values = capture_runtime_values current_typing_env env.id env.runtime_values new_idents in
 
   (* Save the updated environment state *)
   env.runtime_values <- updated_values;

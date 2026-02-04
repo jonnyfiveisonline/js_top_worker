@@ -163,7 +163,7 @@ module U = Impl.Make (S)
 let start_server () =
   let open U in
   Logs.set_reporter (Logs_fmt.reporter ());
-  Logs.set_level (Some Logs.Info);
+  Logs.set_level (Some Logs.Warning);
   (* let pid = Unix.getpid () in *)
   Server.init (IdlM.T.lift init);
   Server.create_env (IdlM.T.lift create_env);
