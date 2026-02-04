@@ -40,6 +40,7 @@
   (pps js_of_ocaml-ppx))
  (libraries
   js_top_worker
+  js_top_worker_message
   js_of_ocaml-ppx
   js_of_ocaml-toplevel
   js_of_ocaml-lwt

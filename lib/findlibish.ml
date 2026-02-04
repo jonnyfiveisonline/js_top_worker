@@ -126,21 +126,35 @@ let fetch_dynamic_cmis sync_get url =
 let (let*) = Lwt.bind
 
 (** Parse a findlib_index file (JSON or legacy text format) and return
-    the list of META file paths.
+    the list of META file paths and universe paths.
 
-    JSON format: [{"metas": ["path/to/META", ...]}]
+    JSON format: {"meta_files": ["path/to/META", ...], "universes": ["universe1", ...]}
 
-    The paths are absolute from the URL root and include universe hashes,
-    e.g., ["abc123/lib/cmdliner/META", "def456/lib/astring/META"] *)
+    meta_files: direct paths to META files
+    universes: paths to other universes (directories containing findlib_index) *)
 let parse_findlib_index content =
   (* Try JSON format first *)
   try
     let json = Yojson.Safe.from_string content in
     let open Yojson.Safe.Util in
-    json |> member "metas" |> to_list |> List.map to_string
+    (* Support both "meta_files" and "metas" for compatibility *)
+    let meta_files =
+      try json |> member "meta_files" |> to_list |> List.map to_string
+      with _ ->
+        try json |> member "metas" |> to_list |> List.map to_string
+        with _ -> []
+    in
+    (* Support both "universes" and "deps" for compatibility *)
+    let universes =
+      try json |> member "universes" |> to_list |> List.map to_string
+      with _ ->
+        try json |> member "deps" |> to_list |> List.map to_string
+        with _ -> []
+    in
+    (meta_files, universes)
   with _ ->
-    (* Fall back to legacy whitespace-separated format *)
-    Astring.String.fields ~empty:false content
+    (* Fall back to legacy whitespace-separated format (no universes) *)
+    (Astring.String.fields ~empty:false content, [])
 
 (** Load a single META file and parse it into a library *)
 let load_meta async_get meta_path =
@@ -175,31 +189,70 @@ let load_meta async_get meta_path =
           Jslib.log "Failed to parse uri: %s" m;
           Lwt.return_none
 
-(** Resolve a path from the URL root *)
-let resolve_url_from_root ~base path =
+(** Resolve a path relative to the directory of the base URL.
+    Used for meta_files which are relative to their findlib_index.
+    e.g. base="http://host/demo1/base/findlib_index", path="lib/base/META"
+    => "http://host/demo1/base/lib/base/META" *)
+let resolve_relative_to_dir ~base path =
+  match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference base with
+  | Ok base_uri ->
+      let base_path = Uri.path base_uri in
+      let parent_dir =
+        match Fpath.of_string base_path with
+        | Ok p -> Fpath.parent p |> Fpath.to_string
+        | Error _ -> "/"
+      in
+      let resolved = Filename.concat parent_dir path in
+      Uri.with_path base_uri resolved |> Uri.to_string
+  | Error _ -> path
+
+(** Resolve a path as absolute from root (preserving scheme/host from base).
+    Used for universe paths which are already full paths from root.
+    e.g. base="http://host/demo1/findlib_index", path="demo1/base/findlib_index"
+    => "http://host/demo1/base/findlib_index" *)
+let resolve_from_root ~base path =
   match Angstrom.parse_string ~consume:All Uri.Parser.uri_reference base with
   | Ok base_uri ->
       let resolved = "/" ^ path in
       Uri.with_path base_uri resolved |> Uri.to_string
-  | Error _ -> path
+  | Error _ -> "/" ^ path
 
 let init (async_get : string -> (string, [>`Msg of string]) result Lwt.t) findlib_index : t Lwt.t =
   Jslib.log "Initializing findlib";
-  let* findlib_txt = async_get findlib_index in
-  match findlib_txt with
-  | Error (`Msg m) ->
-      Jslib.log "Error fetching findlib index %s: %s" findlib_index m;
+  (* Track visited universes to avoid infinite loops *)
+  let visited = Hashtbl.create 16 in
+  let rec load_universe index_url =
+    if Hashtbl.mem visited index_url then
       Lwt.return []
-  | Ok content ->
-      let metas = parse_findlib_index content in
-      Jslib.log "Loaded findlib_index %s: %d META files" findlib_index (List.length metas);
-      (* Resolve META paths from URL root *)
-      let resolved_metas =
-        List.map (fun p -> resolve_url_from_root ~base:findlib_index p) metas
-      in
-      (* Load all META files *)
-      let* libs = Lwt_list.filter_map_p (load_meta async_get) resolved_metas in
-      Lwt.return (flatten_libs libs)
+    else begin
+      Hashtbl.add visited index_url ();
+      let* findlib_txt = async_get index_url in
+      match findlib_txt with
+      | Error (`Msg m) ->
+          Jslib.log "Error fetching findlib index %s: %s" index_url m;
+          Lwt.return []
+      | Ok content ->
+          let meta_files, universes = parse_findlib_index content in
+          Jslib.log "Loaded findlib_index %s: %d META files, %d universes"
+            index_url (List.length meta_files) (List.length universes);
+          (* Resolve META paths relative to findlib_index directory *)
+          let resolved_metas =
+            List.map (fun p -> resolve_relative_to_dir ~base:index_url p) meta_files
+          in
+          (* Load META files from this universe *)
+          let* local_libs = Lwt_list.filter_map_p (load_meta async_get) resolved_metas in
+          (* Resolve universe paths from root (they're already full paths) *)
+          let universe_index_urls =
+            List.map (fun u ->
+              resolve_from_root ~base:index_url (Filename.concat u "findlib_index"))
+              universes
+          in
+          let* universe_libs = Lwt_list.map_p load_universe universe_index_urls in
+          Lwt.return (local_libs @ List.flatten universe_libs)
+    end
+  in
+  let* all_libs = load_universe findlib_index in
+  Lwt.return (flatten_libs all_libs)
 
 let require ~import_scripts sync_get cmi_only v packages =
   let rec require dcss package :

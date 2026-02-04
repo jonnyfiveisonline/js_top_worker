@@ -1,23 +1,17 @@
 node_test.js: [INFO] init()
 Initializing findlib
 node_test.js: [INFO] async_get: _opam/findlib_index
-node_test.js: [INFO] async_get: _opam/lib/stdlib-shims/META
-node_test.js: [INFO] async_get: _opam/lib/sexplib0/META
-node_test.js: [INFO] async_get: _opam/lib/ppxlib/META
-node_test.js: [INFO] async_get: _opam/lib/ppx_deriving/META
-node_test.js: [INFO] async_get: _opam/lib/ppx_derivers/META
-node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/META
-node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib/META
-node_test.js: [INFO] async_get: _opam/lib/ocaml/compiler-libs/META
-node_test.js: [INFO] async_get: _opam/lib/ocaml-compiler-libs/META
-node_test.js: [INFO] async_get: _opam/lib/base/META
-Parsed uri: lib/stdlib-shims/META
+Loaded findlib_index findlib_index: 10 META files, 0 universes
+node_test.js: [INFO] async_get: _opam/./lib/stdlib-shims/META
+Parsed uri: ./lib/stdlib-shims/META
 Reading library: stdlib-shims
 Number of children: 0
-Parsed uri: lib/sexplib0/META
+node_test.js: [INFO] async_get: _opam/./lib/sexplib0/META
+Parsed uri: ./lib/sexplib0/META
 Reading library: sexplib0
 Number of children: 0
-Parsed uri: lib/ppxlib/META
+node_test.js: [INFO] async_get: _opam/./lib/ppxlib/META
+Parsed uri: ./lib/ppxlib/META
 Reading library: ppxlib
 Number of children: 11
 Found child: __private__
@@ -56,7 +50,8 @@ Number of children: 0
 Found child: traverse_builtins
 Reading library: ppxlib.traverse_builtins
 Number of children: 0
-Parsed uri: lib/ppx_deriving/META
+node_test.js: [INFO] async_get: _opam/./lib/ppx_deriving/META
+Parsed uri: ./lib/ppx_deriving/META
 Reading library: ppx_deriving
 Number of children: 12
 Found child: api
@@ -95,16 +90,20 @@ Number of children: 0
 Found child: std
 Reading library: ppx_deriving.std
 Number of children: 0
-Parsed uri: lib/ppx_derivers/META
+node_test.js: [INFO] async_get: _opam/./lib/ppx_derivers/META
+Parsed uri: ./lib/ppx_derivers/META
 Reading library: ppx_derivers
 Number of children: 0
-Parsed uri: lib/ocaml_intrinsics_kernel/META
+node_test.js: [INFO] async_get: _opam/./lib/ocaml_intrinsics_kernel/META
+Parsed uri: ./lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel
 Number of children: 0
-Parsed uri: lib/ocaml/stdlib/META
+node_test.js: [INFO] async_get: _opam/./lib/ocaml/stdlib/META
+Parsed uri: ./lib/ocaml/stdlib/META
 Reading library: stdlib
 Number of children: 0
-Parsed uri: lib/ocaml/compiler-libs/META
+node_test.js: [INFO] async_get: _opam/./lib/ocaml/compiler-libs/META
+Parsed uri: ./lib/ocaml/compiler-libs/META
 Reading library: compiler-libs
 Number of children: 5
 Found child: common
@@ -122,7 +121,8 @@ Number of children: 0
 Found child: native-toplevel
 Reading library: compiler-libs.native-toplevel
 Number of children: 0
-Parsed uri: lib/ocaml-compiler-libs/META
+node_test.js: [INFO] async_get: _opam/./lib/ocaml-compiler-libs/META
+Parsed uri: ./lib/ocaml-compiler-libs/META
 Reading library: ocaml-compiler-libs
 Number of children: 5
 Found child: bytecomp
@@ -140,7 +140,8 @@ Number of children: 0
 Found child: toplevel
 Reading library: ocaml-compiler-libs.toplevel
 Number of children: 0
-Parsed uri: lib/base/META
+node_test.js: [INFO] async_get: _opam/./lib/base/META
+Parsed uri: ./lib/base/META
 Reading library: base
 Number of children: 3
 Found child: base_internalhash_types
@@ -154,16 +155,17 @@ Reading library: base.shadow_stdlib
 Number of children: 0
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/dynamic_cmis.json
 node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
-node_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalLazy.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
+node_test.js: [INFO]   toplevel modules: Std_exit, CamlinternalFormatBasics, CamlinternalLazy, CamlinternalMod, Stdlib, CamlinternalOO, CamlinternalFormat
 node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalLazy.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
 node_test.js: [INFO] init() finished
 node_test.js: [INFO] setup() for env default...
+node_test.js: [INFO] [ENV] with_env called for default (has_saved_env=false, runtime_values_count=0)
 node_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Format.cmi
@@ -173,196 +175,215 @@ node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_test.js: [INFO] Setup complete
+node_test.js: [INFO] [ENV] Env.diff found 92 new idents for default
+node_test.js: [INFO] [ENV] Capturing 92 new bindings for env default
+>> Fatal error: Continuation_already_taken unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Continuation_already_taken: Misc.Fatal_error
+>> Fatal error: Division_by_zero unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Division_by_zero: Misc.Fatal_error
+>> Fatal error: Failure unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Failure: Misc.Fatal_error
+>> Fatal error: Match_failure unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Match_failure: Misc.Fatal_error
+>> Fatal error: Invalid_argument unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Invalid_argument: Misc.Fatal_error
+>> Fatal error: End_of_file unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture End_of_file: Misc.Fatal_error
+>> Fatal error: Assert_failure unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Assert_failure: Misc.Fatal_error
+>> Fatal error: Not_found unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Not_found: Misc.Fatal_error
+>> Fatal error: Out_of_memory unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Out_of_memory: Misc.Fatal_error
+>> Fatal error: Sys_blocked_io unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Sys_blocked_io: Misc.Fatal_error
+>> Fatal error: Undefined_recursive_module unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Undefined_recursive_module: Misc.Fatal_error
+>> Fatal error: Sys_error unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Sys_error: Misc.Fatal_error
+>> Fatal error: Stack_overflow unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stack_overflow: Misc.Fatal_error
+>> Fatal error: CamlinternalFormat unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
+>> Fatal error: CamlinternalLazy unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
+>> Fatal error: CamlinternalFormatBasics unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
+>> Fatal error: CamlinternalOO unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
+>> Fatal error: Stdlib unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
+>> Fatal error: Std_exit unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
+>> Fatal error: CamlinternalMod unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
+>> Fatal error: CamlinternalFormat unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
+>> Fatal error: CamlinternalLazy unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
+>> Fatal error: CamlinternalFormatBasics unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
+>> Fatal error: CamlinternalOO unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
+>> Fatal error: Stdlib unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
+>> Fatal error: Std_exit unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
+>> Fatal error: CamlinternalMod unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
+>> Fatal error: Stdlib__Array unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Array: Misc.Fatal_error
+>> Fatal error: Stdlib__Atomic unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Atomic: Misc.Fatal_error
+>> Fatal error: Stdlib__ArrayLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__ArrayLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Bool unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Bool: Misc.Fatal_error
+>> Fatal error: Stdlib__Bytes unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Bytes: Misc.Fatal_error
+>> Fatal error: Stdlib__Buffer unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Buffer: Misc.Fatal_error
+>> Fatal error: Stdlib__Bigarray unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Bigarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Arg unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Arg: Misc.Fatal_error
+>> Fatal error: Stdlib__Callback unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Callback: Misc.Fatal_error
+>> Fatal error: Stdlib__Complex unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Complex: Misc.Fatal_error
+>> Fatal error: Stdlib__Char unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Char: Misc.Fatal_error
+>> Fatal error: Stdlib__Digest unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Digest: Misc.Fatal_error
+>> Fatal error: Stdlib__Dynarray unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Dynarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Domain unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Domain: Misc.Fatal_error
+>> Fatal error: Stdlib__Condition unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Condition: Misc.Fatal_error
+>> Fatal error: Stdlib__Either unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Either: Misc.Fatal_error
+>> Fatal error: Stdlib__Filename unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Filename: Misc.Fatal_error
+>> Fatal error: Stdlib__Ephemeron unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Ephemeron: Misc.Fatal_error
+>> Fatal error: Stdlib__Format unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Format: Misc.Fatal_error
+>> Fatal error: Stdlib__Gc unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Gc: Misc.Fatal_error
+>> Fatal error: Stdlib__Fun unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Fun: Misc.Fatal_error
+>> Fatal error: Stdlib__Float unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Float: Misc.Fatal_error
+>> Fatal error: Stdlib__Effect unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Effect: Misc.Fatal_error
+>> Fatal error: Stdlib__BytesLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__BytesLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Iarray unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Iarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Int unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Int: Misc.Fatal_error
+>> Fatal error: Stdlib__In_channel unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__In_channel: Misc.Fatal_error
+>> Fatal error: Stdlib__Int64 unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Int64: Misc.Fatal_error
+>> Fatal error: Stdlib__Lexing unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Lexing: Misc.Fatal_error
+>> Fatal error: Stdlib__Lazy unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Lazy: Misc.Fatal_error
+>> Fatal error: Stdlib__Int32 unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Int32: Misc.Fatal_error
+>> Fatal error: Stdlib__ListLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__ListLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Marshal unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Marshal: Misc.Fatal_error
+>> Fatal error: Stdlib__Map unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Map: Misc.Fatal_error
+>> Fatal error: Stdlib__Mutex unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Mutex: Misc.Fatal_error
+>> Fatal error: Stdlib__Obj unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Obj: Misc.Fatal_error
+>> Fatal error: Stdlib__Nativeint unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Nativeint: Misc.Fatal_error
+>> Fatal error: Stdlib__MoreLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__MoreLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__List unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__List: Misc.Fatal_error
+>> Fatal error: Stdlib__Option unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Option: Misc.Fatal_error
+>> Fatal error: Stdlib__Pair unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Pair: Misc.Fatal_error
+>> Fatal error: Stdlib__Out_channel unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Out_channel: Misc.Fatal_error
+>> Fatal error: Stdlib__Pqueue unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Pqueue: Misc.Fatal_error
+>> Fatal error: Stdlib__Printf unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Printf: Misc.Fatal_error
+>> Fatal error: Stdlib__Printexc unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Printexc: Misc.Fatal_error
+>> Fatal error: Stdlib__Parsing unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Parsing: Misc.Fatal_error
+>> Fatal error: Stdlib__Random unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Random: Misc.Fatal_error
+>> Fatal error: Stdlib__Result unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Result: Misc.Fatal_error
+>> Fatal error: Stdlib__Repr unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Repr: Misc.Fatal_error
+>> Fatal error: Stdlib__Semaphore unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Semaphore: Misc.Fatal_error
+>> Fatal error: Stdlib__Set unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Set: Misc.Fatal_error
+>> Fatal error: Stdlib__Seq unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Seq: Misc.Fatal_error
+>> Fatal error: Stdlib__Scanf unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Scanf: Misc.Fatal_error
+>> Fatal error: Stdlib__Queue unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Queue: Misc.Fatal_error
+>> Fatal error: Stdlib__StdLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__StdLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__StringLabels unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__StringLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__String unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__String: Misc.Fatal_error
+>> Fatal error: Stdlib__Type unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Type: Misc.Fatal_error
+>> Fatal error: Stdlib__Weak unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Weak: Misc.Fatal_error
+>> Fatal error: Stdlib__Unit unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Unit: Misc.Fatal_error
+>> Fatal error: Stdlib__Uchar unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Uchar: Misc.Fatal_error
+>> Fatal error: Stdlib__Sys unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Sys: Misc.Fatal_error
+>> Fatal error: Stdlib__Stack unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Stack: Misc.Fatal_error
+>> Fatal error: Stdlib__Oo unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Oo: Misc.Fatal_error
+>> Fatal error: Stdlib__Hashtbl unbound at toplevel
+node_test.js: [INFO] [ENV]   could not capture Stdlib__Hashtbl: Misc.Fatal_error
 Loading package base
 lib.dir: None
 Loading package base.base_internalhash_types
 lib.dir: base_internalhash_types
-uri: lib/base/base_internalhash_types/dynamic_cmis.json
-node_test.js: [INFO] sync_get: _opam/lib/base/base_internalhash_types/dynamic_cmis.json
-importScripts: lib/base/base_internalhash_types/base_internalhash_types.cma.js
+uri: ./lib/base/base_internalhash_types/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/./lib/base/base_internalhash_types/dynamic_cmis.json
+importScripts: ./lib/base/base_internalhash_types/base_internalhash_types.cma.js
 Finished loading package base.base_internalhash_types
 Loading package base.shadow_stdlib
 lib.dir: shadow_stdlib
-uri: lib/base/shadow_stdlib/dynamic_cmis.json
-node_test.js: [INFO] sync_get: _opam/lib/base/shadow_stdlib/dynamic_cmis.json
-importScripts: lib/base/shadow_stdlib/shadow_stdlib.cma.js
+uri: ./lib/base/shadow_stdlib/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/./lib/base/shadow_stdlib/dynamic_cmis.json
+importScripts: ./lib/base/shadow_stdlib/shadow_stdlib.cma.js
 Finished loading package base.shadow_stdlib
 Loading package ocaml_intrinsics_kernel
 lib.dir: None
-uri: lib/ocaml_intrinsics_kernel/dynamic_cmis.json
-node_test.js: [INFO] sync_get: _opam/lib/ocaml_intrinsics_kernel/dynamic_cmis.json
-importScripts: lib/ocaml_intrinsics_kernel/ocaml_intrinsics_kernel.cma.js
+uri: ./lib/ocaml_intrinsics_kernel/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/./lib/ocaml_intrinsics_kernel/dynamic_cmis.json
+importScripts: ./lib/ocaml_intrinsics_kernel/ocaml_intrinsics_kernel.cma.js
 Finished loading package ocaml_intrinsics_kernel
 Loading package sexplib0
 lib.dir: None
-uri: lib/sexplib0/dynamic_cmis.json
-node_test.js: [INFO] sync_get: _opam/lib/sexplib0/dynamic_cmis.json
-importScripts: lib/sexplib0/sexplib0.cma.js
-Finished loading package sexplib0
-uri: lib/base/dynamic_cmis.json
-node_test.js: [INFO] sync_get: _opam/lib/base/dynamic_cmis.json
-importScripts: lib/base/base.cma.js
-Finished loading package base
-node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/
-node_test.js: [INFO]   toplevel modules: Base
-node_test.js: [INFO] async_get: _opam/lib/base/base.cmi
-node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/sexplib0/
-node_test.js: [INFO]   toplevel modules: Sexplib0
-node_test.js: [INFO] async_get: _opam/lib/sexplib0/sexplib0.cmi
-node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml_intrinsics_kernel/
-node_test.js: [INFO]   toplevel modules: Ocaml_intrinsics_kernel
-node_test.js: [INFO] async_get: _opam/lib/ocaml_intrinsics_kernel/ocaml_intrinsics_kernel.cmi
-node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/shadow_stdlib/
-node_test.js: [INFO]   toplevel modules: Shadow_stdlib
-node_test.js: [INFO] async_get: _opam/lib/base/shadow_stdlib/shadow_stdlib.cmi
-node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/base/base_internalhash_types/
-node_test.js: [INFO]   toplevel modules: Base_internalhash_types
-node_test.js: [INFO] async_get: _opam/lib/base/base_internalhash_types/base_internalhash_types.cmi
-node_test.js: [INFO] setup() finished for env default
-node_test.js: [INFO] setup output: OCaml version 5.4.0
-Unknown directive enable.
-Unknown directive disable.
-node_test.js: [INFO] add_cmi
-node_test.js: [INFO] prefix: /static/cmis/cell__c1
-node_test.js: [INFO] About to type_implementation
-node_test.js: [INFO] file_exists: /static/cmis/cell__c1.cmi = true
-node_test.js: [INFO] Number of errors: 1 (should be 1)
-node_test.js: [INFO] add_cmi
-node_test.js: [INFO] prefix: /static/cmis/cell__c1
-node_test.js: [INFO] About to type_implementation
-node_test.js: [INFO] file_exists: /static/cmis/cell__c1.cmi = true
-node_test.js: [INFO] add_cmi
-node_test.js: [INFO] prefix: /static/cmis/cell__c2
-node_test.js: [INFO] About to type_implementation
-node_test.js: [INFO] file_exists: /static/cmis/cell__c2.cmi = true
-node_test.js: [INFO] Number of errors1: 1 (should be 1)
-node_test.js: [INFO] Number of errors2: 0 (should be 0)
-node_test.js: [INFO] completing for id: c_comp1
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: 'let _ = List.leng' (length: 17)
-node_test.js: [INFO] complete after offset: g
-node_test.js: [INFO] Fetching stdlib__List.cmi
-
-node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__List.cmi
-node_test.js: [INFO] Completions for 'List.leng': 1 entries
-node_test.js: [INFO]   - length (Value): 'a list -> int
-node_test.js: [INFO] completing for id: c_comp2
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  let _ = List.' (length: 15)
-node_test.js: [INFO] complete after offset: .
-node_test.js: [INFO] Completions for 'List.': 73 entries
-node_test.js: [INFO]   - (::) (Constructor): 'a0 * 'a0 list -> 'a0 List.t
-node_test.js: [INFO]   - ([]) (Constructor): 'a0 List.t
-node_test.js: [INFO]   - append (Value): 'a list -> 'a list -> 'a list
-node_test.js: [INFO]   - assoc (Value): 'a -> ('a * 'b) list -> 'b
-node_test.js: [INFO]   - assoc_opt (Value): 'a -> ('a * 'b) list -> 'b option
-node_test.js: [INFO]   - assq (Value): 'a -> ('a * 'b) list -> 'b
-node_test.js: [INFO]   - assq_opt (Value): 'a -> ('a * 'b) list -> 'b option
-node_test.js: [INFO]   - combine (Value): 'a list -> 'b list -> ('a * 'b) list
-node_test.js: [INFO]   - compare (Value): ('a -> 'a -> int) -> 'a list -> 'a list -> int
-node_test.js: [INFO]   - compare_length_with (Value): 'a list -> int -> int
-node_test.js: [INFO]   - compare_lengths (Value): 'a list -> 'b list -> int
-node_test.js: [INFO]   - concat (Value): 'a list list -> 'a list
-node_test.js: [INFO]   - concat_map (Value): ('a -> 'b list) -> 'a list -> 'b list
-node_test.js: [INFO]   - cons (Value): 'a -> 'a list -> 'a list
-node_test.js: [INFO]   - drop (Value): int -> 'a list -> 'a list
-node_test.js: [INFO]   - drop_while (Value): ('a -> bool) -> 'a list -> 'a list
-node_test.js: [INFO]   - equal (Value): ('a -> 'a -> bool) -> 'a list -> 'a list -> bool
-node_test.js: [INFO]   - exists (Value): ('a -> bool) -> 'a list -> bool
-node_test.js: [INFO]   - exists2 (Value): ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-node_test.js: [INFO]   - fast_sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
-node_test.js: [INFO]   - filter (Value): ('a -> bool) -> 'a list -> 'a list
-node_test.js: [INFO]   - filter_map (Value): ('a -> 'b option) -> 'a list -> 'b list
-node_test.js: [INFO]   - filteri (Value): (int -> 'a -> bool) -> 'a list -> 'a list
-node_test.js: [INFO]   - find (Value): ('a -> bool) -> 'a list -> 'a
-node_test.js: [INFO]   - find_all (Value): ('a -> bool) -> 'a list -> 'a list
-node_test.js: [INFO]   - find_index (Value): ('a -> bool) -> 'a list -> int option
-node_test.js: [INFO]   - find_map (Value): ('a -> 'b option) -> 'a list -> 'b option
-node_test.js: [INFO]   - find_mapi (Value): (int -> 'a -> 'b option) -> 'a list -> 'b option
-node_test.js: [INFO]   - find_opt (Value): ('a -> bool) -> 'a list -> 'a option
-node_test.js: [INFO]   - flatten (Value): 'a list list -> 'a list
-node_test.js: [INFO]   - fold_left (Value): ('acc -> 'a -> 'acc) -> 'acc -> 'a list -> 'acc
-node_test.js: [INFO]   - fold_left2 (Value): ('acc -> 'a -> 'b -> 'acc) -> 'acc -> 'a list -> 'b list -> 'acc
-node_test.js: [INFO]   - fold_left_map (Value): ('acc -> 'a -> 'acc * 'b) -> 'acc -> 'a list -> 'acc * 'b list
-node_test.js: [INFO]   - fold_right (Value): ('a -> 'acc -> 'acc) -> 'a list -> 'acc -> 'acc
-node_test.js: [INFO]   - fold_right2 (Value): ('a -> 'b -> 'acc -> 'acc) -> 'a list -> 'b list -> 'acc -> 'acc
-node_test.js: [INFO]   - for_all (Value): ('a -> bool) -> 'a list -> bool
-node_test.js: [INFO]   - for_all2 (Value): ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-node_test.js: [INFO]   - hd (Value): 'a list -> 'a
-node_test.js: [INFO]   - init (Value): int -> (int -> 'a) -> 'a list
-node_test.js: [INFO]   - is_empty (Value): 'a list -> bool
-node_test.js: [INFO]   - iter (Value): ('a -> unit) -> 'a list -> unit
-node_test.js: [INFO]   - iter2 (Value): ('a -> 'b -> unit) -> 'a list -> 'b list -> unit
-node_test.js: [INFO]   - iteri (Value): (int -> 'a -> unit) -> 'a list -> unit
-node_test.js: [INFO]   - length (Value): 'a list -> int
-node_test.js: [INFO]   - map (Value): ('a -> 'b) -> 'a list -> 'b list
-node_test.js: [INFO]   - map2 (Value): ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
-node_test.js: [INFO]   - mapi (Value): (int -> 'a -> 'b) -> 'a list -> 'b list
-node_test.js: [INFO]   - mem (Value): 'a -> 'a list -> bool
-node_test.js: [INFO]   - mem_assoc (Value): 'a -> ('a * 'b) list -> bool
-node_test.js: [INFO]   - mem_assq (Value): 'a -> ('a * 'b) list -> bool
-node_test.js: [INFO]   - memq (Value): 'a -> 'a list -> bool
-node_test.js: [INFO]   - merge (Value): ('a -> 'a -> int) -> 'a list -> 'a list -> 'a list
-node_test.js: [INFO]   - nth (Value): 'a list -> int -> 'a
-node_test.js: [INFO]   - nth_opt (Value): 'a list -> int -> 'a option
-node_test.js: [INFO]   - of_seq (Value): 'a Seq.t -> 'a list
-node_test.js: [INFO]   - partition (Value): ('a -> bool) -> 'a list -> 'a list * 'a list
-node_test.js: [INFO]   - partition_map (Value): ('a -> ('b, 'c) Either.t) -> 'a list -> 'b list * 'c list
-node_test.js: [INFO]   - remove_assoc (Value): 'a -> ('a * 'b) list -> ('a * 'b) list
-node_test.js: [INFO]   - remove_assq (Value): 'a -> ('a * 'b) list -> ('a * 'b) list
-node_test.js: [INFO]   - rev (Value): 'a list -> 'a list
-node_test.js: [INFO]   - rev_append (Value): 'a list -> 'a list -> 'a list
-node_test.js: [INFO]   - rev_map (Value): ('a -> 'b) -> 'a list -> 'b list
-node_test.js: [INFO]   - rev_map2 (Value): ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
-node_test.js: [INFO]   - singleton (Value): 'a -> 'a list
-node_test.js: [INFO]   - sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
-node_test.js: [INFO]   - sort_uniq (Value): ('a -> 'a -> int) -> 'a list -> 'a list
-node_test.js: [INFO]   - split (Value): ('a * 'b) list -> 'a list * 'b list
-node_test.js: [INFO]   - stable_sort (Value): ('a -> 'a -> int) -> 'a list -> 'a list
-node_test.js: [INFO]   - take (Value): int -> 'a list -> 'a list
-node_test.js: [INFO]   - take_while (Value): ('a -> bool) -> 'a list -> 'a list
-node_test.js: [INFO]   - tl (Value): 'a list -> 'a list
-node_test.js: [INFO]   - to_seq (Value): 'a list -> 'a Seq.t
-node_test.js: [INFO]   - t (Type): type 'a t = 'a list = [] | (::) of 'a * 'a list
-node_test.js: [INFO] completing for id: c_comp3
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  let _ = ma' (length: 12)
-node_test.js: [INFO] complete after offset: a
-node_test.js: [INFO] Completions for 'ma': 3 entries
-node_test.js: [INFO]   - max (Value): 'a -> 'a -> 'a
-node_test.js: [INFO]   - max_float (Value): float
-node_test.js: [INFO]   - max_int (Value): int
-node_test.js: [INFO] completing for id: c_comp4
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: 'let _ = List.leng' (length: 17)
-node_test.js: [INFO] complete after offset: g
-node_test.js: [INFO] Completions for 'List.leng' (non-toplevel): 1 entries
-node_test.js: [INFO]   - length (Value): 'a list -> int
-node_test.js: [INFO] completing for id: c_comp5
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  let _ = List.leng
-   let foo=1.0;;' (length: 36)
-node_test.js: [INFO] Completions for 'List.leng' (Logical position): 0 entries
-node_test.js: [INFO] completing for id: c_comp6
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  let my_var = 42;;
-  let x = 1 + my_v' (length: 38)
-node_test.js: [INFO] complete after offset: v
-node_test.js: [INFO] Completions for 'my_v' (toplevel variable): 1 entries
-node_test.js: [INFO]   - my_var (Value): int
-node_test.js: [INFO] completing for id: c_comp7
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  let rec factorial n = if n <= 1 then 1 else n * facto' (length: 55)
-node_test.js: [INFO] complete after offset: o
-node_test.js: [INFO] Completions for 'facto' (recursive function): 1 entries
-node_test.js: [INFO]   - factorial (Value): int -> int
-node_test.js: [INFO] completing for id: c_comp8
-node_test.js: [INFO] line1: '' (length: 0)
-node_test.js: [INFO] src: '  String.lengt' (length: 14)
-node_test.js: [INFO] complete after offset: t
-node_test.js: [INFO] Fetching stdlib__String.cmi
-
-node_test.js: [INFO] sync_get: _opam/lib/ocaml/stdlib__String.cmi
-node_test.js: [INFO] Completions for 'String.lengt' (module path): 1 entries
-node_test.js: [INFO]   - length (Value): string -> int
-node_test.js: [INFO] Success
+uri: ./lib/sexplib0/dynamic_cmis.json
+node_test.js: [INFO] sync_get: _opam/./lib/sexplib0/dynamic_cmis.json
+importScripts: ./lib/sexplib0/sexplib0.cma.js
+node_test.js: [ERROR] Error: TypeError: k is not a function

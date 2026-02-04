@@ -2,13 +2,14 @@
 
 node_mime_test.js: [INFO] init()
 Initializing findlib
-Parsed uri: lib/stdlib-shims/META
+Loaded findlib_index findlib_index: 10 META files, 0 universes
+Parsed uri: ./lib/stdlib-shims/META
 Reading library: stdlib-shims
 Number of children: 0
-Parsed uri: lib/sexplib0/META
+Parsed uri: ./lib/sexplib0/META
 Reading library: sexplib0
 Number of children: 0
-Parsed uri: lib/ppxlib/META
+Parsed uri: ./lib/ppxlib/META
 Reading library: ppxlib
 Number of children: 11
 Found child: __private__
@@ -47,7 +48,7 @@ Number of children: 0
 Found child: traverse_builtins
 Reading library: ppxlib.traverse_builtins
 Number of children: 0
-Parsed uri: lib/ppx_deriving/META
+Parsed uri: ./lib/ppx_deriving/META
 Reading library: ppx_deriving
 Number of children: 12
 Found child: api
@@ -86,16 +87,16 @@ Number of children: 0
 Found child: std
 Reading library: ppx_deriving.std
 Number of children: 0
-Parsed uri: lib/ppx_derivers/META
+Parsed uri: ./lib/ppx_derivers/META
 Reading library: ppx_derivers
 Number of children: 0
-Parsed uri: lib/ocaml_intrinsics_kernel/META
+Parsed uri: ./lib/ocaml_intrinsics_kernel/META
 Reading library: ocaml_intrinsics_kernel
 Number of children: 0
-Parsed uri: lib/ocaml/stdlib/META
+Parsed uri: ./lib/ocaml/stdlib/META
 Reading library: stdlib
 Number of children: 0
-Parsed uri: lib/ocaml/compiler-libs/META
+Parsed uri: ./lib/ocaml/compiler-libs/META
 Reading library: compiler-libs
 Number of children: 5
 Found child: common
@@ -113,7 +114,7 @@ Number of children: 0
 Found child: native-toplevel
 Reading library: compiler-libs.native-toplevel
 Number of children: 0
-Parsed uri: lib/ocaml-compiler-libs/META
+Parsed uri: ./lib/ocaml-compiler-libs/META
 Reading library: ocaml-compiler-libs
 Number of children: 5
 Found child: bytecomp
@@ -131,7 +132,7 @@ Number of children: 0
 Found child: toplevel
 Reading library: ocaml-compiler-libs.toplevel
 Number of children: 0
-Parsed uri: lib/base/META
+Parsed uri: ./lib/base/META
 Reading library: base
 Number of children: 3
 Found child: base_internalhash_types
@@ -144,9 +145,10 @@ Found child: shadow_stdlib
 Reading library: base.shadow_stdlib
 Number of children: 0
 node_mime_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
-node_mime_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_mime_test.js: [INFO]   toplevel modules: Std_exit, CamlinternalFormatBasics, CamlinternalLazy, CamlinternalMod, Stdlib, CamlinternalOO, CamlinternalFormat
 node_mime_test.js: [INFO] init() finished
 node_mime_test.js: [INFO] setup() for env default...
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=false, runtime_values_count=0)
 node_mime_test.js: [INFO] Fetching stdlib__Format.cmi
 
 node_mime_test.js: [INFO] Fetching stdlib__Sys.cmi
@@ -154,8 +156,200 @@ node_mime_test.js: [INFO] Fetching stdlib__Sys.cmi
 error while evaluating #enable "pretty";;
 error while evaluating #disable "shortvar";;
 node_mime_test.js: [INFO] Setup complete
+node_mime_test.js: [INFO] [ENV] Env.diff found 92 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 92 new bindings for env default
+>> Fatal error: Continuation_already_taken unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Continuation_already_taken: Misc.Fatal_error
+>> Fatal error: Division_by_zero unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Division_by_zero: Misc.Fatal_error
+>> Fatal error: Failure unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Failure: Misc.Fatal_error
+>> Fatal error: Match_failure unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Match_failure: Misc.Fatal_error
+>> Fatal error: Invalid_argument unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Invalid_argument: Misc.Fatal_error
+>> Fatal error: End_of_file unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture End_of_file: Misc.Fatal_error
+>> Fatal error: Assert_failure unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Assert_failure: Misc.Fatal_error
+>> Fatal error: Not_found unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Not_found: Misc.Fatal_error
+>> Fatal error: Out_of_memory unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Out_of_memory: Misc.Fatal_error
+>> Fatal error: Sys_blocked_io unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Sys_blocked_io: Misc.Fatal_error
+>> Fatal error: Undefined_recursive_module unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Undefined_recursive_module: Misc.Fatal_error
+>> Fatal error: Sys_error unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Sys_error: Misc.Fatal_error
+>> Fatal error: Stack_overflow unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stack_overflow: Misc.Fatal_error
+>> Fatal error: CamlinternalFormat unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
+>> Fatal error: CamlinternalLazy unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
+>> Fatal error: CamlinternalFormatBasics unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
+>> Fatal error: CamlinternalOO unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
+>> Fatal error: Stdlib unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
+>> Fatal error: Std_exit unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
+>> Fatal error: CamlinternalMod unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
+>> Fatal error: CamlinternalFormat unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalFormat: Misc.Fatal_error
+>> Fatal error: CamlinternalLazy unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalLazy: Misc.Fatal_error
+>> Fatal error: CamlinternalFormatBasics unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalFormatBasics: Misc.Fatal_error
+>> Fatal error: CamlinternalOO unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalOO: Misc.Fatal_error
+>> Fatal error: Stdlib unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib: Misc.Fatal_error
+>> Fatal error: Std_exit unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Std_exit: Misc.Fatal_error
+>> Fatal error: CamlinternalMod unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture CamlinternalMod: Misc.Fatal_error
+>> Fatal error: Stdlib__Array unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Array: Misc.Fatal_error
+>> Fatal error: Stdlib__Atomic unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Atomic: Misc.Fatal_error
+>> Fatal error: Stdlib__ArrayLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__ArrayLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Bool unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Bool: Misc.Fatal_error
+>> Fatal error: Stdlib__Bytes unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Bytes: Misc.Fatal_error
+>> Fatal error: Stdlib__Buffer unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Buffer: Misc.Fatal_error
+>> Fatal error: Stdlib__Bigarray unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Bigarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Arg unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Arg: Misc.Fatal_error
+>> Fatal error: Stdlib__Callback unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Callback: Misc.Fatal_error
+>> Fatal error: Stdlib__Complex unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Complex: Misc.Fatal_error
+>> Fatal error: Stdlib__Char unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Char: Misc.Fatal_error
+>> Fatal error: Stdlib__Digest unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Digest: Misc.Fatal_error
+>> Fatal error: Stdlib__Dynarray unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Dynarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Domain unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Domain: Misc.Fatal_error
+>> Fatal error: Stdlib__Condition unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Condition: Misc.Fatal_error
+>> Fatal error: Stdlib__Either unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Either: Misc.Fatal_error
+>> Fatal error: Stdlib__Filename unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Filename: Misc.Fatal_error
+>> Fatal error: Stdlib__Ephemeron unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Ephemeron: Misc.Fatal_error
+>> Fatal error: Stdlib__Format unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Format: Misc.Fatal_error
+>> Fatal error: Stdlib__Gc unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Gc: Misc.Fatal_error
+>> Fatal error: Stdlib__Fun unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Fun: Misc.Fatal_error
+>> Fatal error: Stdlib__Float unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Float: Misc.Fatal_error
+>> Fatal error: Stdlib__Effect unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Effect: Misc.Fatal_error
+>> Fatal error: Stdlib__BytesLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__BytesLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Iarray unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Iarray: Misc.Fatal_error
+>> Fatal error: Stdlib__Int unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Int: Misc.Fatal_error
+>> Fatal error: Stdlib__In_channel unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__In_channel: Misc.Fatal_error
+>> Fatal error: Stdlib__Int64 unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Int64: Misc.Fatal_error
+>> Fatal error: Stdlib__Lexing unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Lexing: Misc.Fatal_error
+>> Fatal error: Stdlib__Lazy unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Lazy: Misc.Fatal_error
+>> Fatal error: Stdlib__Int32 unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Int32: Misc.Fatal_error
+>> Fatal error: Stdlib__ListLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__ListLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__Marshal unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Marshal: Misc.Fatal_error
+>> Fatal error: Stdlib__Map unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Map: Misc.Fatal_error
+>> Fatal error: Stdlib__Mutex unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Mutex: Misc.Fatal_error
+>> Fatal error: Stdlib__Obj unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Obj: Misc.Fatal_error
+>> Fatal error: Stdlib__Nativeint unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Nativeint: Misc.Fatal_error
+>> Fatal error: Stdlib__MoreLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__MoreLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__List unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__List: Misc.Fatal_error
+>> Fatal error: Stdlib__Option unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Option: Misc.Fatal_error
+>> Fatal error: Stdlib__Pair unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Pair: Misc.Fatal_error
+>> Fatal error: Stdlib__Out_channel unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Out_channel: Misc.Fatal_error
+>> Fatal error: Stdlib__Pqueue unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Pqueue: Misc.Fatal_error
+>> Fatal error: Stdlib__Printf unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Printf: Misc.Fatal_error
+>> Fatal error: Stdlib__Printexc unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Printexc: Misc.Fatal_error
+>> Fatal error: Stdlib__Parsing unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Parsing: Misc.Fatal_error
+>> Fatal error: Stdlib__Random unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Random: Misc.Fatal_error
+>> Fatal error: Stdlib__Result unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Result: Misc.Fatal_error
+>> Fatal error: Stdlib__Repr unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Repr: Misc.Fatal_error
+>> Fatal error: Stdlib__Semaphore unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Semaphore: Misc.Fatal_error
+>> Fatal error: Stdlib__Set unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Set: Misc.Fatal_error
+>> Fatal error: Stdlib__Seq unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Seq: Misc.Fatal_error
+>> Fatal error: Stdlib__Scanf unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Scanf: Misc.Fatal_error
+>> Fatal error: Stdlib__Queue unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Queue: Misc.Fatal_error
+>> Fatal error: Stdlib__StdLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__StdLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__StringLabels unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__StringLabels: Misc.Fatal_error
+>> Fatal error: Stdlib__String unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__String: Misc.Fatal_error
+>> Fatal error: Stdlib__Type unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Type: Misc.Fatal_error
+>> Fatal error: Stdlib__Weak unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Weak: Misc.Fatal_error
+>> Fatal error: Stdlib__Unit unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Unit: Misc.Fatal_error
+>> Fatal error: Stdlib__Uchar unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Uchar: Misc.Fatal_error
+>> Fatal error: Stdlib__Sys unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Sys: Misc.Fatal_error
+>> Fatal error: Stdlib__Stack unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Stack: Misc.Fatal_error
+>> Fatal error: Stdlib__Oo unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Oo: Misc.Fatal_error
+>> Fatal error: Stdlib__Hashtbl unbound at toplevel
+node_mime_test.js: [INFO] [ENV]   could not capture Stdlib__Hashtbl: Misc.Fatal_error
 node_mime_test.js: [INFO] setup() finished for env default
 --- Section 1: exec_result Has mime_vals Field ---
+node_mime_test.js: [INFO] execute() for env_id=
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=0)
+node_mime_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
+node_mime_test.js: [INFO] [ENV]   captured x
+node_mime_test.js: [INFO] execute() done for env_id=
 [PASS] has_mime_vals_field: exec_result has mime_vals field
 [PASS] mime_vals_is_list: mime_vals is a list (length=0)
 [PASS] mime_vals_empty_no_output: mime_vals is empty when no MIME output
@@ -167,11 +361,47 @@ node_mime_test.js: [INFO] setup() finished for env default
 [PASS] encoding_base64: Base64 variant works
 
 --- Section 3: Multiple Executions ---
+node_mime_test.js: [INFO] execute() for env_id=
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=1)
+node_mime_test.js: [INFO] [ENV] Restoring 1 runtime values for env default
+node_mime_test.js: [INFO] [ENV]   setvalue x
+node_mime_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
+node_mime_test.js: [INFO] [ENV]   captured a
+node_mime_test.js: [INFO] execute() done for env_id=
+node_mime_test.js: [INFO] execute() for env_id=
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=2)
+node_mime_test.js: [INFO] [ENV] Restoring 2 runtime values for env default
+node_mime_test.js: [INFO] [ENV]   setvalue a
+node_mime_test.js: [INFO] [ENV]   setvalue x
+node_mime_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
+node_mime_test.js: [INFO] [ENV]   captured b
+node_mime_test.js: [INFO] execute() done for env_id=
+node_mime_test.js: [INFO] execute() for env_id=
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=3)
+node_mime_test.js: [INFO] [ENV] Restoring 3 runtime values for env default
+node_mime_test.js: [INFO] [ENV]   setvalue a
+node_mime_test.js: [INFO] [ENV]   setvalue b
+node_mime_test.js: [INFO] [ENV]   setvalue x
+node_mime_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
+node_mime_test.js: [INFO] [ENV]   captured c
+node_mime_test.js: [INFO] execute() done for env_id=
 [PASS] r1_mime_empty: First exec: mime_vals empty
 [PASS] r2_mime_empty: Second exec: mime_vals empty
 [PASS] r3_mime_empty: Third exec: mime_vals empty
 
 --- Section 4: exec_toplevel Has mime_vals ---
+node_mime_test.js: [INFO] [ENV] with_env called for default (has_saved_env=true, runtime_values_count=4)
+node_mime_test.js: [INFO] [ENV] Restoring 4 runtime values for env default
+node_mime_test.js: [INFO] [ENV]   setvalue a
+node_mime_test.js: [INFO] [ENV]   setvalue b
+node_mime_test.js: [INFO] [ENV]   setvalue c
+node_mime_test.js: [INFO] [ENV]   setvalue x
+node_mime_test.js: [INFO] [ENV] Env.diff found 1 new idents for default
+node_mime_test.js: [INFO] [ENV] Capturing 1 new bindings for env default
+node_mime_test.js: [INFO] [ENV]   captured z
 [PASS] toplevel_has_mime_vals: exec_toplevel_result has mime_vals field
 [PASS] toplevel_mime_vals_list: toplevel mime_vals is a list (length=0)
 

@@ -37,7 +37,7 @@
  (link_flags (-linkall))
  (js_of_ocaml
   (javascript_files ../lib/stubs.js)
-  (flags --effects=disabled --toplevel +toplevel.js +dynlink.js))
+  (flags --effects=disabled --toplevel --opt 3 +toplevel.js +dynlink.js))
  (libraries js_top_worker-web logs.browser mime_printer tyxml))
 
 (executable
