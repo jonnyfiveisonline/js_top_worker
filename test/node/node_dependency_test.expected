@@ -1,0 +1,193 @@
+=== Node.js Cell Dependency Tests ===
+
+Initializing findlib
+Loaded findlib_index findlib_index: 10 META files, 0 universes
+Parsed uri: ./lib/stdlib-shims/META
+Reading library: stdlib-shims
+Number of children: 0
+Parsed uri: ./lib/sexplib0/META
+Reading library: sexplib0
+Number of children: 0
+Parsed uri: ./lib/ppxlib/META
+Reading library: ppxlib
+Number of children: 11
+Found child: __private__
+Reading library: ppxlib.__private__
+Number of children: 1
+Found child: ppx_foo_deriver
+Reading library: ppxlib.__private__.ppx_foo_deriver
+Number of children: 0
+Found child: ast
+Reading library: ppxlib.ast
+Number of children: 0
+Found child: astlib
+Reading library: ppxlib.astlib
+Number of children: 0
+Found child: metaquot
+Reading library: ppxlib.metaquot
+Number of children: 0
+Found child: metaquot_lifters
+Reading library: ppxlib.metaquot_lifters
+Number of children: 0
+Found child: print_diff
+Reading library: ppxlib.print_diff
+Number of children: 0
+Found child: runner
+Reading library: ppxlib.runner
+Number of children: 0
+Found child: runner_as_ppx
+Reading library: ppxlib.runner_as_ppx
+Number of children: 0
+Found child: stdppx
+Reading library: ppxlib.stdppx
+Number of children: 0
+Found child: traverse
+Reading library: ppxlib.traverse
+Number of children: 0
+Found child: traverse_builtins
+Reading library: ppxlib.traverse_builtins
+Number of children: 0
+Parsed uri: ./lib/ppx_deriving/META
+Reading library: ppx_deriving
+Number of children: 12
+Found child: api
+Reading library: ppx_deriving.api
+Number of children: 0
+Found child: create
+Reading library: ppx_deriving.create
+Number of children: 0
+Found child: enum
+Reading library: ppx_deriving.enum
+Number of children: 0
+Found child: eq
+Reading library: ppx_deriving.eq
+Number of children: 0
+Found child: fold
+Reading library: ppx_deriving.fold
+Number of children: 0
+Found child: iter
+Reading library: ppx_deriving.iter
+Number of children: 0
+Found child: make
+Reading library: ppx_deriving.make
+Number of children: 0
+Found child: map
+Reading library: ppx_deriving.map
+Number of children: 0
+Found child: ord
+Reading library: ppx_deriving.ord
+Number of children: 0
+Found child: runtime
+Reading library: ppx_deriving.runtime
+Number of children: 0
+Found child: show
+Reading library: ppx_deriving.show
+Number of children: 0
+Found child: std
+Reading library: ppx_deriving.std
+Number of children: 0
+Parsed uri: ./lib/ppx_derivers/META
+Reading library: ppx_derivers
+Number of children: 0
+Parsed uri: ./lib/ocaml_intrinsics_kernel/META
+Reading library: ocaml_intrinsics_kernel
+Number of children: 0
+Parsed uri: ./lib/ocaml/stdlib/META
+Reading library: stdlib
+Number of children: 0
+Parsed uri: ./lib/ocaml/compiler-libs/META
+Reading library: compiler-libs
+Number of children: 5
+Found child: common
+Reading library: compiler-libs.common
+Number of children: 0
+Found child: bytecomp
+Reading library: compiler-libs.bytecomp
+Number of children: 0
+Found child: optcomp
+Reading library: compiler-libs.optcomp
+Number of children: 0
+Found child: toplevel
+Reading library: compiler-libs.toplevel
+Number of children: 0
+Found child: native-toplevel
+Reading library: compiler-libs.native-toplevel
+Number of children: 0
+Parsed uri: ./lib/ocaml-compiler-libs/META
+Reading library: ocaml-compiler-libs
+Number of children: 5
+Found child: bytecomp
+Reading library: ocaml-compiler-libs.bytecomp
+Number of children: 0
+Found child: common
+Reading library: ocaml-compiler-libs.common
+Number of children: 0
+Found child: optcomp
+Reading library: ocaml-compiler-libs.optcomp
+Number of children: 0
+Found child: shadow
+Reading library: ocaml-compiler-libs.shadow
+Number of children: 0
+Found child: toplevel
+Reading library: ocaml-compiler-libs.toplevel
+Number of children: 0
+Parsed uri: ./lib/base/META
+Reading library: base
+Number of children: 3
+Found child: base_internalhash_types
+Reading library: base.base_internalhash_types
+Number of children: 0
+Found child: md5
+Reading library: base.md5
+Number of children: 0
+Found child: shadow_stdlib
+Reading library: base.shadow_stdlib
+Number of children: 0
+error while evaluating #enable "pretty";;
+error while evaluating #disable "shortvar";;
+[PASS] init: Initialized and setup
+
+--- Section 1: Linear Dependencies ---
+[PASS] linear_c1: 0 errors
+[PASS] linear_c2: 0 errors
+[PASS] linear_c3: 0 errors
+[PASS] linear_c4: 0 errors
+
+--- Section 2: Diamond Dependencies ---
+[PASS] diamond_d1: 0 errors
+[PASS] diamond_d2: 0 errors
+[PASS] diamond_d3: 0 errors
+[PASS] diamond_d4: 0 errors
+
+--- Section 3: Missing Dependencies ---
+[PASS] missing_dep_error: 2 errors (expected > 0)
+node_dependency_test.js: [ERROR] Env.Error: File "_none_", line 1:
+                                            Error: Unbound module Cell__nonexistent
+
+[PASS] missing_dep_simple_ok: 0 errors
+
+--- Section 4: Dependency Update Propagation ---
+[PASS] update_u1_initial: 0 errors
+[PASS] update_u2_initial: 0 errors
+[PASS] update_u1_changed: 0 errors
+[PASS] update_u2_error: 1 errors (expected > 0)
+[PASS] update_u2_fixed: 0 errors
+
+--- Section 5: Type Shadowing ---
+[PASS] shadow_s1: 0 errors
+[PASS] shadow_s2: 0 errors
+[PASS] shadow_s3_string: 0 errors
+[PASS] shadow_s4_int: 0 errors
+
+--- Section 6: Complex Dependency Graph ---
+[PASS] graph_g1: 0 errors
+[PASS] graph_g2: 0 errors
+[PASS] graph_g3: 0 errors
+[PASS] graph_g4: 0 errors
+
+--- Section 7: Empty and Self Dependencies ---
+[PASS] empty_deps: 0 errors
+[PASS] self_define: 0 errors
+
+=== Results: 26/26 tests passed ===
+SUCCESS: All dependency tests passed!

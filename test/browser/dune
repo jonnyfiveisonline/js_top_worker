@@ -1,0 +1,41 @@
+; Browser tests using Playwright
+; Run with: dune build @browser
+
+(executable
+ (name client_test)
+ (modes js)
+ (modules client_test)
+ (preprocess (pps js_of_ocaml-ppx))
+ (libraries js_top_worker-client js_top_worker-rpc astring lwt js_of_ocaml))
+
+(executable
+ (name test_worker)
+ (modes js)
+ (modules test_worker)
+ (link_flags (-linkall))
+ (preprocess (pps js_of_ocaml-ppx))
+ (js_of_ocaml
+  (javascript_files ../../lib/stubs.js)
+  (flags --effects=disabled --toplevel +toplevel.js +dynlink.js))
+ (libraries js_top_worker js_top_worker-rpc js_of_ocaml js_of_ocaml-toplevel lwt))
+
+; Browser test alias - runs Playwright
+; Requires: cd test/browser && npm install (once)
+(alias
+ (name browser)
+ (deps
+  client_test.bc.js
+  test_worker.bc.js
+  (source_tree .)))
+
+(rule
+ (alias runbrowser)
+ (deps
+  client_test.bc.js
+  test_worker.bc.js
+  (source_tree .))
+ (action
+  (chdir %{project_root}/test/browser
+   (progn
+    (echo "Running browser tests with Playwright...\n")
+    (run node run_tests.js)))))

@@ -44,9 +44,12 @@ let run () =
   let open Js_of_ocaml in
   let open M in
   Console.console##log (Js.string "Test worker starting...");
-  Server.exec execute;
-  Server.setup (Impl.IdlM.T.lift setup);
   Server.init (Impl.IdlM.T.lift init);
+  Server.create_env (Impl.IdlM.T.lift create_env);
+  Server.destroy_env (Impl.IdlM.T.lift destroy_env);
+  Server.list_envs (Impl.IdlM.T.lift list_envs);
+  Server.setup (Impl.IdlM.T.lift setup);
+  Server.exec execute;
   Server.complete_prefix complete_prefix;
   Server.query_errors query_errors;
   Server.type_enclosing type_enclosing;
