@@ -3,7 +3,10 @@
 open Rpc
 open Idl
 
-let sockpath = "/tmp/js_top_worker.sock"
+let sockpath =
+  match Sys.getenv_opt "JS_TOP_WORKER_SOCK" with
+  | Some path -> path
+  | None -> "/tmp/js_top_worker.sock"
 
 open Merlin_kernel
 module Location = Ocaml_parsing.Location

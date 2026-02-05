@@ -155,14 +155,14 @@ Reading library: base.shadow_stdlib
 Number of children: 0
 node_test.js: [INFO] sync_get: _opam/lib/ocaml/dynamic_cmis.json
 node_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
-node_test.js: [INFO]   toplevel modules: Std_exit, CamlinternalFormatBasics, CamlinternalLazy, CamlinternalMod, Stdlib, CamlinternalOO, CamlinternalFormat
-node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
+node_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalLazy.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormatBasics.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalMod.cmi
+node_test.js: [INFO] async_get: _opam/lib/ocaml/std_exit.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/stdlib.cmi
 node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalOO.cmi
-node_test.js: [INFO] async_get: _opam/lib/ocaml/camlinternalFormat.cmi
 node_test.js: [INFO] init() finished
 node_test.js: [INFO] setup() for env default...
 node_test.js: [INFO] Fetching stdlib__Format.cmi

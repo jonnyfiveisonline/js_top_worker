@@ -145,7 +145,7 @@ Found child: shadow_stdlib
 Reading library: base.shadow_stdlib
 Number of children: 0
 node_env_test.js: [INFO] Adding toplevel modules for dynamic cmis from lib/ocaml/
-node_env_test.js: [INFO]   toplevel modules: Std_exit, CamlinternalFormatBasics, CamlinternalLazy, CamlinternalMod, Stdlib, CamlinternalOO, CamlinternalFormat
+node_env_test.js: [INFO]   toplevel modules: CamlinternalFormat, CamlinternalLazy, CamlinternalFormatBasics, CamlinternalMod, Std_exit, Stdlib, CamlinternalOO
 node_env_test.js: [INFO] init() finished
 --- Section 1: Default Environment ---
 node_env_test.js: [INFO] setup() for env default...

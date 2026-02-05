@@ -1,2 +1,2 @@
 (cram
- (deps %{bin:unix_worker} %{bin:unix_client}))
+ (deps %{bin:unix_worker} %{bin:unix_client} start_worker.sh))

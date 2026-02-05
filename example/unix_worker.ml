@@ -80,13 +80,19 @@ let mkdir_rec dir perm =
   in
   p_mkdir dir
 
-let serve_requests rpcfn path =
+let serve_requests rpcfn path ~ready_fd =
   let ( let* ) = Lwt.bind in
   (try Unix.unlink path with Unix.Unix_error (Unix.ENOENT, _, _) -> ());
   mkdir_rec (Filename.dirname path) 0o0755;
   let sock = Lwt_unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
   let* () = Lwt_unix.bind sock (Unix.ADDR_UNIX path) in
   Lwt_unix.listen sock 5;
+  (* Signal readiness via pipe to parent process *)
+  (match ready_fd with
+   | Some fd ->
+       ignore (Unix.write fd (Bytes.of_string "R") 0 1);
+       Unix.close fd
+   | None -> ());
   let rec loop () =
     let* this_connection, _ = Lwt_unix.accept sock in
     let* () =
@@ -160,11 +166,10 @@ module U = Impl.Make (S)
     let _ = Location.report_exception ppf exn in
     () *)
 
-let start_server () =
+let start_server ~ready_fd =
   let open U in
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.set_level (Some Logs.Warning);
-  (* let pid = Unix.getpid () in *)
   Server.init (IdlM.T.lift init);
   Server.create_env (IdlM.T.lift create_env);
   Server.destroy_env (IdlM.T.lift destroy_env);
@@ -182,6 +187,27 @@ let start_server () =
     rpc_fn call >>= fun response ->
     Js_top_worker_rpc.Transport.Json.string_of_response ~id:(Rpc.Int 0L) response |> return
   in
-  serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath
+  serve_requests process Js_top_worker_rpc.Toplevel_api_gen.sockpath ~ready_fd
 
-let _ = Lwt_main.run (start_server ())
+let () =
+  (* Fork so parent only exits once child is ready to accept connections *)
+  let read_fd, write_fd = Unix.pipe ~cloexec:false () in
+  match Unix.fork () with
+  | 0 ->
+      (* Child: close read end and detach from terminal *)
+      Unix.close read_fd;
+      (* Redirect stdout/stderr to /dev/null so parent's $() can complete *)
+      let dev_null = Unix.openfile "/dev/null" [Unix.O_RDWR] 0 in
+      Unix.dup2 dev_null Unix.stdout;
+      Unix.dup2 dev_null Unix.stderr;
+      Unix.close dev_null;
+      (* Run server, signal via write end *)
+      Lwt_main.run (start_server ~ready_fd:(Some write_fd))
+  | child_pid ->
+      (* Parent: close write end, wait for ready signal, print child PID, exit *)
+      Unix.close write_fd;
+      let buf = Bytes.create 1 in
+      ignore (Unix.read read_fd buf 0 1);
+      Unix.close read_fd;
+      Printf.printf "%d\n%!" child_pid
+      (* Parent exits here, child continues serving *)
