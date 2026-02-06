@@ -112,24 +112,25 @@ export class OcamlWorker {
   }
 
   /**
-   * Create a worker from a manifest.json URL.
-   * Fetches the manifest to discover content-hashed worker and stdlib_dcs URLs.
-   * @param {string} manifestUrl - URL to manifest.json (e.g., '/jtw-output/manifest.json')
-   * @param {string} [ocamlVersion='5.4.0'] - OCaml compiler version
+   * Create a worker from a findlib_index URL.
+   * The findlib_index JSON contains compiler info (version, content_hash) and
+   * META file paths. This is the single entry point for discovery.
+   * @param {string} indexUrl - URL to findlib_index (e.g., '/jtw-output/u/<hash>/findlib_index')
+   * @param {string} baseOutputUrl - Base URL of the jtw-output directory (e.g., '/jtw-output')
    * @param {Object} [options] - Options passed to OcamlWorker constructor
-   * @returns {Promise<{worker: OcamlWorker, stdlib_dcs: string}>}
+   * @returns {Promise<{worker: OcamlWorker, findlib_index: string, stdlib_dcs: string}>}
    */
-  static async fromManifest(manifestUrl, ocamlVersion = '5.4.0', options = {}) {
-    const resp = await fetch(manifestUrl);
-    if (!resp.ok) throw new Error(`Failed to fetch manifest: ${resp.status}`);
-    const manifest = await resp.json();
-    const compiler = manifest.compilers[ocamlVersion];
-    if (!compiler) throw new Error(`OCaml ${ocamlVersion} not found in manifest`);
-    const baseUrl = new URL(manifestUrl, window.location.href);
-    const workerUrl = new URL(compiler.worker_url, baseUrl).href;
-    const stdlibDcs = compiler.stdlib_dcs;
+  static async fromIndex(indexUrl, baseOutputUrl, options = {}) {
+    const resp = await fetch(indexUrl);
+    if (!resp.ok) throw new Error(`Failed to fetch findlib_index: ${resp.status}`);
+    const index = await resp.json();
+    const compiler = index.compiler;
+    if (!compiler) throw new Error('No compiler info in findlib_index');
+    const ver = compiler.version;
+    const hash = compiler.content_hash;
+    const workerUrl = `${baseOutputUrl}/compiler/${ver}/${hash}/worker.js`;
     const worker = new OcamlWorker(workerUrl, options);
-    return { worker, stdlib_dcs: stdlibDcs };
+    return { worker, findlib_index: indexUrl, stdlib_dcs: 'lib/ocaml/dynamic_cmis.json' };
   }
 
   /**

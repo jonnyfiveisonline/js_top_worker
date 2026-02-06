@@ -31,10 +31,10 @@
       throw new Error('universe parameter required');
     }
 
-    status.textContent = 'Fetching manifest...';
-    const { worker, stdlib_dcs } = await OcamlWorker.fromManifest(
-      '/jtw-output/manifest.json', compilerVersion, { timeout: 120000 });
-    const findlib_index = `/jtw-output/u/${universe}/findlib_index`;
+    status.textContent = 'Fetching findlib_index...';
+    const indexUrl = `/jtw-output/u/${universe}/findlib_index`;
+    const { worker, stdlib_dcs, findlib_index } = await OcamlWorker.fromIndex(
+      indexUrl, '/jtw-output', { timeout: 120000 });
 
     try {
       status.textContent = 'Initializing (loading stdlib)...';

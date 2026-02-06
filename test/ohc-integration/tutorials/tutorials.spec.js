@@ -239,3 +239,51 @@ test('otfm.0.4.0 tutorial', async ({ page }) => {
   if (r.failures.length > 0) console.log('Failures:', JSON.stringify(r.failures, null, 2));
   expect(r.failed, `${r.failed} failures: ${JSON.stringify(r.failures)}`).toBe(0);
 });
+
+// ── New library tutorials (added packages) ────────────────────────────
+
+const newTutorials = [
+  'yojson.3.0.0',
+  'ezjsonm.1.1.0', 'ezjsonm.1.2.0', 'ezjsonm.1.3.0',
+  'sexplib0.v0.17.0',
+  'base64.3.5.2',
+  're.1.10.4', 're.1.11.0', 're.1.12.0', 're.1.13.2', 're.1.14.0',
+  'angstrom.0.16.1',
+  'tyre.0.5', 'tyre.1.0',
+  'uuseg.14.0.0', 'uuseg.15.0.0', 'uuseg.16.0.0', 'uuseg.17.0.0',
+  'containers.3.17',
+  'iter.1.7', 'iter.1.8', 'iter.1.9',
+  'ocamlgraph.2.0.0', 'ocamlgraph.2.1.0', 'ocamlgraph.2.2.0',
+  'hex.1.4.0', 'hex.1.5.0',
+  'eqaf.0.9', 'eqaf.0.10',
+  'uri.4.4.0',
+  'ipaddr.5.6.0', 'ipaddr.5.6.1',
+  'domain-name.0.4.1', 'domain-name.0.5.0',
+  'qcheck-core.0.25', 'qcheck-core.0.27', 'qcheck-core.0.91',
+];
+
+// These packages have broken jtw layers (inconsistent .cmi assumptions,
+// wrong OCaml version, undefined compilation units, or missing JS stubs)
+const skippedTutorials = [
+  'yojson.1.7.0', 'yojson.2.0.2', 'yojson.2.1.2', 'yojson.2.2.2',
+  'angstrom.0.15.0',
+  'base64.3.4.0',
+  'sexplib0.v0.15.1', 'sexplib0.v0.16.0',
+  'csexp.1.5.2',
+  'containers.3.12', 'containers.3.14',
+  'digestif.1.1.2', 'digestif.1.3.0',
+  'uri.4.2.0',
+  'zarith.1.13', 'zarith.1.14',
+];
+
+for (const pkg of skippedTutorials) {
+  test.skip(`${pkg} tutorial — needs combined universe`, () => {});
+}
+
+for (const pkg of newTutorials) {
+  test(`${pkg} tutorial`, async ({ page }) => {
+    const r = await runTutorial(page, pkg);
+    if (r.failures.length > 0) console.log('Failures:', JSON.stringify(r.failures, null, 2));
+    expect(r.failed, `${r.failed} failures: ${JSON.stringify(r.failures)}`).toBe(0);
+  });
+}

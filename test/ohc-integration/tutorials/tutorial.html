@@ -160,17 +160,18 @@
       content.appendChild(sEl);
     }
 
-    // Init worker via manifest.json for content-hashed URLs
+    // Init worker via findlib_index for content-hashed URLs
     initEl.innerHTML = '<span class="spinner">&#x25E0;</span> Initializing OCaml worker...';
     let worker;
     try {
-      const { worker: w, stdlib_dcs } = await OcamlWorker.fromManifest(
-        '/jtw-output/manifest.json', tutorial.compiler || '5.4.0', { timeout: 120000 });
+      const indexUrl = `/jtw-output/u/${tutorial.universe}/findlib_index`;
+      const { worker: w, stdlib_dcs, findlib_index } = await OcamlWorker.fromIndex(
+        indexUrl, '/jtw-output', { timeout: 120000 });
       worker = w;
       await worker.init({
         findlib_requires: [],
         stdlib_dcs: stdlib_dcs,
-        findlib_index: `/jtw-output/u/${tutorial.universe}/findlib_index`,
+        findlib_index: findlib_index,
       });
 
       initEl.innerHTML = '<span class="spinner">&#x25E0;</span> Loading packages...';

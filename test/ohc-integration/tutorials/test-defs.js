@@ -1,39 +1,105 @@
-// Tutorial test definitions for all Bunzli library versions
+// Tutorial test definitions for OCaml libraries
 // Each entry is a self-contained interactive tutorial
 
 const U = {
+  // ── Bunzli libraries ──
   'fmt.0.9.0':      '9901393f978b0a6627c5eab595111f50',
-  'fmt.0.10.0':     'dc92d356407d44e1eae7e39acefce214',
-  'fmt.0.11.0':     '5c8d38716cee871f1a6a1f164c9171e6',
-  'cmdliner.1.0.4': '1c3783a51f479ccb97503596896eb40b',
-  'cmdliner.1.3.0': 'bcb1b5485952a387d9a1a626d018fc5b',
-  'cmdliner.2.0.0': 'e6cf251f6257587fa235157819c1be21',
-  'cmdliner.2.1.0': '146d116fd47cdde3a5912f6c3c43a06c',
-  'mtime.1.3.0':    '405772d8c1d5fcfb52a34bc074e9b2bf',
-  'mtime.1.4.0':    'd07582e1ae666064d4e2cf55b8f966f2',
-  'mtime.2.1.0':    '427565ec9f440e77ea8cda7a5baf2f16',
-  'logs.0.7.0':     '2579ce9998e74d858251a8467a2d3acc',
-  'logs.0.10.0':    '1447d6620c603faabafd2a4af8180e64',
-  'uucp.14.0.0':    '61994aea366afe63fbbdfbec3a6c1c17',
-  'uucp.15.0.0':    '1676ff3253642b3d3380da595576d048',
-  'uucp.16.0.0':    '2536abe6336b2597409378c985af206f',
-  'uucp.17.0.0':    '9f478f56c02c6b75ad53e569576ac528',
-  'uunf.14.0.0':    'c49889fbf46b81974819b189749084eb',
-  'uunf.17.0.0':    'd41feec064e2a5ca2ca9ce644b490c35',
-  'astring.0.8.5':  '77fa5901f826c06565dd83b8f758980c',
-  'jsonm.1.0.2':    '331ba04a1674f61d6eb297de762940ea',
-  'xmlm.1.4.0':     'de0c6b460a24c08865ced16ef6a90978',
-  'ptime.1.2.0':    '0e977ea260d75026d2cdd4a7d007b2a5',
-  'react.1.2.2':    '8b8f1bafe428e743bbb3e9f6a24753a5',
-  'hmap.0.8.1':     '9cbc1bea29fe2a32ff73726147a24f7f',
-  'gg.1.0.0':       '0c7a6cc72b0eef74ddf88e8512b418e1',
-  'note.0.0.3':     '7497fed22490d2257a6fb4ac44bb1316',
-  'otfm.0.4.0':     'af7a1a159d4a1c27da168df5cad06ad9',
-  'vg.0.9.5':       '8a313572e25666862de0bc23fc09c53d',
-  'bos.0.2.1':      '1447d6620c603faabafd2a4af8180e64',
-  'fpath.0.7.3':    'b034f0f4718c8842fdec8d4ff3430b97',
-  'uutf.1.0.4':     '331ba04a1674f61d6eb297de762940ea',
-  'b0.0.0.6':       '3125f46428fef2c0920ae254a3678000',
+  'fmt.0.10.0':     'd8140118651d08430f933d410a909e3b',
+  'fmt.0.11.0':     '7663cce356513833b908ae5e4f521106',
+  'cmdliner.1.0.4': '0dd34259dc0892e543b03b3afb0a77fa',
+  'cmdliner.1.3.0': '258e7979b874502ea546e90a0742184a',
+  'cmdliner.2.0.0': '91c3d96cea9b89ddd24cf7b78786a5ca',
+  'cmdliner.2.1.0': 'f3e665d5388ac380a70c5ed67f465bbb',
+  'mtime.1.3.0':    'b6735658fd307bba23a7c5f21519b910',
+  'mtime.1.4.0':    'ebccfc43716c6da0ca4a065e60d0f875',
+  'mtime.2.1.0':    '7db699c334606d6f66e65c8b515d298d',
+  'logs.0.7.0':     '2c014cfbbee1d278b162002eae03eaa8',
+  'logs.0.10.0':    '07a565e7588ce100ffd7c8eb8b52df07',
+  'uucp.14.0.0':    '60e1409eb30c0650c4d4cbcf3c453e65',
+  'uucp.15.0.0':    '6a96a3f145249f110bf14739c78e758c',
+  'uucp.16.0.0':    '2bf0fbf12aa05c8f99989a759d2dc8cf',
+  'uucp.17.0.0':    '58b9c48e9528ce99586b138d8f4778c2',
+  'uunf.14.0.0':    'cac36534f1bf353fd2192efd015dd0e6',
+  'uunf.17.0.0':    '96704cd9810ea1ed504e4ed71cde82b0',
+  'astring.0.8.5':  '1cdbe76f0ec91a6eb12bd0279a394492',
+  'jsonm.1.0.2':    'ac28e00ecd46c9464f5575c461b5d48f',
+  'xmlm.1.4.0':     'c4c22d0db3ea01343c1a868bab35e1b4',
+  'ptime.1.2.0':    'd57c69f3dd88b91454622c1841971354',
+  'react.1.2.2':    'f438ba61693a5448718c73116b228f3c',
+  'hmap.0.8.1':     '753d7c421afb866e7ffe07ddea3b8349',
+  'gg.1.0.0':       '02a9bababc92d6639cdbaf20233597ba',
+  'note.0.0.3':     '2545f914c274aa806d29749eb96836fa',
+  'otfm.0.4.0':     '4f870a70ee71e41dff878af7123b2cd6',
+  'vg.0.9.5':       '0e2e71cfd8fe2e81bff124849421f662',
+  'bos.0.2.1':      '0e04faa6cc5527bc124d8625bded34fc',
+  'fpath.0.7.3':    '6c4fe09a631d871865fd38aa15cd61d4',
+  'uutf.1.0.4':     'ac04fa0671533316f94dacbd14ffe0bf',
+  'uuseg.14.0.0':   '406ca4903030ee122ff6c61b61446ddc',
+  'uuseg.15.0.0':   '62ea8502ec4e6c386a070cc75ec8377a',
+  'uuseg.16.0.0':   '3a191102f91addba06efdd712ba037b2',
+  'uuseg.17.0.0':   '7d9b8800252a9bec2a9be496e02eb9da',
+  'b0.0.0.6':       'bfc34a228f53ac5ced707eed285a6e5c',
+
+  // ── Serialization ──
+  'yojson.1.7.0':   '0273d3484c1256a463fc6b5d822ba4ae',
+  'yojson.2.0.2':   'b02baa519ba5bedf95d1b42b5e66381a',
+  'yojson.2.1.2':   '5efcef16114ee98834c3f4cf9a7f45b4',
+  'yojson.2.2.2':   '739ca5bed6c1201d906f0f3132274687',
+  'yojson.3.0.0':   'e52f084da1b654e881d2dba81775b440',
+  'ezjsonm.1.1.0':  '899976ac0dc15192e669f652bf29f29e',
+  'ezjsonm.1.2.0':  'b93294aee1f9361bfe1916f4127fa56c',
+  'ezjsonm.1.3.0':  '98ee39eafcb78d7c102a291c7faa302e',
+  'sexplib0.v0.15.1':'f6fb7feeb446b4a67adb486a2392bf3e',
+  'sexplib0.v0.16.0':'8ec78baf83bdc6a0a181b58efb909869',
+  'sexplib0.v0.17.0':'08fe6d134ac413075564220297b2554f',
+  'csexp.1.5.2':    '8443eb56f5227050537a4eb47b26fd10',
+  'base64.3.4.0':   '9befb8850a0bcfb0556f8a7d2de8d3bd',
+  'base64.3.5.2':   'dee9a00f3ec355e7dab15121d7cb5a3c',
+
+  // ── Text / Parsing ──
+  're.1.10.4':      '4697515ef0ed56df99029cfa8b6a4c1a',
+  're.1.11.0':      '87fd99e341a1468e36de4973044ba1cb',
+  're.1.12.0':      '3bc6cdc9f1fd39cd5ee61b89f423f51a',
+  're.1.13.2':      'e080307b8290a25f41d4ad87427c3cc0',
+  're.1.14.0':      '7f3c1f0452e7156dea56c1a52e2096a4',
+  'angstrom.0.15.0':'12fe7a4d575b34f30551cf6eaaed4a0b',
+  'angstrom.0.16.1':'f46aa50b81b7e6a0dd7ee69d247920c0',
+  'tyre.0.5':       'ffdb349acdd211cf2699a689ed1491d3',
+  'tyre.1.0':       'e413ed92802108a275144c27e0f9efa8',
+
+  // ── Data structures ──
+  'containers.3.17': '62a1dfab4e79dda21e6775fc35bac90b',
+  'iter.1.7':       '4aca16dd3c74db420f49a18cc54fd66f',
+  'iter.1.8':       '7724b461d742c869a4abfaa870879763',
+  'iter.1.9':       '73e7b9c9b638abf269affd1967509ce6',
+  'ocamlgraph.2.0.0':'bcfe5c830a54c4fc55121d6bc69d52d4',
+  'ocamlgraph.2.1.0':'e867dbcc2de571de4cb84d9a45e554bd',
+  'ocamlgraph.2.2.0':'ab9aa04f9746bf7c5b275cfddfc9dc20',
+
+  // ── Crypto / Encoding ──
+  'digestif.1.1.2': '33d25472185fc31bd41d277d488478f2',
+  'digestif.1.3.0': 'c3664212cf01a38aa9af7c54123056cf',
+  'hex.1.4.0':      '0bff54cafa851851e4ddb617126d4ce6',
+  'hex.1.5.0':      'a46b45c6915570ff2966d96d9101258c',
+  'eqaf.0.9':       '39499417427d1d35a028fc9101ecbfb2',
+  'eqaf.0.10':      'eed017d4f8c09e4fcabf2f9320361e64',
+
+  // ── Networking types ──
+  'uri.4.2.0':      '473a4aaa6884b7d04af481a4bcf573e6',
+  'uri.4.4.0':      '3f9567317844352b63256b5d7075e595',
+  'ipaddr.5.6.0':   'ca33bd0287b9b4cd9f67a4c6464b0bd9',
+  'ipaddr.5.6.1':   '516728912d49b2b8b007b762f0cd985f',
+  'domain-name.0.4.1':'55bf622c2e1dacb9e5c7da2cf9195e95',
+  'domain-name.0.5.0':'e069e9e37be7c2d8264f41a661136c60',
+
+  // ── Math ──
+  'zarith.1.13':    '5b98616ce2f37ecfbefd3d8c7c1f45a9',
+  'zarith.1.14':    '3abb9b1ae0690526d21d9630f3f27153',
+
+  // ── Testing ──
+  'qcheck-core.0.25':'c338cf74d7ad14da542181619f55fbda',
+  'qcheck-core.0.27':'eb7a98de039353471656e141c6107fc3',
+  'qcheck-core.0.91':'c1307fa49614dc884aa0fec68b55c832',
 };
 
 // ── Factory: Fmt (same API across 0.9–0.11) ────────────────────────────
@@ -1268,6 +1334,427 @@ export const TUTORIALS = {
   // ═══════════════════════════════════════════════════════════════════════
   // Bos
   // ═══════════════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════════════
+  // Yojson
+  // ═══════════════════════════════════════════════════════════════════════
+  'yojson.1.7.0': {
+    name: 'Yojson', version: '1.7.0', opam: 'yojson',
+    description: 'JSON parsing and printing for OCaml (1.x API)',
+    universe: U['yojson.1.7.0'], require: ['yojson'],
+    sections: [
+      { title: 'Parsing JSON',
+        description: 'Yojson.Safe.from_string parses a JSON string into an algebraic type.',
+        steps: [
+          { code: 'Yojson.Safe.from_string {|{"name": "Alice", "age": 30}|};;',
+            expect: '`Assoc', description: 'Parse a JSON object' },
+          { code: 'Yojson.Safe.from_string "[1, 2, 3]";;',
+            expect: '`List', description: 'Parse a JSON array' },
+          { code: 'Yojson.Safe.from_string "42";;',
+            expect: '`Int 42', description: 'Parse a JSON number' },
+        ] },
+      { title: 'Building JSON',
+        description: 'JSON values are polymorphic variants: `Null, `Bool, `Int, `Float, `String, `List, `Assoc.',
+        steps: [
+          { code: 'Yojson.Safe.to_string (`Assoc [("x", `Int 1); ("y", `Int 2)]);;',
+            expect: '"x"', description: 'Serialize an object to string' },
+          { code: 'Yojson.Safe.to_string (`List [`String "a"; `Bool true]);;',
+            expect: '"a"', description: 'Serialize a list' },
+        ] },
+      { title: 'Util Module',
+        description: 'Yojson.Safe.Util provides accessor functions for extracting values from JSON.',
+        steps: [
+          { code: 'let j = Yojson.Safe.from_string {|{"name": "Bob"}|};;', expect: '`Assoc',
+            description: 'Parse a JSON object' },
+          { code: 'Yojson.Safe.Util.member "name" j;;', expect: '`String "Bob"',
+            description: 'Extract a field by name' },
+          { code: 'Yojson.Safe.Util.member "name" j |> Yojson.Safe.Util.to_string;;',
+            expect: '"Bob"', description: 'Extract as an OCaml string' },
+          { code: 'Yojson.Safe.Util.keys (`Assoc [("a", `Int 1); ("b", `Int 2)]);;',
+            expect: '["a"; "b"]', description: 'Get all keys of an object' },
+        ] },
+    ],
+  },
+
+  'yojson.2.0.2': {
+    name: 'Yojson', version: '2.0.2', opam: 'yojson',
+    description: 'JSON parsing and printing for OCaml (2.x API)',
+    universe: U['yojson.2.0.2'], require: ['yojson'],
+    sections: [
+      { title: 'Parsing JSON',
+        description: 'Yojson 2.x removed biniou dependency. The core API is the same.',
+        steps: [
+          { code: 'Yojson.Safe.from_string {|{"key": "value"}|};;',
+            expect: '`Assoc', description: 'Parse a JSON object' },
+          { code: 'Yojson.Safe.from_string "true";;',
+            expect: '`Bool true', description: 'Parse a boolean' },
+        ] },
+      { title: 'Building and Serializing',
+        steps: [
+          { code: 'Yojson.Safe.to_string (`Assoc [("n", `Int 42)]);;',
+            expect: '"n"', description: 'Serialize to compact JSON' },
+          { code: 'Yojson.Safe.pretty_to_string (`Assoc [("n", `Int 42)]);;',
+            expect: '"n"', description: 'Pretty-print with indentation' },
+        ] },
+      { title: 'Util Accessors',
+        description: 'Extract typed values from JSON trees.',
+        steps: [
+          { code: 'Yojson.Safe.Util.to_int (`Int 42);;', expect: '42',
+            description: 'Extract an int' },
+          { code: 'Yojson.Safe.Util.to_list (`List [`Int 1; `Int 2]);;',
+            expect: '[`Int 1', description: 'Extract a list' },
+          { code: 'Yojson.Safe.Util.to_bool (`Bool true);;', expect: 'true',
+            description: 'Extract a bool' },
+          { code: 'Yojson.Safe.Util.member "x" (`Assoc [("x", `Float 3.14)]);;',
+            expect: '`Float 3.14', description: 'Navigate into an object' },
+        ] },
+    ],
+  },
+
+  'yojson.2.1.2': {
+    name: 'Yojson', version: '2.1.2', opam: 'yojson',
+    description: 'JSON parsing and printing for OCaml',
+    universe: U['yojson.2.1.2'], require: ['yojson'],
+    sections: [
+      { title: 'Parsing and Serializing',
+        steps: [
+          { code: 'Yojson.Safe.from_string {|[1, "two", true]|};;',
+            expect: '`List', description: 'Parse a heterogeneous array' },
+          { code: 'Yojson.Safe.to_string (`List [`Int 1; `String "two"; `Bool true]);;',
+            expect: '1', description: 'Serialize back to JSON' },
+        ] },
+      { title: 'Util Navigation',
+        steps: [
+          { code: 'let data = Yojson.Safe.from_string {|{"users": [{"name": "A"}, {"name": "B"}]}|};;',
+            expect: '`Assoc', description: 'Parse nested JSON' },
+          { code: 'Yojson.Safe.Util.(member "users" data |> to_list |> List.map (member "name"));;',
+            expect: '[`String "A"', description: 'Navigate and extract nested values' },
+          { code: 'Yojson.Safe.Util.(member "users" data |> index 0 |> member "name" |> to_string);;',
+            expect: '"A"', description: 'Index into arrays' },
+        ] },
+    ],
+  },
+
+  'yojson.2.2.2': {
+    name: 'Yojson', version: '2.2.2', opam: 'yojson',
+    description: 'JSON parsing and printing for OCaml',
+    universe: U['yojson.2.2.2'], require: ['yojson'],
+    sections: [
+      { title: 'Round-Trip JSON',
+        steps: [
+          { code: 'let j = `Assoc [("list", `List [`Int 1; `Int 2; `Int 3])];;',
+            expect: '`Assoc', description: 'Build a JSON value' },
+          { code: 'let s = Yojson.Safe.to_string j;;', expect: 'string',
+            description: 'Serialize to string' },
+          { code: 'Yojson.Safe.from_string s = j;;', expect: 'true',
+            description: 'Round-trip preserves structure' },
+        ] },
+      { title: 'Util Combinators',
+        steps: [
+          { code: 'Yojson.Safe.Util.combine (`Assoc [("a", `Int 1)]) (`Assoc [("b", `Int 2)]);;',
+            expect: '`Assoc', description: 'Merge two objects' },
+          { code: 'Yojson.Safe.Util.to_assoc (`Assoc [("x", `Int 1)]);;',
+            expect: '[("x"', description: 'Convert to association list' },
+          { code: 'Yojson.Safe.Util.filter_member "name" [`Assoc [("name", `String "A")]; `Assoc []];;',
+            expect: '[`String "A"', description: 'Filter objects by field presence' },
+        ] },
+    ],
+  },
+
+  'yojson.3.0.0': {
+    name: 'Yojson', version: '3.0.0', opam: 'yojson',
+    description: 'JSON parsing and printing for OCaml (3.x, strict types)',
+    universe: U['yojson.3.0.0'], require: ['yojson'],
+    sections: [
+      { title: 'Strict JSON Types',
+        description: 'Yojson 3.0 removed non-standard Tuple and Variant constructors from Safe.t.',
+        steps: [
+          { code: 'Yojson.Safe.from_string {|{"clean": true}|};;',
+            expect: '`Assoc', description: 'Parse standard JSON' },
+          { code: 'Yojson.Safe.to_string (`Assoc [("v", `Intlit "999999999999999")]);;',
+            expect: '999999999999999', description: 'Intlit preserves large integers as strings' },
+        ] },
+      { title: 'Util Module',
+        steps: [
+          { code: 'Yojson.Safe.Util.member "x" (`Assoc [("x", `Null)]);;',
+            expect: '`Null', description: 'Access a null field' },
+          { code: 'Yojson.Safe.Util.values (`Assoc [("a", `Int 1); ("b", `Int 2)]);;',
+            expect: '[`Int 1', description: 'Extract all values' },
+          { code: 'Yojson.Safe.Util.to_string_option (`Null);;', expect: 'None',
+            description: 'Safe accessor returns None for wrong type' },
+          { code: 'Yojson.Safe.Util.to_string_option (`String "hi");;', expect: 'Some "hi"',
+            description: 'Safe accessor returns Some for correct type' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Ezjsonm
+  // ═══════════════════════════════════════════════════════════════════════
+  'ezjsonm.1.1.0': {
+    name: 'Ezjsonm', version: '1.1.0', opam: 'ezjsonm',
+    description: 'Easy JSON manipulation for OCaml',
+    universe: U['ezjsonm.1.1.0'], require: ['ezjsonm'],
+    sections: [
+      { title: 'Building Values',
+        description: 'Ezjsonm provides typed constructors for JSON values.',
+        steps: [
+          { code: 'Ezjsonm.string "hello";;', expect: '`String "hello"',
+            description: 'Create a JSON string' },
+          { code: 'Ezjsonm.int 42;;', expect: '`Float 42.',
+            description: 'Create a JSON number (stored as float internally)' },
+          { code: 'Ezjsonm.bool true;;', expect: '`Bool true',
+            description: 'Create a JSON boolean' },
+          { code: 'Ezjsonm.list Ezjsonm.int [1; 2; 3];;', expect: '`A',
+            description: 'Create a JSON array from a list' },
+        ] },
+      { title: 'Serialization',
+        description: 'Convert values to and from strings.',
+        steps: [
+          { code: 'Ezjsonm.value_to_string (Ezjsonm.string "hi");;', expect: 'string',
+            description: 'Serialize a value (JSON-encoded string with quotes)' },
+          { code: 'Ezjsonm.value_to_string (Ezjsonm.list Ezjsonm.int [1;2;3]);;',
+            expect: '[1', description: 'Serialize an array' },
+          { code: 'Ezjsonm.value_from_string "42";;', expect: '`Float 42.',
+            description: 'Parse a JSON value from string' },
+        ] },
+      { title: 'Extracting Values',
+        description: 'get_* functions extract OCaml values from JSON.',
+        steps: [
+          { code: 'Ezjsonm.get_string (Ezjsonm.string "test");;', expect: '"test"',
+            description: 'Extract a string' },
+          { code: 'Ezjsonm.get_int (Ezjsonm.int 42);;', expect: '42',
+            description: 'Extract an int' },
+          { code: 'Ezjsonm.get_list Ezjsonm.get_int (Ezjsonm.list Ezjsonm.int [1;2;3]);;',
+            expect: '[1; 2; 3]', description: 'Extract a list of ints' },
+        ] },
+    ],
+  },
+
+  'ezjsonm.1.2.0': {
+    name: 'Ezjsonm', version: '1.2.0', opam: 'ezjsonm',
+    description: 'Easy JSON manipulation for OCaml',
+    universe: U['ezjsonm.1.2.0'], require: ['ezjsonm'],
+    sections: [
+      { title: 'Building and Querying',
+        steps: [
+          { code: 'let doc = Ezjsonm.dict [("name", Ezjsonm.string "Alice"); ("age", Ezjsonm.int 30)];;',
+            expect: '`O', description: 'Build a JSON object with dict' },
+          { code: 'Ezjsonm.value_to_string doc;;', expect: 'string',
+            description: 'Serialize the object to JSON' },
+          { code: 'Ezjsonm.get_dict doc;;', expect: '[("name"',
+            description: 'Extract as association list' },
+        ] },
+      { title: 'Navigating Documents',
+        description: 'Ezjsonm.find navigates into nested JSON using a path of string keys.',
+        steps: [
+          { code: 'let j = Ezjsonm.from_string {|{"user": {"name": "Bob"}}|};;',
+            expect: '`O', description: 'Parse a nested document' },
+          { code: 'Ezjsonm.find j ["user"; "name"];;', expect: '`String "Bob"',
+            description: 'Navigate by key path' },
+          { code: 'Ezjsonm.mem j ["user"; "name"];;', expect: 'true',
+            description: 'Check if a path exists' },
+          { code: 'Ezjsonm.find_opt j ["user"; "email"];;', expect: 'None',
+            description: 'Safe navigation returns None for missing paths' },
+        ] },
+    ],
+  },
+
+  'ezjsonm.1.3.0': {
+    name: 'Ezjsonm', version: '1.3.0', opam: 'ezjsonm',
+    description: 'Easy JSON manipulation for OCaml',
+    universe: U['ezjsonm.1.3.0'], require: ['ezjsonm'],
+    sections: [
+      { title: 'Value Constructors',
+        steps: [
+          { code: 'Ezjsonm.string "hello";;', expect: '`String',
+            description: 'A JSON string value' },
+          { code: 'Ezjsonm.unit ();;', expect: '`Null',
+            description: 'JSON null' },
+          { code: 'Ezjsonm.list Ezjsonm.string ["a"; "b"];;', expect: '`A',
+            description: 'Array of strings' },
+        ] },
+      { title: 'Documents',
+        description: 'Documents (Ezjsonm.t) must be arrays or objects at the top level.',
+        steps: [
+          { code: 'let doc = Ezjsonm.from_string {|{"x": [1, 2, 3]}|};;', expect: '`O',
+            description: 'Parse a document' },
+          { code: 'Ezjsonm.find doc ["x"] |> Ezjsonm.get_list Ezjsonm.get_int;;',
+            expect: '[1; 2; 3]', description: 'Navigate and extract typed values' },
+          { code: 'Ezjsonm.to_string ~minify:false doc;;', expect: 'string',
+            description: 'Pretty-print a document' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Sexplib0
+  // ═══════════════════════════════════════════════════════════════════════
+  'sexplib0.v0.15.1': {
+    name: 'Sexplib0', version: 'v0.15.1', opam: 'sexplib0',
+    description: 'S-expression type and printing (minimal, no parsing)',
+    universe: U['sexplib0.v0.15.1'], require: ['sexplib0'],
+    sections: [
+      { title: 'S-expression Type',
+        description: 'Sexplib0.Sexp.t has two constructors: Atom of string and List of t list.',
+        steps: [
+          { code: 'Sexplib0.Sexp.Atom "hello";;', expect: 'Sexplib0.Sexp.t',
+            description: 'An atomic S-expression' },
+          { code: 'Sexplib0.Sexp.List [Atom "add"; Atom "1"; Atom "2"];;',
+            expect: 'Sexplib0.Sexp.t', description: 'A list S-expression' },
+        ] },
+      { title: 'Printing',
+        description: 'to_string produces compact output, to_string_hum produces indented output.',
+        steps: [
+          { code: 'Sexplib0.Sexp.to_string (List [Atom "name"; Atom "Alice"]);;',
+            expect: '"(name Alice)"', description: 'Compact string representation' },
+          { code: 'Sexplib0.Sexp.to_string_hum (List [Atom "config"; List [Atom "port"; Atom "8080"]]);;',
+            expect: '(config', description: 'Human-readable indented output' },
+        ] },
+      { title: 'Comparison',
+        steps: [
+          { code: 'Sexplib0.Sexp.equal (Atom "x") (Atom "x");;', expect: 'true',
+            description: 'Structural equality' },
+          { code: 'Sexplib0.Sexp.equal (Atom "x") (Atom "y");;', expect: 'false',
+            description: 'Different atoms are not equal' },
+        ] },
+    ],
+  },
+
+  'sexplib0.v0.16.0': {
+    name: 'Sexplib0', version: 'v0.16.0', opam: 'sexplib0',
+    description: 'S-expression type and printing (minimal, no parsing)',
+    universe: U['sexplib0.v0.16.0'], require: ['sexplib0'],
+    sections: [
+      { title: 'Building S-expressions',
+        steps: [
+          { code: 'open Sexplib0.Sexp;; let s = List [Atom "person"; List [Atom "name"; Atom "Bob"]; List [Atom "age"; Atom "25"]];;',
+            expect: 'Sexplib0.Sexp.t', description: 'Build a nested S-expression' },
+          { code: 'Sexplib0.Sexp.to_string s;;', expect: '"(person (name Bob) (age 25))"',
+            description: 'Serialize to compact string' },
+          { code: 'Sexplib0.Sexp.to_string_hum s;;', expect: '(person',
+            description: 'Pretty-print with indentation' },
+        ] },
+      { title: 'Error Messages',
+        description: 'Sexp.message builds structured error S-expressions.',
+        steps: [
+          { code: 'Sexplib0.Sexp.message "invalid input" ["value", Atom "42"; "expected", Atom "string"];;',
+            expect: 'Sexplib0.Sexp.t', description: 'Build a structured error message' },
+        ] },
+    ],
+  },
+
+  'sexplib0.v0.17.0': {
+    name: 'Sexplib0', version: 'v0.17.0', opam: 'sexplib0',
+    description: 'S-expression type and printing (minimal, no parsing)',
+    universe: U['sexplib0.v0.17.0'], require: ['sexplib0'],
+    sections: [
+      { title: 'S-expression Basics',
+        steps: [
+          { code: 'let open Sexplib0.Sexp in Atom "hello";;', expect: 'Sexplib0.Sexp.t',
+            description: 'An atom' },
+          { code: 'let open Sexplib0.Sexp in List [Atom "list"; List [Atom "1"; Atom "2"; Atom "3"]];;',
+            expect: 'Sexplib0.Sexp.t', description: 'Nested S-expression' },
+          { code: 'Sexplib0.Sexp.(to_string (List [Atom "a"; Atom "b"; Atom "c"]));;',
+            expect: '"(a b c)"', description: 'Serialize to string' },
+        ] },
+      { title: 'Comparison and Equality',
+        steps: [
+          { code: 'Sexplib0.Sexp.compare (Atom "a") (Atom "b");;', expect: '-1',
+            description: 'Lexicographic comparison' },
+          { code: 'Sexplib0.Sexp.equal (List [Atom "x"]) (List [Atom "x"]);;', expect: 'true',
+            description: 'Deep structural equality' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Csexp
+  // ═══════════════════════════════════════════════════════════════════════
+  'csexp.1.5.2': {
+    name: 'Csexp', version: '1.5.2', opam: 'csexp',
+    description: 'Canonical S-expressions (length-prefixed binary format)',
+    universe: U['csexp.1.5.2'], require: ['csexp'],
+    sections: [
+      { title: 'Encoding',
+        description: 'Canonical S-expressions use length-prefixed format: "5:hello" instead of "hello".',
+        steps: [
+          { code: 'Csexp.to_string (Csexp.Atom "hello");;', expect: '"5:hello"',
+            description: 'Encode an atom (5 bytes, colon, data)' },
+          { code: 'Csexp.to_string (Csexp.List [Csexp.Atom "a"; Csexp.Atom "bc"]);;',
+            expect: '"(1:a2:bc)"', description: 'Encode a list' },
+          { code: 'Csexp.serialised_length (Csexp.Atom "test");;', expect: '6',
+            description: '"1:test" would be wrong; "4:test" = 6 bytes' },
+        ] },
+      { title: 'Decoding',
+        description: 'parse_string decodes canonical S-expressions.',
+        steps: [
+          { code: 'Csexp.parse_string "5:hello";;', expect: 'Ok',
+            description: 'Parse a single atom' },
+          { code: 'Csexp.parse_string "(1:a2:bc)";;', expect: 'Ok',
+            description: 'Parse a list' },
+          { code: 'Csexp.parse_string_many "1:a1:b";;', expect: 'Ok',
+            description: 'Parse multiple S-expressions' },
+          { code: 'Csexp.parse_string "bad";;', expect: 'Error',
+            description: 'Invalid input returns Error' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Base64
+  // ═══════════════════════════════════════════════════════════════════════
+  'base64.3.4.0': {
+    name: 'Base64', version: '3.4.0', opam: 'base64',
+    description: 'Base64 encoding and decoding for OCaml',
+    universe: U['base64.3.4.0'], require: ['base64'],
+    sections: [
+      { title: 'Encoding',
+        steps: [
+          { code: 'Base64.encode_string "Hello, World!";;', expect: 'SGVsbG8sIFdvcmxkIQ==',
+            description: 'Encode a string to base64' },
+          { code: 'Base64.encode_string "";;', expect: '""',
+            description: 'Empty string encodes to empty' },
+          { code: 'Base64.encode_string "a";;', expect: 'YQ==',
+            description: 'Single character with padding' },
+        ] },
+      { title: 'Decoding',
+        steps: [
+          { code: 'Base64.decode_exn "SGVsbG8sIFdvcmxkIQ==";;', expect: '"Hello, World!"',
+            description: 'Decode base64 back to string' },
+          { code: 'Base64.decode "YQ==";;', expect: 'Ok "a"',
+            description: 'Safe decode returns result' },
+          { code: 'Base64.decode "!!invalid!!";;', expect: 'Error',
+            description: 'Invalid base64 returns Error' },
+        ] },
+    ],
+  },
+
+  'base64.3.5.2': {
+    name: 'Base64', version: '3.5.2', opam: 'base64',
+    description: 'Base64 encoding and decoding for OCaml',
+    universe: U['base64.3.5.2'], require: ['base64'],
+    sections: [
+      { title: 'Standard Encoding',
+        steps: [
+          { code: 'Base64.encode_string "OCaml";;', expect: 'T0NhbWw=',
+            description: 'Encode "OCaml" to base64' },
+          { code: 'Base64.decode_exn "T0NhbWw=";;', expect: '"OCaml"',
+            description: 'Decode back to original' },
+        ] },
+      { title: 'Round-Trip',
+        steps: [
+          { code: 'let test s = Base64.decode_exn (Base64.encode_string s) = s;;',
+            expect: 'val test', description: 'Define a round-trip test function' },
+          { code: 'test "hello world";;', expect: 'true',
+            description: 'Round-trip preserves data' },
+          { code: 'test "";;', expect: 'true',
+            description: 'Empty string round-trips' },
+          { code: 'test "\\x00\\xff";;', expect: 'true',
+            description: 'Binary data round-trips' },
+        ] },
+    ],
+  },
+
   'bos.0.2.1': {
     name: 'Bos', version: '0.2.1', opam: 'bos',
     description: 'Basic OS interaction for OCaml',
@@ -1306,6 +1793,992 @@ export const TUTORIALS = {
             expect: '["gcc"; "-g"; "main.c"]', description: 'Debug flag is included when true' },
           { code: 'Bos.Cmd.(v "gcc" %% on false (v "-g") % "main.c") |> Bos.Cmd.to_list;;',
             expect: '["gcc"; "main.c"]', description: 'Debug flag is omitted when false' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Re (regular expressions)
+  // ═══════════════════════════════════════════════════════════════════════
+  're.1.10.4': {
+    name: 'Re', version: '1.10.4', opam: 're',
+    description: 'Regular expression library for OCaml',
+    universe: U['re.1.10.4'], require: ['re'],
+    sections: [
+      { title: 'Compiling and Matching',
+        description: 'Re works in two steps: build a regex value, then compile it before matching.',
+        steps: [
+          { code: 'let re = Re.Pcre.re "\\\\d+" |> Re.compile;;', expect: 'Re.re',
+            description: 'Compile a PCRE-style regex for digits' },
+          { code: 'Re.execp re "abc123";;', expect: 'true',
+            description: 'Test if the string matches anywhere' },
+          { code: 'Re.execp re "no digits";;', expect: 'false',
+            description: 'No match returns false' },
+        ] },
+      { title: 'Extracting Matches',
+        description: 'Re.exec returns a group object, and Re.Group.get extracts matched substrings.',
+        steps: [
+          { code: 'let g = Re.exec re "abc123def";;', expect: 'Re.Group.t',
+            description: 'Execute and get the match group' },
+          { code: 'Re.Group.get g 0;;', expect: '"123"',
+            description: 'Group 0 is the whole match' },
+        ] },
+      { title: 'Finding All Matches',
+        steps: [
+          { code: 'Re.all re "a1b22c333" |> List.map (fun g -> Re.Group.get g 0);;',
+            expect: '["1"; "22"; "333"]', description: 'Find all digit sequences' },
+          { code: 'Re.split (Re.compile (Re.Pcre.re ",")) "a,b,c";;',
+            expect: '["a"; "b"; "c"]', description: 'Split on comma' },
+        ] },
+    ],
+  },
+
+  're.1.11.0': {
+    name: 'Re', version: '1.11.0', opam: 're',
+    description: 'Regular expression library for OCaml',
+    universe: U['re.1.11.0'], require: ['re'],
+    sections: [
+      { title: 'PCRE Syntax',
+        steps: [
+          { code: 'let word = Re.Pcre.re "[a-zA-Z]+" |> Re.compile;;', expect: 'Re.re',
+            description: 'Compile a word pattern' },
+          { code: 'Re.all word "hello world" |> List.map (fun g -> Re.Group.get g 0);;',
+            expect: '["hello"; "world"]', description: 'Find all words' },
+        ] },
+      { title: 'Replacement',
+        steps: [
+          { code: 'Re.replace_string (Re.compile (Re.Pcre.re "\\\\d+")) ~by:"N" "abc123def456";;',
+            expect: '"abcNdefN"', description: 'Replace all digit sequences' },
+        ] },
+      { title: 'Combinatorial API',
+        description: 'Re also has a combinator API for building regexes without string syntax.',
+        steps: [
+          { code: 'let re = Re.(seq [bos; rep1 digit; eos]) |> Re.compile;;', expect: 'Re.re',
+            description: 'Match strings that are all digits' },
+          { code: 'Re.execp re "12345";;', expect: 'true',
+            description: 'All digits matches' },
+          { code: 'Re.execp re "123abc";;', expect: 'false',
+            description: 'Mixed string does not match' },
+        ] },
+    ],
+  },
+
+  're.1.12.0': {
+    name: 'Re', version: '1.12.0', opam: 're',
+    description: 'Regular expression library for OCaml',
+    universe: U['re.1.12.0'], require: ['re'],
+    sections: [
+      { title: 'Pattern Matching',
+        steps: [
+          { code: 'let email_re = Re.Pcre.re "[^@]+@[^@]+" |> Re.compile;;', expect: 'Re.re',
+            description: 'Simple email pattern' },
+          { code: 'Re.execp email_re "user@example.com";;', expect: 'true',
+            description: 'Matches an email-like string' },
+          { code: 'Re.execp email_re "not-an-email";;', expect: 'false',
+            description: 'No @ sign means no match' },
+        ] },
+      { title: 'Groups',
+        description: 'Capture groups extract sub-matches.',
+        steps: [
+          { code: 'let kv = Re.Pcre.re "(\\\\w+)=(\\\\w+)" |> Re.compile;;', expect: 'Re.re',
+            description: 'Key=value pattern with groups' },
+          { code: 'let g = Re.exec kv "name=Alice";;', expect: 'Re.Group.t',
+            description: 'Execute the match' },
+          { code: 'Re.Group.get g 1;;', expect: '"name"',
+            description: 'Group 1: the key' },
+          { code: 'Re.Group.get g 2;;', expect: '"Alice"',
+            description: 'Group 2: the value' },
+        ] },
+    ],
+  },
+
+  're.1.13.2': {
+    name: 'Re', version: '1.13.2', opam: 're',
+    description: 'Regular expression library for OCaml',
+    universe: U['re.1.13.2'], require: ['re'],
+    sections: [
+      { title: 'Splitting and Replacing',
+        steps: [
+          { code: 'Re.split (Re.compile (Re.Pcre.re "\\\\s+")) "hello  world  foo";;',
+            expect: '["hello"; "world"; "foo"]', description: 'Split on whitespace' },
+          { code: 'Re.replace_string (Re.compile (Re.Pcre.re "[aeiou]")) ~by:"*" "hello";;',
+            expect: '"h*ll*"', description: 'Replace vowels' },
+        ] },
+      { title: 'Posix Character Classes',
+        steps: [
+          { code: 'let re = Re.(rep1 alpha |> compile);;', expect: 'Re.re',
+            description: 'Match alphabetic characters' },
+          { code: 'Re.execp re "hello";;', expect: 'true',
+            description: 'All alpha matches' },
+          { code: 'Re.all re "abc123def" |> List.map (fun g -> Re.Group.get g 0);;',
+            expect: '["abc"; "def"]', description: 'Find all alphabetic runs' },
+        ] },
+    ],
+  },
+
+  're.1.14.0': {
+    name: 'Re', version: '1.14.0', opam: 're',
+    description: 'Regular expression library for OCaml',
+    universe: U['re.1.14.0'], require: ['re'],
+    sections: [
+      { title: 'Combinatorial API',
+        steps: [
+          { code: 'let hex = Re.(alt [rg \'0\' \'9\'; rg \'a\' \'f\'; rg \'A\' \'F\']) |> Re.rep1 |> Re.compile;;',
+            expect: 'Re.re', description: 'Match hex strings' },
+          { code: 'Re.execp hex "deadBEEF";;', expect: 'true',
+            description: 'Valid hex matches' },
+          { code: 'Re.all hex "ff0099" |> List.map (fun g -> Re.Group.get g 0);;',
+            expect: '["ff0099"]', description: 'Extract hex values' },
+        ] },
+      { title: 'Capture Groups',
+        steps: [
+          { code: 'let re = Re.Pcre.re "(\\\\d{4})-(\\\\d{2})" |> Re.compile;;',
+            expect: 'Re.re', description: 'Date pattern with capture groups' },
+          { code: 'let g = Re.exec re "date: 2024-01";;', expect: 'Re.Group.t',
+            description: 'Execute match' },
+          { code: 'Re.Group.get g 1;;', expect: '"2024"',
+            description: 'First capture group (year)' },
+          { code: 'Re.Group.get g 2;;', expect: '"01"',
+            description: 'Second capture group (month)' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Angstrom
+  // ═══════════════════════════════════════════════════════════════════════
+  'angstrom.0.15.0': {
+    name: 'Angstrom', version: '0.15.0', opam: 'angstrom',
+    description: 'Parser combinators for OCaml',
+    universe: U['angstrom.0.15.0'], require: ['angstrom'],
+    sections: [
+      { title: 'Basic Parsers',
+        description: 'Angstrom provides primitive parsers and combinators for building complex parsers.',
+        steps: [
+          { code: 'Angstrom.parse_string ~consume:Prefix (Angstrom.string "hello") "hello world";;',
+            expect: 'Ok "hello"', description: 'Match a literal string' },
+          { code: 'Angstrom.parse_string ~consume:All (Angstrom.string "hello") "hello";;',
+            expect: 'Ok "hello"', description: 'Consume:All requires full input match' },
+          { code: 'Angstrom.parse_string ~consume:All (Angstrom.string "hello") "hello world";;',
+            expect: 'Error', description: 'Consume:All fails with leftover input' },
+        ] },
+      { title: 'Character Parsers',
+        steps: [
+          { code: 'let digits = Angstrom.take_while1 (function \'0\'..\'9\' -> true | _ -> false);;',
+            expect: 'Angstrom.t', description: 'Parser for one or more digits' },
+          { code: 'Angstrom.parse_string ~consume:Prefix digits "123abc";;',
+            expect: 'Ok "123"', description: 'Consume digits, stop at letters' },
+        ] },
+      { title: 'Combinators',
+        description: 'Combine parsers with sep_by, many, choice, and operators.',
+        steps: [
+          { code: 'let word = Angstrom.take_while1 (function \'a\'..\'z\' | \'A\'..\'Z\' -> true | _ -> false);;',
+            expect: 'Angstrom.t', description: 'Parser for words' },
+          { code: 'let csv = Angstrom.sep_by (Angstrom.char \',\') word;;', expect: 'Angstrom.t',
+            description: 'Comma-separated words parser' },
+          { code: 'Angstrom.parse_string ~consume:All csv "foo,bar,baz";;',
+            expect: 'Ok ["foo"; "bar"; "baz"]', description: 'Parse CSV into a list' },
+          { code: 'Angstrom.parse_string ~consume:Prefix (Angstrom.many (Angstrom.char \'a\')) "aaab";;',
+            expect: 'Ok', description: 'many matches zero or more' },
+        ] },
+    ],
+  },
+
+  'angstrom.0.16.1': {
+    name: 'Angstrom', version: '0.16.1', opam: 'angstrom',
+    description: 'Parser combinators for OCaml',
+    universe: U['angstrom.0.16.1'], require: ['angstrom'],
+    sections: [
+      { title: 'Parsing Structured Data',
+        steps: [
+          { code: 'let is_digit c = c >= \'0\' && c <= \'9\';;', expect: 'val is_digit',
+            description: 'Helper: digit predicate' },
+          { code: 'let integer = Angstrom.(take_while1 is_digit >>| int_of_string);;',
+            expect: 'Angstrom.t', description: 'Integer parser using >>| (map)' },
+          { code: 'Angstrom.parse_string ~consume:Prefix integer "42rest";;',
+            expect: 'Ok 42', description: 'Parse and convert to int' },
+        ] },
+      { title: 'Sequencing and Alternatives',
+        description: 'Use *> to discard left, <* to discard right, <|> for alternatives.',
+        steps: [
+          { code: 'let bool_p = Angstrom.((string "true" >>| fun _ -> true) <|> (string "false" >>| fun _ -> false));;',
+            expect: 'Angstrom.t', description: 'Boolean parser with alternatives' },
+          { code: 'Angstrom.parse_string ~consume:All bool_p "true";;',
+            expect: 'Ok true', description: 'Parse "true"' },
+          { code: 'Angstrom.parse_string ~consume:All bool_p "false";;',
+            expect: 'Ok false', description: 'Parse "false"' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Tyre
+  // ═══════════════════════════════════════════════════════════════════════
+  'tyre.0.5': {
+    name: 'Tyre', version: '0.5', opam: 'tyre',
+    description: 'Typed regular expressions for OCaml',
+    universe: U['tyre.0.5'], require: ['tyre'],
+    sections: [
+      { title: 'Basic Typed Matching',
+        description: 'Tyre combines regex matching with type extraction.',
+        steps: [
+          { code: 'let re = Tyre.compile Tyre.int;;', expect: 'Tyre.re',
+            description: 'Compile a typed regex for integers' },
+          { code: 'Tyre.exec re "42";;', expect: 'Ok 42',
+            description: 'Match and extract an int' },
+          { code: 'Tyre.exec re "abc";;', expect: 'Error',
+            description: 'Non-matching input returns Error' },
+        ] },
+      { title: 'Combining Patterns',
+        description: 'Use <&> to sequence patterns (returns tuples) and *> or <* to discard parts.',
+        steps: [
+          { code: 'let re = Tyre.compile Tyre.(str "v" *> int);;', expect: 'Tyre.re',
+            description: 'Match "v" prefix then extract an int' },
+          { code: 'Tyre.exec re "v42";;', expect: 'Ok 42',
+            description: 'Extract version number' },
+          { code: 'let dim = Tyre.compile Tyre.(int <&> str "x" *> int);;', expect: 'Tyre.re',
+            description: 'Match WxH dimension pattern' },
+          { code: 'Tyre.exec dim "800x600";;', expect: 'Ok (800, 600)',
+            description: 'Extract both dimensions as a tuple' },
+        ] },
+    ],
+  },
+
+  'tyre.1.0': {
+    name: 'Tyre', version: '1.0', opam: 'tyre',
+    description: 'Typed regular expressions for OCaml',
+    universe: U['tyre.1.0'], require: ['tyre'],
+    sections: [
+      { title: 'Typed Extraction',
+        steps: [
+          { code: 'Tyre.exec (Tyre.compile Tyre.int) "123";;', expect: 'Ok 123',
+            description: 'Extract an integer' },
+          { code: 'Tyre.exec (Tyre.compile Tyre.float) "3.14";;', expect: 'Ok 3.14',
+            description: 'Extract a float' },
+          { code: 'Tyre.exec (Tyre.compile Tyre.bool) "true";;', expect: 'Ok true',
+            description: 'Extract a boolean' },
+        ] },
+      { title: 'Optional and Repeated',
+        steps: [
+          { code: 'let re = Tyre.compile Tyre.(opt int);;', expect: 'Tyre.re',
+            description: 'Optional integer pattern' },
+          { code: 'Tyre.exec re "42";;', expect: 'Ok (Some 42)',
+            description: 'Present value gives Some' },
+          { code: 'Tyre.exec re "";;', expect: 'Ok None',
+            description: 'Empty input gives None' },
+        ] },
+      { title: 'Bidirectional: Eval',
+        description: 'Tyre.eval converts values back to strings (unparse).',
+        steps: [
+          { code: 'Tyre.eval Tyre.int 42;;', expect: '"42"',
+            description: 'Unparse an integer' },
+          { code: 'Tyre.eval Tyre.(str "v" *> int) 3;;', expect: '"v3"',
+            description: 'Unparse with literal prefix' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Uuseg
+  // ═══════════════════════════════════════════════════════════════════════
+  'uuseg.14.0.0': {
+    name: 'Uuseg', version: '14.0.0', opam: 'uuseg',
+    description: 'Unicode text segmentation (Unicode 14.0.0)',
+    universe: U['uuseg.14.0.0'], require: ['uuseg'],
+    sections: [
+      { title: 'Unicode Version',
+        steps: [
+          { code: 'Uuseg.unicode_version;;', expect: '"14.0.0"',
+            description: 'Check the Unicode version' },
+        ] },
+      { title: 'Segmenter Creation',
+        description: 'Uuseg.create makes a segmenter for grapheme clusters, words, or sentences.',
+        steps: [
+          { code: 'let seg = Uuseg.create `Grapheme_cluster;;', expect: 'Uuseg.t',
+            description: 'Create a grapheme cluster segmenter' },
+          { code: 'let wseg = Uuseg.create `Word;;', expect: 'Uuseg.t',
+            description: 'Create a word segmenter' },
+        ] },
+    ],
+  },
+
+  'uuseg.15.0.0': {
+    name: 'Uuseg', version: '15.0.0', opam: 'uuseg',
+    description: 'Unicode text segmentation (Unicode 15.0.0)',
+    universe: U['uuseg.15.0.0'], require: ['uuseg'],
+    sections: [
+      { title: 'Unicode Version',
+        steps: [
+          { code: 'Uuseg.unicode_version;;', expect: '"15.0.0"',
+            description: 'Check the Unicode version' },
+        ] },
+      { title: 'Segmenter Types',
+        steps: [
+          { code: 'let _ = Uuseg.create `Grapheme_cluster;;', expect: 'Uuseg.t',
+            description: 'Grapheme cluster segmentation' },
+          { code: 'let _ = Uuseg.create `Word;;', expect: 'Uuseg.t',
+            description: 'Word segmentation' },
+          { code: 'let _ = Uuseg.create `Sentence;;', expect: 'Uuseg.t',
+            description: 'Sentence segmentation' },
+          { code: 'let _ = Uuseg.create `Line_break;;', expect: 'Uuseg.t',
+            description: 'Line break opportunity segmentation' },
+        ] },
+    ],
+  },
+
+  'uuseg.16.0.0': {
+    name: 'Uuseg', version: '16.0.0', opam: 'uuseg',
+    description: 'Unicode text segmentation (Unicode 16.0.0)',
+    universe: U['uuseg.16.0.0'], require: ['uuseg'],
+    sections: [
+      { title: 'Unicode Version',
+        steps: [
+          { code: 'Uuseg.unicode_version;;', expect: '"16.0.0"',
+            description: 'Check the Unicode version' },
+        ] },
+      { title: 'Segmenter API',
+        description: 'Feed Uchars to a segmenter and it reports segment boundaries.',
+        steps: [
+          { code: 'let seg = Uuseg.create `Grapheme_cluster;;', expect: 'Uuseg.t',
+            description: 'Create a grapheme cluster segmenter' },
+          { code: 'Uuseg.add seg (`Uchar (Uchar.of_int 0x0041));;', expect: '',
+            description: "Add 'A' to the segmenter" },
+          { code: 'Uuseg.add seg `End;;', expect: '',
+            description: 'Signal end of input' },
+        ] },
+    ],
+  },
+
+  'uuseg.17.0.0': {
+    name: 'Uuseg', version: '17.0.0', opam: 'uuseg',
+    description: 'Unicode text segmentation (Unicode 17.0.0)',
+    universe: U['uuseg.17.0.0'], require: ['uuseg'],
+    sections: [
+      { title: 'Unicode Version',
+        steps: [
+          { code: 'Uuseg.unicode_version;;', expect: '"17.0.0"',
+            description: 'Check the Unicode version' },
+        ] },
+      { title: 'Segmenter Types',
+        steps: [
+          { code: 'let _ = Uuseg.create `Grapheme_cluster;;', expect: 'Uuseg.t',
+            description: 'Grapheme cluster boundaries' },
+          { code: 'let _ = Uuseg.create `Word;;', expect: 'Uuseg.t',
+            description: 'Word boundaries' },
+          { code: 'let _ = Uuseg.create `Sentence;;', expect: 'Uuseg.t',
+            description: 'Sentence boundaries' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Containers
+  // ═══════════════════════════════════════════════════════════════════════
+  'containers.3.17': {
+    name: 'Containers', version: '3.17', opam: 'containers',
+    description: 'A modular extension of the OCaml standard library',
+    universe: U['containers.3.17'], require: ['containers'],
+    sections: [
+      { title: 'CCList Advanced',
+        steps: [
+          { code: 'CCList.product (fun a b -> (a, b)) [1; 2] ["a"; "b"];;',
+            expect: '[(1, "a")', description: 'Cartesian product' },
+          { code: 'CCList.pure 42;;', expect: '[42]',
+            description: 'Wrap a value in a singleton list' },
+        ] },
+      { title: 'CCString',
+        steps: [
+          { code: 'CCString.take 5 "hello world";;', expect: '"hello"',
+            description: 'Take first 5 characters' },
+          { code: 'CCString.drop 6 "hello world";;', expect: '"world"',
+            description: 'Drop first 6 characters' },
+          { code: 'CCString.chop_prefix ~pre:"http://" "http://example.com";;',
+            expect: 'Some "example.com"', description: 'Remove prefix if present' },
+          { code: 'CCString.chop_suffix ~suf:".ml" "main.ml";;',
+            expect: 'Some "main"', description: 'Remove suffix if present' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Iter
+  // ═══════════════════════════════════════════════════════════════════════
+  'iter.1.7': {
+    name: 'Iter', version: '1.7', opam: 'iter',
+    description: 'Simple, efficient iterators for OCaml',
+    universe: U['iter.1.7'], require: ['iter'],
+    sections: [
+      { title: 'Creating Iterators',
+        description: 'Iter.t is (\'a -> unit) -> unit — a continuation-based iterator.',
+        steps: [
+          { code: 'Iter.of_list [1; 2; 3] |> Iter.to_list;;', expect: '[1; 2; 3]',
+            description: 'Round-trip through Iter' },
+          { code: 'Iter.(1 -- 5) |> Iter.to_list;;', expect: '[1; 2; 3; 4; 5]',
+            description: 'Integer range (inclusive)' },
+          { code: 'Iter.init (fun i -> i * i) |> Iter.take 5 |> Iter.to_list;;',
+            expect: '[0; 1; 4; 9; 16]', description: 'Infinite sequence, take first 5' },
+        ] },
+      { title: 'Transformations',
+        steps: [
+          { code: 'Iter.(1 -- 10) |> Iter.filter (fun x -> x mod 2 = 0) |> Iter.to_list;;',
+            expect: '[2; 4; 6; 8; 10]', description: 'Filter even numbers' },
+          { code: 'Iter.(1 -- 5) |> Iter.map (fun x -> x * 2) |> Iter.to_list;;',
+            expect: '[2; 4; 6; 8; 10]', description: 'Map doubling' },
+          { code: 'Iter.(1 -- 5) |> Iter.fold (+) 0;;', expect: '15',
+            description: 'Fold to compute sum' },
+        ] },
+    ],
+  },
+
+  'iter.1.8': {
+    name: 'Iter', version: '1.8', opam: 'iter',
+    description: 'Simple, efficient iterators for OCaml',
+    universe: U['iter.1.8'], require: ['iter'],
+    sections: [
+      { title: 'Iterator Basics',
+        steps: [
+          { code: 'Iter.empty |> Iter.to_list;;', expect: '[]',
+            description: 'Empty iterator' },
+          { code: 'Iter.singleton 42 |> Iter.to_list;;', expect: '[42]',
+            description: 'Single-element iterator' },
+          { code: 'Iter.repeat 3 |> Iter.take 4 |> Iter.to_list;;', expect: '[3; 3; 3; 3]',
+            description: 'Infinite repetition, take 4' },
+        ] },
+      { title: 'Flat Map and Product',
+        steps: [
+          { code: 'Iter.(1 -- 3) |> Iter.flat_map (fun x -> Iter.of_list [x; x*10]) |> Iter.to_list;;',
+            expect: '[1; 10; 2; 20; 3; 30]', description: 'Flat map' },
+          { code: 'Iter.product (Iter.of_list [1;2]) (Iter.of_list ["a";"b"]) |> Iter.to_list;;',
+            expect: '[(1, "a")', description: 'Cartesian product' },
+        ] },
+    ],
+  },
+
+  'iter.1.9': {
+    name: 'Iter', version: '1.9', opam: 'iter',
+    description: 'Simple, efficient iterators for OCaml',
+    universe: U['iter.1.9'], require: ['iter'],
+    sections: [
+      { title: 'Aggregation',
+        steps: [
+          { code: 'Iter.(1 -- 100) |> Iter.fold (+) 0;;', expect: '5050',
+            description: 'Sum 1 to 100' },
+          { code: 'Iter.(1 -- 10) |> Iter.length;;', expect: '10',
+            description: 'Count elements' },
+          { code: 'Iter.of_list ["hello"; "world"] |> Iter.for_all (fun s -> String.length s > 3);;',
+            expect: 'true', description: 'Check a predicate for all elements' },
+          { code: 'Iter.of_list [1; 2; 3] |> Iter.exists (fun x -> x > 2);;',
+            expect: 'true', description: 'Check if any element matches' },
+        ] },
+      { title: 'Conversion',
+        steps: [
+          { code: 'Iter.of_list [1; 2; 3] |> Iter.to_rev_list;;', expect: '[3; 2; 1]',
+            description: 'Convert to reversed list' },
+          { code: 'Iter.of_list [("a",1); ("b",2)] |> Iter.to_hashtbl;;', expect: 'Hashtbl',
+            description: 'Convert to hashtable' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // OCamlgraph
+  // ═══════════════════════════════════════════════════════════════════════
+  'ocamlgraph.2.0.0': {
+    name: 'OCamlgraph', version: '2.0.0', opam: 'ocamlgraph',
+    description: 'Graph library for OCaml',
+    universe: U['ocamlgraph.2.0.0'], require: ['ocamlgraph'],
+    sections: [
+      { title: 'Building Graphs',
+        description: 'Graph.Pack.Digraph provides an easy-to-use imperative directed graph. Vertices must be reused (not re-created).',
+        steps: [
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let v1 = G.V.create 1 in let v2 = G.V.create 2 in let v3 = G.V.create 3 in G.add_edge g v1 v2; G.add_edge g v2 v3; G.nb_vertex g;;',
+            expect: '3', description: 'Create a graph with 3 vertices' },
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let v1 = G.V.create 1 in let v2 = G.V.create 2 in let v3 = G.V.create 3 in G.add_edge g v1 v2; G.add_edge g v1 v3; G.nb_edges g;;',
+            expect: '2', description: '2 edges from vertex 1' },
+        ] },
+    ],
+  },
+
+  'ocamlgraph.2.1.0': {
+    name: 'OCamlgraph', version: '2.1.0', opam: 'ocamlgraph',
+    description: 'Graph library for OCaml',
+    universe: U['ocamlgraph.2.1.0'], require: ['ocamlgraph'],
+    sections: [
+      { title: 'Imperative Graphs',
+        steps: [
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let v1 = G.V.create 10 in let v2 = G.V.create 20 in G.add_edge g v1 v2; G.mem_edge g v1 v2;;',
+            expect: 'true', description: 'Check edge existence' },
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in G.add_edge g (G.V.create 1) (G.V.create 2); G.add_edge g (G.V.create 2) (G.V.create 3); G.add_edge g (G.V.create 3) (G.V.create 1); G.nb_edges g;;',
+            expect: '3', description: 'A cycle with 3 edges' },
+        ] },
+    ],
+  },
+
+  'ocamlgraph.2.2.0': {
+    name: 'OCamlgraph', version: '2.2.0', opam: 'ocamlgraph',
+    description: 'Graph library for OCaml',
+    universe: U['ocamlgraph.2.2.0'], require: ['ocamlgraph'],
+    sections: [
+      { title: 'Graph Operations',
+        steps: [
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let vs = Array.init 6 G.V.create in for i = 0 to 4 do G.add_edge g vs.(i) vs.(i+1) done; G.nb_vertex g;;',
+            expect: '6', description: 'A chain of 6 vertices' },
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let vs = Array.init 6 G.V.create in for i = 0 to 4 do G.add_edge g vs.(i) vs.(i+1) done; G.nb_edges g;;',
+            expect: '5', description: '5 edges in the chain' },
+          { code: 'let module G = Graph.Pack.Digraph in let g = G.create () in let v0 = G.V.create 0 in let v1 = G.V.create 1 in let v2 = G.V.create 2 in G.add_edge g v0 v1; G.add_edge g v0 v2; G.out_degree g v0;;',
+            expect: '2', description: 'Out-degree of vertex 0' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Digestif
+  // ═══════════════════════════════════════════════════════════════════════
+  'digestif.1.1.2': {
+    name: 'Digestif', version: '1.1.2', opam: 'digestif',
+    description: 'Cryptographic hash functions for OCaml',
+    universe: U['digestif.1.1.2'], require: ['digestif'],
+    sections: [
+      { title: 'SHA-256',
+        description: 'Digestif.SHA256 provides SHA-256 hashing with hex encoding.',
+        steps: [
+          { code: 'Digestif.SHA256.digest_string "hello" |> Digestif.SHA256.to_hex;;',
+            expect: '2cf24dba', description: 'SHA-256 of "hello"' },
+          { code: 'Digestif.SHA256.digest_string "" |> Digestif.SHA256.to_hex;;',
+            expect: 'e3b0c442', description: 'SHA-256 of empty string' },
+          { code: 'let h1 = Digestif.SHA256.digest_string "test" in let h2 = Digestif.SHA256.digest_string "test" in Digestif.SHA256.equal h1 h2;;',
+            expect: 'true', description: 'Same input produces same hash (constant-time equal)' },
+        ] },
+      { title: 'MD5',
+        steps: [
+          { code: 'Digestif.MD5.digest_string "hello" |> Digestif.MD5.to_hex;;',
+            expect: '5d41402a', description: 'MD5 of "hello"' },
+        ] },
+    ],
+  },
+
+  'digestif.1.3.0': {
+    name: 'Digestif', version: '1.3.0', opam: 'digestif',
+    description: 'Cryptographic hash functions for OCaml',
+    universe: U['digestif.1.3.0'], require: ['digestif'],
+    sections: [
+      { title: 'Multiple Algorithms',
+        steps: [
+          { code: 'Digestif.SHA256.digest_string "OCaml" |> Digestif.SHA256.to_hex;;',
+            expect: 'string', description: 'SHA-256 hash' },
+          { code: 'Digestif.SHA512.digest_string "OCaml" |> Digestif.SHA512.to_hex;;',
+            expect: 'string', description: 'SHA-512 hash' },
+          { code: 'Digestif.SHA1.digest_string "OCaml" |> Digestif.SHA1.to_hex;;',
+            expect: 'string', description: 'SHA-1 hash' },
+        ] },
+      { title: 'HMAC',
+        description: 'HMAC provides keyed hashing for authentication.',
+        steps: [
+          { code: 'Digestif.SHA256.hmac_string ~key:"secret" "message" |> Digestif.SHA256.to_hex;;',
+            expect: 'string', description: 'HMAC-SHA256 with a key' },
+          { code: 'let h1 = Digestif.SHA256.hmac_string ~key:"k" "m" in let h2 = Digestif.SHA256.hmac_string ~key:"k" "m" in Digestif.SHA256.equal h1 h2;;',
+            expect: 'true', description: 'Same key+message = same HMAC' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Hex
+  // ═══════════════════════════════════════════════════════════════════════
+  'hex.1.4.0': {
+    name: 'Hex', version: '1.4.0', opam: 'hex',
+    description: 'Hex encoding and decoding for OCaml',
+    universe: U['hex.1.4.0'], require: ['hex'],
+    sections: [
+      { title: 'Encoding and Decoding',
+        steps: [
+          { code: 'Hex.of_string "Hello";;', expect: '`Hex',
+            description: 'Encode string to hex' },
+          { code: 'Hex.to_string (`Hex "48656c6c6f");;', expect: '"Hello"',
+            description: 'Decode hex to string' },
+          { code: 'Hex.hexdump_s (Hex.of_string "Hello, World!");;', expect: '4865',
+            description: 'Hexdump for debugging' },
+        ] },
+    ],
+  },
+
+  'hex.1.5.0': {
+    name: 'Hex', version: '1.5.0', opam: 'hex',
+    description: 'Hex encoding and decoding for OCaml',
+    universe: U['hex.1.5.0'], require: ['hex'],
+    sections: [
+      { title: 'Hex Encoding',
+        steps: [
+          { code: 'Hex.of_string "\\x00\\xff";;', expect: '`Hex "00ff"',
+            description: 'Binary data to hex' },
+          { code: 'Hex.to_string (`Hex "00ff");;', expect: 'string',
+            description: 'Hex back to binary' },
+          { code: 'Hex.show (Hex.of_string "AB");;', expect: '"4142"',
+            description: 'Show hex representation' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Eqaf
+  // ═══════════════════════════════════════════════════════════════════════
+  'eqaf.0.9': {
+    name: 'Eqaf', version: '0.9', opam: 'eqaf',
+    description: 'Constant-time string comparison for OCaml',
+    universe: U['eqaf.0.9'], require: ['eqaf'],
+    sections: [
+      { title: 'Constant-Time Comparison',
+        description: 'Eqaf.equal compares strings in constant time, preventing timing attacks.',
+        steps: [
+          { code: 'Eqaf.equal "secret" "secret";;', expect: 'true',
+            description: 'Equal strings' },
+          { code: 'Eqaf.equal "secret" "wrong!";;', expect: 'false',
+            description: 'Different strings' },
+          { code: 'Eqaf.equal "" "";;', expect: 'true',
+            description: 'Empty strings are equal' },
+        ] },
+    ],
+  },
+
+  'eqaf.0.10': {
+    name: 'Eqaf', version: '0.10', opam: 'eqaf',
+    description: 'Constant-time string comparison for OCaml',
+    universe: U['eqaf.0.10'], require: ['eqaf'],
+    sections: [
+      { title: 'Constant-Time Operations',
+        steps: [
+          { code: 'Eqaf.equal "abc" "abc";;', expect: 'true',
+            description: 'Same strings (constant time)' },
+          { code: 'Eqaf.equal "abc" "xyz";;', expect: 'false',
+            description: 'Different strings (same timing as equal case)' },
+          { code: 'Eqaf.compare_be "a" "b";;', expect: '-1',
+            description: 'Constant-time big-endian comparison' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Uri
+  // ═══════════════════════════════════════════════════════════════════════
+  'uri.4.2.0': {
+    name: 'Uri', version: '4.2.0', opam: 'uri',
+    description: 'URI parsing and manipulation for OCaml',
+    universe: U['uri.4.2.0'], require: ['uri'],
+    sections: [
+      { title: 'Parsing URIs',
+        steps: [
+          { code: 'let u = Uri.of_string "https://example.com:8080/path?q=1#frag";;', expect: 'Uri.t',
+            description: 'Parse a full URI' },
+          { code: 'Uri.scheme u;;', expect: 'Some "https"',
+            description: 'Extract the scheme' },
+          { code: 'Uri.host u;;', expect: 'Some "example.com"',
+            description: 'Extract the host' },
+          { code: 'Uri.port u;;', expect: 'Some 8080',
+            description: 'Extract the port' },
+          { code: 'Uri.path u;;', expect: '"/path"',
+            description: 'Extract the path' },
+          { code: 'Uri.fragment u;;', expect: 'Some "frag"',
+            description: 'Extract the fragment' },
+        ] },
+      { title: 'Query Parameters',
+        steps: [
+          { code: 'let u = Uri.of_string "http://example.com?a=1&b=2";;', expect: 'Uri.t',
+            description: 'URI with query params' },
+          { code: 'Uri.get_query_param u "a";;', expect: 'Some "1"',
+            description: 'Get a single query parameter' },
+          { code: 'Uri.query u;;', expect: '[("a"', description: 'Get all query parameters' },
+        ] },
+      { title: 'Building URIs',
+        steps: [
+          { code: 'Uri.make ~scheme:"https" ~host:"example.com" ~path:"/api" () |> Uri.to_string;;',
+            expect: 'https://example.com/api', description: 'Build a URI from components' },
+          { code: 'Uri.with_query\' (Uri.of_string "http://x.com") [("key", "val")] |> Uri.to_string;;',
+            expect: 'key=val', description: 'Add query parameters' },
+        ] },
+    ],
+  },
+
+  'uri.4.4.0': {
+    name: 'Uri', version: '4.4.0', opam: 'uri',
+    description: 'URI parsing and manipulation for OCaml',
+    universe: U['uri.4.4.0'], require: ['uri'],
+    sections: [
+      { title: 'URI Components',
+        steps: [
+          { code: 'let u = Uri.of_string "ftp://user@host/file.txt";;', expect: 'Uri.t',
+            description: 'Parse an FTP URI' },
+          { code: 'Uri.scheme u;;', expect: 'Some "ftp"',
+            description: 'FTP scheme' },
+          { code: 'Uri.userinfo u;;', expect: 'Some "user"',
+            description: 'Extract userinfo' },
+          { code: 'Uri.host u;;', expect: 'Some "host"',
+            description: 'Extract host' },
+          { code: 'Uri.path u;;', expect: '"/file.txt"',
+            description: 'Extract path' },
+        ] },
+      { title: 'URI Manipulation',
+        steps: [
+          { code: 'let u = Uri.of_string "http://example.com/old" in Uri.with_path u "/new" |> Uri.to_string;;',
+            expect: 'http://example.com/new', description: 'Replace the path' },
+          { code: 'Uri.resolve "http" (Uri.of_string "http://example.com/a/b") (Uri.of_string "../c") |> Uri.to_string;;',
+            expect: 'example.com', description: 'Resolve a relative reference' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Ipaddr
+  // ═══════════════════════════════════════════════════════════════════════
+  'ipaddr.5.6.0': {
+    name: 'Ipaddr', version: '5.6.0', opam: 'ipaddr',
+    description: 'IP address parsing and manipulation for OCaml',
+    universe: U['ipaddr.5.6.0'], require: ['ipaddr'],
+    sections: [
+      { title: 'IPv4 Addresses',
+        steps: [
+          { code: 'Ipaddr.V4.of_string_exn "192.168.1.1";;', expect: 'Ipaddr.V4.t',
+            description: 'Parse an IPv4 address' },
+          { code: 'Ipaddr.V4.to_string (Ipaddr.V4.of_string_exn "10.0.0.1");;',
+            expect: '"10.0.0.1"', description: 'Convert back to string' },
+          { code: 'Ipaddr.V4.localhost |> Ipaddr.V4.to_string;;', expect: '"127.0.0.1"',
+            description: 'Localhost constant' },
+        ] },
+      { title: 'IPv6 Addresses',
+        steps: [
+          { code: 'Ipaddr.V6.of_string_exn "::1" |> Ipaddr.V6.to_string;;', expect: '"::1"',
+            description: 'IPv6 loopback' },
+          { code: 'Ipaddr.V6.localhost |> Ipaddr.V6.to_string;;', expect: '"::1"',
+            description: 'IPv6 localhost constant' },
+        ] },
+      { title: 'Generic IP',
+        steps: [
+          { code: 'Ipaddr.of_string_exn "192.168.1.1" |> Ipaddr.to_string;;',
+            expect: '"192.168.1.1"', description: 'Parse any IP address' },
+          { code: 'Ipaddr.of_string_exn "::1" |> Ipaddr.to_string;;',
+            expect: '"::1"', description: 'Parse IPv6 through generic interface' },
+        ] },
+    ],
+  },
+
+  'ipaddr.5.6.1': {
+    name: 'Ipaddr', version: '5.6.1', opam: 'ipaddr',
+    description: 'IP address parsing and manipulation for OCaml',
+    universe: U['ipaddr.5.6.1'], require: ['ipaddr'],
+    sections: [
+      { title: 'Address Operations',
+        steps: [
+          { code: 'Ipaddr.V4.of_string "invalid";;', expect: 'Error',
+            description: 'Invalid address returns Error' },
+          { code: 'Ipaddr.V4.of_string "10.0.0.1";;', expect: 'Ok',
+            description: 'Valid address returns Ok' },
+          { code: 'Ipaddr.V4.(compare localhost (of_string_exn "127.0.0.1"));;', expect: '0',
+            description: 'Localhost equals 127.0.0.1' },
+        ] },
+      { title: 'CIDR Prefixes',
+        steps: [
+          { code: 'let prefix = Ipaddr.V4.Prefix.of_string_exn "192.168.0.0/24";;',
+            expect: 'Ipaddr.V4.Prefix.t', description: 'Parse a CIDR prefix' },
+          { code: 'Ipaddr.V4.Prefix.mem (Ipaddr.V4.of_string_exn "192.168.0.42") prefix;;',
+            expect: 'true', description: 'Address is in the prefix' },
+          { code: 'Ipaddr.V4.Prefix.mem (Ipaddr.V4.of_string_exn "192.168.1.1") prefix;;',
+            expect: 'false', description: 'Address is not in the prefix' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Domain_name
+  // ═══════════════════════════════════════════════════════════════════════
+  'domain-name.0.4.1': {
+    name: 'Domain_name', version: '0.4.1', opam: 'domain-name',
+    description: 'Domain name parsing and validation for OCaml',
+    universe: U['domain-name.0.4.1'], require: ['domain-name'],
+    sections: [
+      { title: 'Parsing Domain Names',
+        steps: [
+          { code: 'Domain_name.of_string_exn "example.com";;', expect: 'Domain_name.t',
+            description: 'Parse a domain name' },
+          { code: 'Domain_name.to_string (Domain_name.of_string_exn "www.example.com");;',
+            expect: '"www.example.com"', description: 'Convert back to string' },
+          { code: 'Domain_name.of_string "invalid..domain";;', expect: 'Error',
+            description: 'Double dots are invalid' },
+        ] },
+      { title: 'Domain Name Operations',
+        steps: [
+          { code: 'Domain_name.of_string_exn "sub.example.com" |> Domain_name.count_labels;;',
+            expect: '3', description: 'Count labels (sub, example, com)' },
+          { code: 'Domain_name.equal (Domain_name.of_string_exn "A.COM") (Domain_name.of_string_exn "a.com");;',
+            expect: 'true', description: 'Domain names are case-insensitive' },
+        ] },
+    ],
+  },
+
+  'domain-name.0.5.0': {
+    name: 'Domain_name', version: '0.5.0', opam: 'domain-name',
+    description: 'Domain name parsing and validation for OCaml',
+    universe: U['domain-name.0.5.0'], require: ['domain-name'],
+    sections: [
+      { title: 'Domain Names',
+        steps: [
+          { code: 'Domain_name.of_string_exn "mail.example.org";;', expect: 'Domain_name.t',
+            description: 'Parse a domain name' },
+          { code: 'Domain_name.of_string_exn "example.com" |> Domain_name.count_labels;;',
+            expect: '2', description: 'Two labels' },
+          { code: 'Domain_name.is_subdomain ~subdomain:(Domain_name.of_string_exn "sub.example.com") ~domain:(Domain_name.of_string_exn "example.com");;',
+            expect: 'true', description: 'Check subdomain relationship' },
+        ] },
+      { title: 'Host Names',
+        description: 'Domain_name.host_exn validates a domain name as a valid hostname.',
+        steps: [
+          { code: 'Domain_name.host_exn (Domain_name.of_string_exn "example.com");;',
+            expect: 'Domain_name.t', description: 'Valid hostname' },
+          { code: 'Domain_name.to_string (Domain_name.of_string_exn "example.com");;',
+            expect: '"example.com"', description: 'Convert back to string' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // Zarith
+  // ═══════════════════════════════════════════════════════════════════════
+  'zarith.1.13': {
+    name: 'Zarith', version: '1.13', opam: 'zarith',
+    description: 'Arbitrary-precision integers and rationals for OCaml',
+    universe: U['zarith.1.13'], require: ['zarith'],
+    sections: [
+      { title: 'Big Integers',
+        description: 'Z.t represents arbitrary-precision integers.',
+        steps: [
+          { code: 'Z.of_int 42;;', expect: '42', description: 'Create from int' },
+          { code: 'Z.of_string "999999999999999999999";;', expect: '999999999999999999999',
+            description: 'Create from string (exceeds int range)' },
+          { code: 'Z.add (Z.of_int 1) (Z.of_string "999999999999999999999");;',
+            expect: '1000000000000000000000', description: 'Arbitrary-precision addition' },
+        ] },
+      { title: 'Arithmetic',
+        steps: [
+          { code: 'Z.mul (Z.of_int 1000000) (Z.of_int 1000000);;', expect: '1000000000000',
+            description: 'Multiplication' },
+          { code: 'Z.pow (Z.of_int 2) 100 |> Z.to_string;;', expect: '1267650600228229401496703205376',
+            description: '2^100 as a string' },
+          { code: 'Z.rem (Z.of_int 17) (Z.of_int 5);;', expect: '2',
+            description: 'Remainder' },
+          { code: 'Z.gcd (Z.of_int 12) (Z.of_int 18);;', expect: '6',
+            description: 'Greatest common divisor' },
+        ] },
+      { title: 'Comparison',
+        steps: [
+          { code: 'Z.compare (Z.of_int 10) (Z.of_int 20);;', expect: '-1',
+            description: '10 < 20' },
+          { code: 'Z.equal Z.zero Z.zero;;', expect: 'true',
+            description: 'Zero equals zero' },
+          { code: 'Z.sign (Z.of_int (-5));;', expect: '-1',
+            description: 'Sign of negative number' },
+        ] },
+    ],
+  },
+
+  'zarith.1.14': {
+    name: 'Zarith', version: '1.14', opam: 'zarith',
+    description: 'Arbitrary-precision integers and rationals for OCaml',
+    universe: U['zarith.1.14'], require: ['zarith'],
+    sections: [
+      { title: 'Big Integer Arithmetic',
+        steps: [
+          { code: 'Z.(of_int 2 ** 256) |> Z.to_string |> String.length;;',
+            expect: '78', description: '2^256 has 78 digits' },
+          { code: 'Z.probab_prime (Z.of_int 97) 25;;', expect: '2',
+            description: '97 is prime (2 = definitely prime)' },
+          { code: 'Z.probab_prime (Z.of_int 100) 25;;', expect: '0',
+            description: '100 is composite (0 = definitely not prime)' },
+        ] },
+      { title: 'Rationals (Q module)',
+        description: 'Q.t represents exact rational numbers.',
+        steps: [
+          { code: 'Q.of_ints 1 3;;', expect: '1/3',
+            description: 'Create the fraction 1/3' },
+          { code: 'Q.add (Q.of_ints 1 3) (Q.of_ints 1 6);;', expect: '1/2',
+            description: '1/3 + 1/6 = 1/2 (auto-simplified)' },
+          { code: 'Q.mul (Q.of_ints 2 3) (Q.of_ints 3 4);;', expect: '1/2',
+            description: '2/3 * 3/4 = 1/2' },
+          { code: 'Q.to_float (Q.of_ints 1 3);;', expect: '0.333333',
+            description: 'Convert to float (approximate)' },
+        ] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // QCheck
+  // ═══════════════════════════════════════════════════════════════════════
+  'qcheck-core.0.25': {
+    name: 'QCheck', version: '0.25', opam: 'qcheck-core',
+    description: 'Property-based testing for OCaml',
+    universe: U['qcheck-core.0.25'], require: ['qcheck-core'],
+    sections: [
+      { title: 'Generators',
+        description: 'QCheck2.Gen provides random value generators with integrated shrinking.',
+        steps: [
+          { code: 'QCheck2.Gen.generate1 QCheck2.Gen.int;;', expect: 'int',
+            description: 'Generate a random integer' },
+          { code: 'QCheck2.Gen.generate1 (QCheck2.Gen.return 42);;', expect: '42',
+            description: 'Constant generator always returns 42' },
+          { code: 'QCheck2.Gen.generate1 (QCheck2.Gen.list QCheck2.Gen.small_int) |> List.length >= 0;;',
+            expect: 'true', description: 'Generate a random list of small ints' },
+        ] },
+      { title: 'Property Tests',
+        description: 'QCheck2.Test.make creates a test, check_exn runs it.',
+        steps: [
+          { code: 'let t = QCheck2.Test.make ~name:"commutative" QCheck2.Gen.(pair int int) (fun (a, b) -> a + b = b + a);;',
+            expect: 'QCheck2.Test.t', description: 'Addition is commutative' },
+          { code: 'QCheck2.Test.check_exn t;;', expect: 'unit',
+            description: 'Test passes (no exception)' },
+          { code: 'let t2 = QCheck2.Test.make ~name:"rev rev" QCheck2.Gen.(list small_int) (fun l -> List.rev (List.rev l) = l);;',
+            expect: 'QCheck2.Test.t', description: 'Double reverse is identity' },
+          { code: 'QCheck2.Test.check_exn t2;;', expect: 'unit',
+            description: 'Test passes' },
+        ] },
+    ],
+  },
+
+  'qcheck-core.0.27': {
+    name: 'QCheck', version: '0.27', opam: 'qcheck-core',
+    description: 'Property-based testing for OCaml',
+    universe: U['qcheck-core.0.27'], require: ['qcheck-core'],
+    sections: [
+      { title: 'Generators',
+        steps: [
+          { code: 'QCheck2.Gen.generate1 (QCheck2.Gen.oneof [QCheck2.Gen.return 1; QCheck2.Gen.return 2]);;',
+            expect: 'int', description: 'Choose between generators randomly' },
+          { code: 'QCheck2.Gen.generate1 (QCheck2.Gen.map (fun x -> x * 2) QCheck2.Gen.small_int);;',
+            expect: 'int', description: 'Map over a generator' },
+        ] },
+      { title: 'Testing Properties',
+        steps: [
+          { code: 'let t = QCheck2.Test.make ~name:"sort idempotent" QCheck2.Gen.(list small_int) (fun l -> let s = List.sort compare l in List.sort compare s = s);;',
+            expect: 'QCheck2.Test.t', description: 'Sorting is idempotent' },
+          { code: 'QCheck2.Test.check_exn t;;', expect: 'unit',
+            description: 'Property holds' },
+          { code: 'let t = QCheck2.Test.make ~count:1000 ~name:"length" QCheck2.Gen.(list small_int) (fun l -> List.length (List.rev l) = List.length l);;',
+            expect: 'QCheck2.Test.t', description: 'Rev preserves length (1000 tests)' },
+          { code: 'QCheck2.Test.check_exn t;;', expect: 'unit',
+            description: 'Passes all 1000 tests' },
+        ] },
+    ],
+  },
+
+  'qcheck-core.0.91': {
+    name: 'QCheck', version: '0.91', opam: 'qcheck-core',
+    description: 'Property-based testing for OCaml',
+    universe: U['qcheck-core.0.91'], require: ['qcheck-core'],
+    sections: [
+      { title: 'Generators and Tests',
+        steps: [
+          { code: 'QCheck2.Gen.generate1 (QCheck2.Gen.pair QCheck2.Gen.nat QCheck2.Gen.bool);;',
+            expect: 'int * bool', description: 'Generate a pair of int and bool' },
+          { code: 'let t = QCheck2.Test.make ~name:"assoc" QCheck2.Gen.(triple int int int) (fun (a, b, c) -> (a + b) + c = a + (b + c));;',
+            expect: 'QCheck2.Test.t', description: 'Addition is associative' },
+          { code: 'QCheck2.Test.check_exn t;;', expect: 'unit',
+            description: 'Property holds' },
         ] },
     ],
   },
