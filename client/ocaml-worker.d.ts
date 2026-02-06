@@ -115,9 +115,22 @@ export interface EnvResult {
   env_id: string;
 }
 
+export interface OutputAt {
+  /** Cell identifier */
+  cell_id: number;
+  /** Character position after phrase (pos_cnum) */
+  loc: number;
+  /** OCaml pretty-printed output for this phrase */
+  caml_ppf: string;
+  /** MIME values for this phrase */
+  mime_vals: MimeVal[];
+}
+
 export interface OcamlWorkerOptions {
   /** Timeout in milliseconds (default: 30000) */
   timeout?: number;
+  /** Callback for incremental output after each phrase */
+  onOutputAt?: (output: OutputAt) => void;
 }
 
 export class OcamlWorker {

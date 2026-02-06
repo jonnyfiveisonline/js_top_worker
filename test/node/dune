@@ -356,3 +356,62 @@
  (deps _opam)
  (action
   (diff node_dependency_test.expected node_dependency_test.out)))
+
+; Incremental output test executable
+(executable
+ (name node_incremental_test)
+ (modes byte)
+ (modules node_incremental_test)
+ (link_flags (-linkall))
+ (libraries
+  str
+  fpath
+  js_of_ocaml
+  js_top_worker-web
+  js_of_ocaml-toplevel
+  js_top_worker
+  logs
+  logs.fmt
+  rpclib.core
+  rpclib.json
+  findlib.top
+  js_of_ocaml-lwt
+  zarith_stubs_js))
+
+(rule
+ (targets node_incremental_test.js)
+ (action
+  (run
+   %{bin:js_of_ocaml}
+   --toplevel
+   --pretty
+   --no-cmis
+   --effects=cps
+   --debuginfo
+   --target-env=nodejs
+   +toplevel.js
+   +dynlink.js
+   +bigstringaf/runtime.js
+   +zarith_stubs_js/runtime.js
+   %{lib:js_top_worker:stubs.js}
+   %{dep:node_incremental_test.bc}
+   -o
+   %{targets})))
+
+(rule
+ (deps _opam)
+ (action
+  (with-outputs-to
+   node_incremental_test.out
+   (run
+    node
+    --stack-size=2000
+    -r
+    ./%{dep:import_scripts.js}
+    %{dep:node_incremental_test.js}))))
+
+(rule
+ (alias runtest)
+ (deps _opam)
+ (action
+  (diff node_incremental_test.expected node_incremental_test.out)))

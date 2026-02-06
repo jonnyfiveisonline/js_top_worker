@@ -80,6 +80,12 @@ type worker_msg =
       caml_ppf : string;
       mime_vals : mime_val list;
     }
+  | OutputAt of {
+      cell_id : int;
+      loc : int;  (* pos_cnum - character position after phrase *)
+      caml_ppf : string;
+      mime_vals : mime_val list;
+    }
   | Completions of { cell_id : int; completions : completions }
   | Types of { cell_id : int; types : type_info list }
   | ErrorList of { cell_id : int; errors : error list }
@@ -106,11 +112,20 @@ let get_int obj key =
   Js.Unsafe.get obj (Js.string key)
 
 let get_string_opt obj key =
-  let v : Js.js_string Js.t Js.Optdef.t = Js.Unsafe.get obj (Js.string key) in
-  Js.Optdef.to_option v |> Option.map Js.to_string
+  let v = Js.Unsafe.get obj (Js.string key) in
+  (* Handle both null and undefined *)
+  if Js.Opt.test v then
+    Some (Js.to_string v)
+  else
+    None
 
 let get_array obj key =
-  Js.to_array (Js.Unsafe.get obj (Js.string key))
+  let v = Js.Unsafe.get obj (Js.string key) in
+  (* Use Js.Opt.test to check if the value is not null *)
+  if Js.Opt.test v then
+    Js.to_array v
+  else
+    [||]
 
 let get_string_array obj key =
   Array.to_list (Array.map Js.to_string (get_array obj key))
@@ -183,6 +198,14 @@ let json_of_worker_msg msg =
           ("cell_id", json_int cell_id);
           ("stdout", json_string stdout);
           ("stderr", json_string stderr);
+          ("caml_ppf", json_string caml_ppf);
+          ("mime_vals", json_array (List.map (fun mv -> Js.Unsafe.inject (json_of_mime_val mv)) mime_vals));
+        ]
+    | OutputAt { cell_id; loc; caml_ppf; mime_vals } ->
+        json_of_obj [
+          ("type", json_string "output_at");
+          ("cell_id", json_int cell_id);
+          ("loc", json_int loc);
           ("caml_ppf", json_string caml_ppf);
           ("mime_vals", json_array (List.map (fun mv -> Js.Unsafe.inject (json_of_mime_val mv)) mime_vals));
         ]

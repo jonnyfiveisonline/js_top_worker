@@ -434,6 +434,88 @@ module Make (S : S) = struct
         mime_vals;
       }
 
+  (** {3 Incremental Phrase Execution}
+
+      Executes OCaml phrases incrementally, calling a callback after each
+      phrase with its output and location. *)
+
+  type phrase_output = {
+    loc : int;
+    caml_ppf : string option;
+    mime_vals : Toplevel_api_gen.mime_val list;
+  }
+
+  let execute_in_env_incremental env phrase ~on_phrase_output =
+    let code_buff = Buffer.create 100 in
+    let res_buff = Buffer.create 100 in
+    let pp_code = Format.formatter_of_buffer code_buff in
+    let pp_result = Format.formatter_of_buffer res_buff in
+    let highlighted = ref None in
+    let set_highlight loc =
+      let _file1, line1, col1 = Location.get_pos_info loc.Location.loc_start in
+      let _file2, line2, col2 = Location.get_pos_info loc.Location.loc_end in
+      highlighted := Some Toplevel_api_gen.{ line1; col1; line2; col2 }
+    in
+    Buffer.clear code_buff;
+    Buffer.clear res_buff;
+    Buffer.clear stderr_buff;
+    Buffer.clear stdout_buff;
+    let phrase =
+      let l = String.length phrase in
+      if l >= 2 && String.sub phrase (l - 2) 2 = ";;" then phrase
+      else phrase ^ ";;"
+    in
+    let o, () =
+      Environment.with_env env (fun () ->
+        S.capture
+          (fun () ->
+            let lb = Lexing.from_function (refill_lexbuf phrase (ref 0) (Some pp_code)) in
+            (try
+               while true do
+                 try
+                   let phr = !Toploop.parse_toplevel_phrase lb in
+                   let phr = JsooTopPpx.preprocess_phrase phr in
+                   ignore (Toploop.execute_phrase true pp_result phr : bool);
+                   (* Get location from phrase AST *)
+                   let loc = match phr with
+                     | Parsetree.Ptop_def ({ pstr_loc; _ } :: _) ->
+                         pstr_loc.loc_end.pos_cnum
+                     | Parsetree.Ptop_dir { pdir_loc; _ } ->
+                         pdir_loc.loc_end.pos_cnum
+                     | _ -> lb.lex_curr_p.pos_cnum
+                   in
+                   (* Flush and get current output *)
+                   Format.pp_print_flush pp_result ();
+                   let caml_ppf = buff_opt res_buff in
+                   let mime_vals = Mime_printer.get () in
+                   (* Call callback with phrase output *)
+                   on_phrase_output { loc; caml_ppf; mime_vals };
+                   (* Clear for next phrase *)
+                   Buffer.clear res_buff
+                 with
+                 | End_of_file -> raise End_of_file
+                 | x ->
+                     (match loc x with Some l -> set_highlight l | None -> ());
+                     Errors.report_error Format.err_formatter x
+               done
+             with End_of_file -> ());
+            flush_all ())
+          ())
+    in
+    (* Get any remaining mime_vals (shouldn't be any after last callback) *)
+    let mime_vals = Mime_printer.get () in
+    Format.pp_print_flush pp_code ();
+    Format.pp_print_flush pp_result ();
+    Toplevel_api_gen.
+      {
+        stdout = string_opt o.stdout;
+        stderr = string_opt o.stderr;
+        sharp_ppf = buff_opt code_buff;
+        caml_ppf = buff_opt res_buff;
+        highlight = !highlighted;
+        mime_vals;
+      }
+
   (** {3 Dynamic CMI Loading}
 
       Handles loading .cmi files on demand for packages that weren't
@@ -696,6 +778,13 @@ module Make (S : S) = struct
     let env = resolve_env env_id in
     let result = execute_in_env env phrase in
     Logs.info (fun m -> m "execute() done for env_id=%s" env_id);
+    IdlM.ErrM.return result
+
+  let execute_incremental env_id (phrase : string) ~on_phrase_output =
+    Logs.info (fun m -> m "execute_incremental() for env_id=%s" env_id);
+    let env = resolve_env env_id in
+    let result = execute_in_env_incremental env phrase ~on_phrase_output in
+    Logs.info (fun m -> m "execute_incremental() done for env_id=%s" env_id);
     IdlM.ErrM.return result
 
   (** {3 Merlin Integration}

@@ -97,6 +97,18 @@ let output_of_exec_result cell_id (r : Toplevel_api_gen.exec_result) =
     mime_vals;
   }
 
+(** Convert phrase_output to Message.OutputAt *)
+let output_at_of_phrase cell_id (p : Impl.Make(S).phrase_output) =
+  let mime_vals = List.map (fun (mv : Toplevel_api_gen.mime_val) ->
+    { Msg.mime_type = mv.mime_type; data = mv.data }
+  ) p.mime_vals in
+  Msg.OutputAt {
+    cell_id;
+    loc = p.loc;
+    caml_ppf = Option.value ~default:"" p.caml_ppf;
+    mime_vals;
+  }
+
 (** Convert completions to Message.Completions *)
 let completions_of_result cell_id (c : Toplevel_api_gen.completions) =
   let entries = List.map (fun (e : Toplevel_api_gen.query_protocol_compl_entry) ->
@@ -214,7 +226,8 @@ let handle_message msg =
 
   | Msg.Eval { cell_id; env_id; code } ->
       Jslib.log "Eval cell_id=%d env_id=%s" cell_id env_id;
-      Rpc_lwt.T.get (M.execute env_id code) >|= fun result ->
+      let on_phrase_output p = send_message (output_at_of_phrase cell_id p) in
+      Rpc_lwt.T.get (M.execute_incremental env_id code ~on_phrase_output) >|= fun result ->
       (match result with
        | Ok exec_result ->
            send_message (output_of_exec_result cell_id exec_result)

@@ -7,6 +7,29 @@ module Brr_worker = Brr_webworkers.Worker
 module Brr_message = Brr_io.Message
 module Msg = Js_top_worker_message.Message
 
+(** Incremental output from a single phrase *)
+type output_at = {
+  cell_id : int;
+  loc : int;  (** Character position after phrase (pos_cnum) *)
+  caml_ppf : string;
+  mime_vals : Msg.mime_val list;
+}
+
+(** Output result type *)
+type output = {
+  cell_id : int;
+  stdout : string;
+  stderr : string;
+  caml_ppf : string;
+  mime_vals : Msg.mime_val list;
+}
+
+(** Eval stream event *)
+type eval_event =
+  | Phrase of output_at  (** Incremental output after each phrase *)
+  | Done of output       (** Final result *)
+  | Error of string      (** Error occurred *)
+
 (** Client state *)
 type t = {
   worker : Brr_worker.t;
@@ -16,6 +39,7 @@ type t = {
   ready_waiters : (unit -> unit) Queue.t;
   pending : (int, Msg.worker_msg Lwt.u) Hashtbl.t;
   pending_env : (string, Msg.worker_msg Lwt.u) Hashtbl.t;
+  pending_stream : (int, eval_event option -> unit) Hashtbl.t;
 }
 
 exception Timeout
@@ -98,6 +122,18 @@ let parse_worker_msg s =
       Msg.EnvCreated { env_id = get_string "env_id" }
   | "env_destroyed" ->
       Msg.EnvDestroyed { env_id = get_string "env_id" }
+  | "output_at" ->
+      let mime_vals_arr = Js.to_array (Js.Unsafe.get obj (Js.string "mime_vals")) in
+      let mime_vals = Array.to_list (Array.map (fun mv ->
+        { Msg.mime_type = Js.to_string (Js.Unsafe.get mv (Js.string "mime_type"));
+          data = Js.to_string (Js.Unsafe.get mv (Js.string "data")) }
+      ) mime_vals_arr) in
+      Msg.OutputAt {
+        cell_id = get_int "cell_id";
+        loc = get_int "loc";
+        caml_ppf = get_string "caml_ppf";
+        mime_vals;
+      }
   | _ -> failwith ("Unknown message type: " ^ typ)
 
 (** Handle incoming message from worker *)
@@ -113,9 +149,40 @@ let handle_message t msg =
       t.ready <- true;
       Queue.iter (fun f -> f ()) t.ready_waiters;
       Queue.clear t.ready_waiters
-  | Msg.Output { cell_id; _ } | Msg.Completions { cell_id; _ }
-  | Msg.Types { cell_id; _ } | Msg.ErrorList { cell_id; _ }
-  | Msg.EvalError { cell_id; _ } ->
+  | Msg.OutputAt { cell_id; loc; caml_ppf; mime_vals } ->
+      (match Hashtbl.find_opt t.pending_stream cell_id with
+       | Some push -> push (Some (Phrase { cell_id; loc; caml_ppf; mime_vals }))
+       | None -> ())
+  | Msg.Output { cell_id; stdout; stderr; caml_ppf; mime_vals } ->
+      (* Handle streaming eval *)
+      (match Hashtbl.find_opt t.pending_stream cell_id with
+       | Some push ->
+           Hashtbl.remove t.pending_stream cell_id;
+           push (Some (Done { cell_id; stdout; stderr; caml_ppf; mime_vals }));
+           push None  (* Close the stream *)
+       | None -> ());
+      (* Handle regular eval *)
+      (match Hashtbl.find_opt t.pending cell_id with
+       | Some resolver ->
+           Hashtbl.remove t.pending cell_id;
+           Lwt.wakeup resolver parsed
+       | None -> ())
+  | Msg.EvalError { cell_id; message } ->
+      (* Handle streaming eval *)
+      (match Hashtbl.find_opt t.pending_stream cell_id with
+       | Some push ->
+           Hashtbl.remove t.pending_stream cell_id;
+           push (Some (Error message));
+           push None  (* Close the stream *)
+       | None -> ());
+      (* Handle regular eval *)
+      (match Hashtbl.find_opt t.pending cell_id with
+       | Some resolver ->
+           Hashtbl.remove t.pending cell_id;
+           Lwt.wakeup resolver parsed
+       | None -> ())
+  | Msg.Completions { cell_id; _ }
+  | Msg.Types { cell_id; _ } | Msg.ErrorList { cell_id; _ } ->
       (match Hashtbl.find_opt t.pending cell_id with
        | Some resolver ->
            Hashtbl.remove t.pending cell_id;
@@ -128,7 +195,8 @@ let handle_message t msg =
            Lwt.wakeup resolver parsed
        | None -> ())
 
-(** Create a new worker client *)
+(** Create a new worker client.
+    @param timeout Timeout in milliseconds (default: 30000) *)
 let create ?(timeout = 30000) url =
   let worker = Brr_worker.create (Jstr.v url) in
   let t = {
@@ -139,6 +207,7 @@ let create ?(timeout = 30000) url =
     ready_waiters = Queue.create ();
     pending = Hashtbl.create 16;
     pending_env = Hashtbl.create 16;
+    pending_stream = Hashtbl.create 16;
   } in
   let _listener =
     Brr.Ev.listen Brr_message.Ev.message (handle_message t) (Brr_worker.as_target worker)
@@ -226,15 +295,6 @@ let init t config =
   wait_ready t >>= fun () ->
   Lwt.return_unit
 
-(** Output result type *)
-type output = {
-  cell_id : int;
-  stdout : string;
-  stderr : string;
-  caml_ppf : string;
-  mime_vals : Msg.mime_val list;
-}
-
 (** Evaluate OCaml code *)
 let eval t ?(env_id = "default") code =
   let open Lwt.Infix in
@@ -250,6 +310,20 @@ let eval t ?(env_id = "default") code =
   | Msg.EvalError { message; _ } ->
       Lwt.fail (EvalError message)
   | _ -> Lwt.fail (Failure "Unexpected response")
+
+(** Evaluate OCaml code with streaming output.
+    Returns a stream of events: [Phrase] for each phrase as it executes,
+    then [Done] with the final result, or [Error] if evaluation fails. *)
+let eval_stream t ?(env_id = "default") code =
+  let stream, push = Lwt_stream.create () in
+  (* Wait for ready before sending, but return stream immediately *)
+  Lwt.async (fun () ->
+    let open Lwt.Infix in
+    wait_ready t >|= fun () ->
+    let cell_id = next_cell_id t in
+    Hashtbl.add t.pending_stream cell_id push;
+    send t (`Eval (cell_id, env_id, code)));
+  stream
 
 (** Get completions *)
 let complete t ?(env_id = "default") source position =

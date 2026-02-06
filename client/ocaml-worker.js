@@ -88,16 +88,41 @@
  * @property {string} tail - Tail position info
  */
 
+/**
+ * @typedef {Object} OutputAt
+ * @property {number} cell_id - Cell identifier
+ * @property {number} loc - Character position after phrase (pos_cnum)
+ * @property {string} caml_ppf - OCaml pretty-printed output for this phrase
+ * @property {MimeVal[]} mime_vals - MIME values for this phrase
+ */
+
 export class OcamlWorker {
   /**
+   * Create the worker blob URL with proper base URL setup.
+   * The worker needs __global_rel_url to find its resources.
+   * @private
+   */
+  static _createWorkerUrl(baseUrl) {
+    // Convert relative URL to absolute - importScripts in blob workers needs absolute URLs
+    const absoluteBase = new URL(baseUrl, window.location.href).href;
+    // Remove the trailing /worker.js to get the base directory
+    const baseDir = absoluteBase.replace(/\/worker\.js$/, '');
+    const content = `globalThis.__global_rel_url="${baseDir}"\nimportScripts("${absoluteBase}");`;
+    return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
+  }
+
+  /**
    * Create a new OCaml worker client.
-   * @param {string} workerUrl - URL to the worker script
+   * @param {string} workerUrl - URL to the worker script (e.g., '_opam/worker.js')
    * @param {Object} [options] - Options
    * @param {number} [options.timeout=30000] - Timeout in milliseconds
+   * @param {function(OutputAt): void} [options.onOutputAt] - Callback for incremental output
    */
   constructor(workerUrl, options = {}) {
-    this.worker = new Worker(workerUrl);
+    const blobUrl = OcamlWorker._createWorkerUrl(workerUrl);
+    this.worker = new Worker(blobUrl);
     this.timeout = options.timeout || 30000;
+    this.onOutputAt = options.onOutputAt || null;
     this.cellIdCounter = 0;
     this.pendingRequests = new Map();
     this.readyPromise = null;
@@ -132,6 +157,13 @@ export class OcamlWorker {
             reject(new Error(msg.message));
             this.pendingRequests.delete('init');
           }
+        }
+        break;
+
+      case 'output_at':
+        // Incremental output - call callback but don't resolve (wait for final 'output')
+        if (this.onOutputAt) {
+          this.onOutputAt(msg);
         }
         break;
 
