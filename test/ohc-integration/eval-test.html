@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JTW Eval Test</title>
+</head>
+<body>
+  <h1>JTW Eval Test</h1>
+  <div id="status">Loading...</div>
+  <pre id="log"></pre>
+  <script type="module">
+    import { OcamlWorker } from '/client/ocaml-worker.js';
+
+    const status = document.getElementById('status');
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+      logEl.textContent += msg + '\n';
+      console.log(msg);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const universe = params.get('universe');
+    const compilerVersion = params.get('compiler') || '5.4.0';
+
+    if (!universe) {
+      status.textContent = 'Error: ?universe= parameter required';
+      status.dataset.error = 'universe parameter required';
+      throw new Error('universe parameter required');
+    }
+
+    const workerUrl = `/jtw-output/compiler/${compilerVersion}/worker.js`;
+    const findlib_index = `/jtw-output/u/${universe}/findlib_index`;
+    const stdlib_dcs = `lib/ocaml/dynamic_cmis.json`;
+
+    status.textContent = 'Creating worker...';
+    const worker = new OcamlWorker(workerUrl, { timeout: 120000 });
+
+    try {
+      status.textContent = 'Initializing...';
+      await worker.init({
+        findlib_requires: [],
+        stdlib_dcs: stdlib_dcs,
+        findlib_index: findlib_index,
+      });
+
+      status.textContent = 'Ready';
+      status.dataset.ready = 'true';
+
+      // Expose eval/complete/require on window for Playwright
+      window.workerEval = async (code) => {
+        const result = await worker.eval(code);
+        return {
+          caml_ppf: result.caml_ppf || '',
+          stdout: result.stdout || '',
+          stderr: result.stderr || '',
+        };
+      };
+
+      window.workerComplete = async (source, pos) => {
+        const result = await worker.complete(source, pos);
+        const entries = result.completions?.entries || [];
+        return entries.map(e => e.name);
+      };
+
+    } catch (err) {
+      status.textContent = 'Error: ' + err.message;
+      status.dataset.error = err.message;
+      log('ERROR: ' + err.message);
+    }
+  </script>
+</body>
+</html>

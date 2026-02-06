@@ -3,3 +3,11 @@ _build/
 
 # Local OPAM switch
 _opam/
+
+# JTW output symlink (for integration testing)
+jtw-output
+
+# Test artifacts
+test-results/
+demo/
+test/ohc-integration/node_modules/

@@ -161,13 +161,31 @@ export class OcamlWorker {
         break;
 
       case 'output_at':
-        // Incremental output - call callback but don't resolve (wait for final 'output')
+        // Incremental output - accumulate caml_ppf for final output
+        if (!this._accumulatedOutput) {
+          this._accumulatedOutput = new Map();
+        }
+        {
+          const cellId = msg.cell_id;
+          const prev = this._accumulatedOutput.get(cellId) || '';
+          this._accumulatedOutput.set(cellId, prev + (msg.caml_ppf || ''));
+        }
         if (this.onOutputAt) {
           this.onOutputAt(msg);
         }
         break;
 
       case 'output':
+        // Merge accumulated incremental caml_ppf into the final output
+        if (this._accumulatedOutput && this._accumulatedOutput.has(msg.cell_id)) {
+          const accumulated = this._accumulatedOutput.get(msg.cell_id);
+          if (accumulated && (!msg.caml_ppf || msg.caml_ppf === '')) {
+            msg.caml_ppf = accumulated;
+          }
+          this._accumulatedOutput.delete(msg.cell_id);
+        }
+        this._resolveRequest(msg.cell_id, msg);
+        break;
       case 'completions':
       case 'types':
       case 'errors':

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OHC JTW Integration Test</title>
+</head>
+<body>
+  <h1>OHC JTW Integration Test</h1>
+  <div id="status">Loading...</div>
+  <div id="results"></div>
+  <script type="module">
+    import { OcamlWorker } from '/client/ocaml-worker.js';
+
+    const status = document.getElementById('status');
+    const results = document.getElementById('results');
+
+    function log(msg) {
+      const p = document.createElement('pre');
+      p.textContent = msg;
+      results.appendChild(p);
+      console.log(msg);
+    }
+
+    // Read config from URL params
+    const params = new URLSearchParams(window.location.search);
+    const universe = params.get('universe');
+    const compilerVersion = params.get('compiler') || '5.4.0';
+
+    if (!universe) {
+      status.textContent = 'Error: ?universe= parameter required';
+      throw new Error('universe parameter required');
+    }
+
+    const workerUrl = `/jtw-output/compiler/${compilerVersion}/worker.js`;
+    const findlib_index = `/jtw-output/u/${universe}/findlib_index`;
+    const stdlib_dcs = `lib/ocaml/dynamic_cmis.json`;
+
+    status.textContent = 'Creating worker...';
+    const worker = new OcamlWorker(workerUrl, { timeout: 120000 });
+
+    try {
+      status.textContent = 'Initializing (loading stdlib)...';
+      await worker.init({
+        findlib_requires: [],
+        stdlib_dcs: stdlib_dcs,
+        findlib_index: findlib_index,
+      });
+
+      status.textContent = 'Worker ready';
+      document.getElementById('status').dataset.ready = 'true';
+
+      // Test 1: Basic arithmetic
+      log('--- Test 1: Basic arithmetic ---');
+      const r1 = await worker.eval('let x = 1 + 2;;');
+      log('eval: let x = 1 + 2;;');
+      log('caml_ppf: ' + r1.caml_ppf);
+      document.getElementById('results').dataset.test1 = r1.caml_ppf;
+
+      // Test 2: String operations
+      log('--- Test 2: String operations ---');
+      const r2 = await worker.eval('String.concat ", " ["hello"; "world"];;');
+      log('eval: String.concat ", " ["hello"; "world"];;');
+      log('caml_ppf: ' + r2.caml_ppf);
+      document.getElementById('results').dataset.test2 = r2.caml_ppf;
+
+      // Test 3: Load fmt via #require
+      log('--- Test 3: Load fmt ---');
+      const r3 = await worker.eval('#require "fmt";;');
+      log('eval: #require "fmt";;');
+      log('caml_ppf: ' + r3.caml_ppf);
+      log('stderr: ' + r3.stderr);
+      document.getElementById('results').dataset.test3 = 'loaded';
+
+      // Test 4: Use fmt
+      log('--- Test 4: Use Fmt ---');
+      const r4 = await worker.eval('Fmt.str "%a" Fmt.int 42;;');
+      log('eval: Fmt.str "%a" Fmt.int 42;;');
+      log('caml_ppf: ' + r4.caml_ppf);
+      document.getElementById('results').dataset.test4 = r4.caml_ppf;
+
+      // Test 5: Completions
+      log('--- Test 5: Completions ---');
+      const r5 = await worker.complete('Fmt.i', 5);
+      log('complete: Fmt.i at pos 5');
+      const entries = r5.completions?.entries || [];
+      log('entries: ' + entries.map(e => e.name).join(', '));
+      document.getElementById('results').dataset.test5 = entries.length > 0 ? 'ok' : 'empty';
+
+      status.textContent = 'All tests complete';
+      document.getElementById('status').dataset.done = 'true';
+
+    } catch (err) {
+      status.textContent = 'Error: ' + err.message;
+      log('ERROR: ' + err.message);
+      log('Stack: ' + err.stack);
+      document.getElementById('status').dataset.error = err.message;
+    }
+  </script>
+</body>
+</html>

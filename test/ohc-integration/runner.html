@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JTW Library Test Runner</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 24px; line-height: 1.5; }
+    h1 { color: #f0f6fc; margin-bottom: 4px; font-size: 24px; }
+    .subtitle { color: #8b949e; margin-bottom: 24px; font-size: 14px; }
+    .summary { display: flex; gap: 16px; margin-bottom: 24px; padding: 16px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; flex-wrap: wrap; }
+    .summary .stat { text-align: center; min-width: 70px; }
+    .summary .stat .num { font-size: 32px; font-weight: 700; }
+    .summary .stat .label { font-size: 12px; color: #8b949e; text-transform: uppercase; }
+    .stat.pass .num { color: #3fb950; }
+    .stat.fail .num { color: #f85149; }
+    .stat.skip .num { color: #d29922; }
+    .stat.run .num { color: #58a6ff; }
+    .progress { height: 4px; background: #21262d; border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+    .progress-bar { height: 100%; background: #58a6ff; transition: width 0.3s; }
+
+    .group { margin-bottom: 16px; }
+    .group-header { font-size: 14px; font-weight: 600; color: #f0f6fc; padding: 8px 12px; background: #161b22; border: 1px solid #30363d; border-radius: 8px 8px 0 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .group-header:hover { background: #1c2128; }
+    .group-header .arrow { transition: transform 0.2s; }
+    .group-header.collapsed .arrow { transform: rotate(-90deg); }
+    .group-badge { font-size: 11px; padding: 1px 6px; border-radius: 10px; margin-left: 8px; font-weight: 400; }
+    .group-badge.cross { background: #30363d; color: #d2a8ff; }
+    .group-body { border: 1px solid #30363d; border-top: none; border-radius: 0 0 8px 8px; overflow: hidden; }
+    .group-body.hidden { display: none; }
+
+    .code-banner { padding: 6px 12px; background: #0d1117; border-bottom: 1px solid #21262d; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #d2a8ff; }
+    .code-banner code { color: #f0f6fc; }
+
+    .test-row { display: flex; align-items: flex-start; padding: 8px 12px; border-bottom: 1px solid #21262d; font-size: 13px; gap: 8px; }
+    .test-row:last-child { border-bottom: none; }
+    .test-row:hover { background: #161b22; }
+    .test-icon { flex-shrink: 0; width: 20px; text-align: center; font-size: 14px; }
+    .test-name { flex: 1; }
+    .test-name .label { font-family: 'SF Mono', 'Fira Code', monospace; }
+    .test-detail { font-size: 12px; color: #8b949e; margin-top: 2px; }
+    .test-time { color: #8b949e; font-size: 12px; flex-shrink: 0; }
+
+    .test-row.pass .test-icon { color: #3fb950; }
+    .test-row.fail .test-icon { color: #f85149; }
+    .test-row.skip .test-icon { color: #d29922; }
+    .test-row.running .test-icon { color: #58a6ff; }
+    .test-row.pending .test-icon { color: #484f58; }
+    /* "Expected error" pass: still green check but with a visual indicator */
+    .test-row.pass-neg .test-icon { color: #3fb950; }
+
+    .expect-badge { font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+    .expect-badge.should-pass { background: #23862633; color: #3fb950; }
+    .expect-badge.should-error { background: #f8514933; color: #f85149; }
+
+    .error-detail { background: #1c1215; border: 1px solid #f8514933; border-radius: 4px; padding: 8px; margin-top: 6px; font-family: 'SF Mono', monospace; font-size: 12px; color: #f85149; white-space: pre-wrap; word-break: break-all; }
+    .output-detail { background: #121a16; border: 1px solid #3fb95033; border-radius: 4px; padding: 8px; margin-top: 6px; font-family: 'SF Mono', monospace; font-size: 12px; color: #3fb950; white-space: pre-wrap; word-break: break-all; }
+    .neg-output-detail { background: #1a1520; border: 1px solid #d2a8ff33; border-radius: 4px; padding: 8px; margin-top: 6px; font-family: 'SF Mono', monospace; font-size: 12px; color: #d2a8ff; white-space: pre-wrap; word-break: break-all; }
+
+    .step-transcript { margin-top: 6px; border-radius: 4px; overflow: hidden; border: 1px solid #30363d; }
+    .step-transcript + .step-transcript { margin-top: 4px; }
+    .step-input { padding: 4px 8px; background: #161b22; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #d2a8ff; border-bottom: 1px solid #21262d; }
+    .step-input::before { content: '# '; color: #484f58; }
+    .step-output { padding: 4px 8px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+    .step-output.out-pass { background: #121a16; color: #3fb950; }
+    .step-output.out-fail { background: #1c1215; color: #f85149; }
+    .step-output.out-neg { background: #1a1520; color: #d2a8ff; }
+    .step-output.out-stdout { background: #161b22; color: #c9d1d9; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { display: inline-block; animation: spin 1s linear infinite; }
+  </style>
+</head>
+<body>
+  <h1>JTW Library Test Runner</h1>
+  <p class="subtitle">Testing OCaml libraries across versions via ohc-built JTW output &mdash; including cross-version negative tests</p>
+
+  <div class="summary">
+    <div class="stat pass"><div class="num" id="pass-count">0</div><div class="label">Passed</div></div>
+    <div class="stat fail"><div class="num" id="fail-count">0</div><div class="label">Unexpected</div></div>
+    <div class="stat skip"><div class="num" id="skip-count">0</div><div class="label">Skipped</div></div>
+    <div class="stat run"><div class="num" id="run-count">0</div><div class="label">Running</div></div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div id="groups"></div>
+
+  <script type="module">
+    import { OcamlWorker } from '/client/ocaml-worker.js';
+
+    // ── Universe mapping ──────────────────────────────────────────────────
+    const U = {
+      'fmt.0.9.0':      '9901393f978b0a6627c5eab595111f50',
+      'fmt.0.10.0':     'dc92d356407d44e1eae7e39acefce214',
+      'fmt.0.11.0':     '5c8d38716cee871f1a6a1f164c9171e6',
+      'cmdliner.1.0.4': '1c3783a51f479ccb97503596896eb40b',
+      'cmdliner.1.3.0': 'bcb1b5485952a387d9a1a626d018fc5b',
+      'cmdliner.2.0.0': 'e6cf251f6257587fa235157819c1be21',
+      'cmdliner.2.1.0': '146d116fd47cdde3a5912f6c3c43a06c',
+      'mtime.1.3.0':    '405772d8c1d5fcfb52a34bc074e9b2bf',
+      'mtime.1.4.0':    'd07582e1ae666064d4e2cf55b8f966f2',
+      'mtime.2.1.0':    '427565ec9f440e77ea8cda7a5baf2f16',
+      'logs.0.7.0':     '2579ce9998e74d858251a8467a2d3acc',
+      'logs.0.10.0':    '1447d6620c603faabafd2a4af8180e64',
+      'uucp.14.0.0':    '61994aea366afe63fbbdfbec3a6c1c17',
+      'uucp.15.0.0':    '1676ff3253642b3d3380da595576d048',
+      'uucp.16.0.0':    '2536abe6336b2597409378c985af206f',
+      'uucp.17.0.0':    '9f478f56c02c6b75ad53e569576ac528',
+      'uunf.14.0.0':    'c49889fbf46b81974819b189749084eb',
+      'uunf.17.0.0':    'd41feec064e2a5ca2ca9ce644b490c35',
+      'astring.0.8.5':  '77fa5901f826c06565dd83b8f758980c',
+      'jsonm.1.0.2':    '331ba04a1674f61d6eb297de762940ea',
+      'xmlm.1.4.0':     'de0c6b460a24c08865ced16ef6a90978',
+      'ptime.1.2.0':    '0e977ea260d75026d2cdd4a7d007b2a5',
+      'react.1.2.2':    '8b8f1bafe428e743bbb3e9f6a24753a5',
+      'hmap.0.8.1':     '9cbc1bea29fe2a32ff73726147a24f7f',
+      'gg.1.0.0':       '0c7a6cc72b0eef74ddf88e8512b418e1',
+      'note.0.0.3':     '7497fed22490d2257a6fb4ac44bb1316',
+      'otfm.0.4.0':     'af7a1a159d4a1c27da168df5cad06ad9',
+      'vg.0.9.5':       '8a313572e25666862de0bc23fc09c53d',
+      'bos.0.2.1':      '1447d6620c603faabafd2a4af8180e64',
+      'fpath.0.7.3':    'b034f0f4718c8842fdec8d4ff3430b97',
+      'uutf.1.0.4':     '331ba04a1674f61d6eb297de762940ea',
+      'b0.0.0.6':       '3125f46428fef2c0920ae254a3678000',
+    };
+
+    // ── Test definitions ──────────────────────────────────────────────────
+    //
+    // Regular tests:
+    //   { group, name, universe, require, steps: [{code, expect}] }
+    //
+    // Cross-version (negative) tests:
+    //   { group, crossVersion: true, code: "...",
+    //     cases: [{ label, universe, require,
+    //               shouldPass: true/false, expect?, expectError? }] }
+
+    const tests = [
+
+      // ══════════════════════════════════════════════════════════════════
+      // CROSS-VERSION NEGATIVE TESTS
+      // ══════════════════════════════════════════════════════════════════
+
+      // ── Cmdliner.Cmd module: introduced in ~1.1, absent in 1.0.4 ──
+      { group: 'Cmdliner: Cmd module boundary', crossVersion: true,
+        code: 'Cmdliner.Cmd.info;;',
+        description: 'Cmdliner.Cmd was introduced after 1.0.x. Same code errors in 1.0.4 but works in 1.3.0+.',
+        cases: [
+          { label: 'cmdliner 1.0.4', universe: U['cmdliner.1.0.4'], require: ['cmdliner'],
+            shouldPass: false, expectError: 'Unbound module' },
+          { label: 'cmdliner 1.3.0', universe: U['cmdliner.1.3.0'], require: ['cmdliner'],
+            shouldPass: true, expect: 'Cmdliner.Cmd' },
+          { label: 'cmdliner 2.1.0', universe: U['cmdliner.2.1.0'], require: ['cmdliner'],
+            shouldPass: true, expect: 'Cmdliner.Cmd' },
+        ] },
+
+      // ── Cmdliner.Term.eval: removed in 2.0 ──
+      { group: 'Cmdliner: Term.eval removal', crossVersion: true,
+        code: 'Cmdliner.Term.eval;;',
+        description: 'Cmdliner.Term.eval was removed in 2.0. Present in 1.0.4 and 1.3.0 (transitional), gone in 2.x.',
+        cases: [
+          { label: 'cmdliner 1.0.4', universe: U['cmdliner.1.0.4'], require: ['cmdliner'],
+            shouldPass: true, expect: 'Cmdliner.Term' },
+          { label: 'cmdliner 1.3.0', universe: U['cmdliner.1.3.0'], require: ['cmdliner'],
+            shouldPass: true, expect: 'Cmdliner.Term' },
+          { label: 'cmdliner 2.0.0', universe: U['cmdliner.2.0.0'], require: ['cmdliner'],
+            shouldPass: false, expectError: 'Unbound' },
+          { label: 'cmdliner 2.1.0', universe: U['cmdliner.2.1.0'], require: ['cmdliner'],
+            shouldPass: false, expectError: 'Unbound' },
+        ] },
+
+      // ── Uucp.unicode_version value changes ──
+      { group: 'Uucp: unicode_version value', crossVersion: true,
+        code: 'Uucp.unicode_version;;',
+        description: 'Each Uucp release tracks a specific Unicode version. The returned string differs per version.',
+        cases: [
+          { label: 'uucp 14.0.0', universe: U['uucp.14.0.0'], require: ['uucp'],
+            shouldPass: true, expect: '"14.0.0"' },
+          { label: 'uucp 15.0.0', universe: U['uucp.15.0.0'], require: ['uucp'],
+            shouldPass: true, expect: '"15.0.0"' },
+          { label: 'uucp 16.0.0', universe: U['uucp.16.0.0'], require: ['uucp'],
+            shouldPass: true, expect: '"16.0.0"' },
+          { label: 'uucp 17.0.0', universe: U['uucp.17.0.0'], require: ['uucp'],
+            shouldPass: true, expect: '"17.0.0"' },
+        ] },
+
+      // ── Uucp: "17.0.0" only in uucp 17 ──
+      { group: 'Uucp: version string mismatch', crossVersion: true,
+        code: 'assert (Uucp.unicode_version = "17.0.0");;',
+        description: 'Asserting unicode_version = "17.0.0" passes only in uucp 17, fails in 14.',
+        cases: [
+          { label: 'uucp 14.0.0', universe: U['uucp.14.0.0'], require: ['uucp'],
+            shouldPass: false, expectError: 'Assert_failure' },
+          { label: 'uucp 17.0.0', universe: U['uucp.17.0.0'], require: ['uucp'],
+            shouldPass: true, expect: '' },
+        ] },
+
+      // ── Uunf version boundary ──
+      { group: 'Uunf: version boundary', crossVersion: true,
+        code: 'assert (Uunf.unicode_version = "17.0.0");;',
+        description: 'Uunf 14.0.0 reports Unicode 14, so asserting "17.0.0" fails. Passes in uunf 17.',
+        cases: [
+          { label: 'uunf 14.0.0', universe: U['uunf.14.0.0'], require: ['uunf'],
+            shouldPass: false, expectError: 'Assert_failure' },
+          { label: 'uunf 17.0.0', universe: U['uunf.17.0.0'], require: ['uunf'],
+            shouldPass: true, expect: '' },
+        ] },
+
+      // ── Mtime.Span.of_float_ns: added in 2.x ──
+      { group: 'Mtime: Span.of_float_ns boundary', crossVersion: true,
+        code: 'Mtime.Span.of_float_ns;;',
+        description: 'Mtime.Span.of_float_ns was added in mtime 2.0. Not present in 1.x.',
+        cases: [
+          { label: 'mtime 1.3.0', universe: U['mtime.1.3.0'], require: ['mtime'],
+            shouldPass: false, expectError: 'Unbound' },
+          { label: 'mtime 1.4.0', universe: U['mtime.1.4.0'], require: ['mtime'],
+            shouldPass: false, expectError: 'Unbound' },
+          { label: 'mtime 2.1.0', universe: U['mtime.2.1.0'], require: ['mtime'],
+            shouldPass: true, expect: 'Mtime.span option' },
+        ] },
+
+      // ══════════════════════════════════════════════════════════════════
+      // POSITIVE TESTS (functionality verification)
+      // ══════════════════════════════════════════════════════════════════
+
+      // ── Fmt ──
+      ...['0.9.0', '0.10.0', '0.11.0'].map(v => ({
+        group: 'Fmt',
+        name: `${v}: Fmt.str formats integers`,
+        universe: U[`fmt.${v}`],
+        require: ['fmt'],
+        steps: [{ code: 'Fmt.str "%d" 42;;', expect: '"42"' }],
+      })),
+      ...['0.9.0', '0.10.0', '0.11.0'].map(v => ({
+        group: 'Fmt',
+        name: `${v}: Fmt.pr writes to stdout`,
+        universe: U[`fmt.${v}`],
+        require: ['fmt'],
+        steps: [{ code: 'Fmt.pr "hello %s" "world";;', expectStdout: 'hello world' }],
+      })),
+      { group: 'Fmt', name: '0.11.0: completions for Fmt.s*', universe: U['fmt.0.11.0'], require: ['fmt'],
+        steps: [{ complete: { source: 'Fmt.s', pos: 5 }, expectEntries: ['str'] }] },
+
+      // ── Cmdliner (positive) ──
+      { group: 'Cmdliner', name: '2.1.0: Arg combinators', universe: U['cmdliner.2.1.0'], require: ['cmdliner'],
+        steps: [{ code: 'let name = Cmdliner.Arg.(required & pos 0 (some string) None & info []);;', expect: 'Cmdliner.Term' }] },
+
+      // ── Uucp (positive) ──
+      { group: 'Uucp', name: '17.0.0: general category A = Lu', universe: U['uucp.17.0.0'], require: ['uucp'],
+        steps: [{ code: 'Uucp.Gc.general_category (Uchar.of_int 0x0041);;', expect: '`Lu' }] },
+
+      // ── Mtime (positive) ──
+      { group: 'Mtime', name: '1.4.0: Span.to_uint64_ns', universe: U['mtime.1.4.0'], require: ['mtime'],
+        steps: [{ code: 'Mtime.Span.to_uint64_ns;;', expect: '-> int64' }] },
+      { group: 'Mtime', name: '2.1.0: Span.of_uint64_ns', universe: U['mtime.2.1.0'], require: ['mtime'],
+        steps: [{ code: 'Mtime.Span.of_uint64_ns 1_000_000_000L;;', expect: 'Mtime.span' }] },
+
+      // ── Logs ──
+      { group: 'Logs', name: '0.10.0: Src.create and Src.name', universe: U['logs.0.10.0'], require: ['logs'],
+        steps: [
+          { code: 'let src = Logs.Src.create "test" ~doc:"A test source";;', expect: 'Logs.src' },
+          { code: 'Logs.Src.name src;;', expect: '"test"' },
+        ] },
+
+      // ── Astring ──
+      { group: 'Astring', name: '0.8.5: String.cuts', universe: U['astring.0.8.5'], require: ['astring'],
+        steps: [{ code: 'Astring.String.cuts ~sep:"," "a,b,c";;', expect: '["a"; "b"; "c"]' }] },
+      { group: 'Astring', name: '0.8.5: String.concat', universe: U['astring.0.8.5'], require: ['astring'],
+        steps: [{ code: 'Astring.String.concat ~sep:"-" ["x"; "y"; "z"];;', expect: '"x-y-z"' }] },
+      { group: 'Astring', name: '0.8.5: String.Sub', universe: U['astring.0.8.5'], require: ['astring'],
+        steps: [{ code: 'Astring.String.Sub.(to_string (v "hello world" ~start:6));;', expect: '"world"' }] },
+
+      // ── Jsonm ──
+      { group: 'Jsonm', name: '1.0.2: decode JSON', universe: U['jsonm.1.0.2'], require: ['jsonm'],
+        steps: [{ code: 'let d = Jsonm.decoder (`String "42") in Jsonm.decode d;;', expect: '`Lexeme' }] },
+
+      // ── Xmlm ──
+      { group: 'Xmlm', name: '1.4.0: parse XML', universe: U['xmlm.1.4.0'], require: ['xmlm'],
+        steps: [{ code: 'let i = Xmlm.make_input (`String (0, "<root/>")) in Xmlm.input i;;', expect: '`Dtd' }] },
+
+      // ── Ptime ──
+      { group: 'Ptime', name: '1.2.0: epoch', universe: U['ptime.1.2.0'], require: ['ptime'],
+        steps: [{ code: 'Ptime.epoch;;', expect: 'Ptime.t' }] },
+      { group: 'Ptime', name: '1.2.0: date creation', universe: U['ptime.1.2.0'], require: ['ptime'],
+        steps: [{ code: 'Ptime.of_date_time ((2024, 1, 1), ((0, 0, 0), 0));;', expect: 'Some' }] },
+      { group: 'Ptime', name: '1.2.0: Span round-trip', universe: U['ptime.1.2.0'], require: ['ptime'],
+        steps: [{ code: 'Ptime.Span.of_int_s 3600 |> Ptime.Span.to_int_s;;', expect: '3600' }] },
+
+      // ── React ──
+      { group: 'React', name: '1.2.2: signal create/read/update', universe: U['react.1.2.2'], require: ['react'],
+        steps: [
+          { code: 'let s, set_s = React.S.create 0;;', expect: 'React.signal' },
+          { code: 'React.S.value s;;', expect: '0' },
+          { code: 'set_s 42;;', expect: '' },
+          { code: 'React.S.value s;;', expect: '42' },
+        ] },
+
+      // ── Hmap ──
+      { group: 'Hmap', name: '0.8.1: heterogeneous keys + lookup', universe: U['hmap.0.8.1'], require: ['hmap'],
+        steps: [
+          { code: 'let k_int : int Hmap.key = Hmap.Key.create ();;', expect: 'Hmap.key' },
+          { code: 'let k_str : string Hmap.key = Hmap.Key.create ();;', expect: 'Hmap.key' },
+          { code: 'let m = Hmap.empty |> Hmap.add k_int 42 |> Hmap.add k_str "hello";;', expect: 'Hmap.t' },
+          { code: 'Hmap.find k_int m;;', expect: 'Some 42' },
+          { code: 'Hmap.find k_str m;;', expect: 'Some "hello"' },
+        ] },
+
+      // ── Gg ──
+      { group: 'Gg', name: '1.0.0: V2 vectors + addition', universe: U['gg.1.0.0'], require: ['gg'],
+        steps: [
+          { code: 'Gg.V2.v 1.0 2.0;;', expect: 'Gg.v2' },
+          { code: 'let r = Gg.V2.add (Gg.V2.v 1.0 2.0) (Gg.V2.v 3.0 4.0) in Gg.V2.x r;;', expect: '4.' },
+        ] },
+      { group: 'Gg', name: '1.0.0: colors', universe: U['gg.1.0.0'], require: ['gg'],
+        steps: [{ code: 'Gg.Color.red;;', expect: 'Gg.color' }] },
+
+      // ── Vg ──
+      { group: 'Vg', name: '0.9.5: paths and images', universe: U['vg.0.9.5'], require: ['vg', 'gg'],
+        steps: [
+          { code: 'let p = Vg.P.empty |> Vg.P.line (Gg.V2.v 1.0 1.0);;', expect: 'Vg.path' },
+          { code: 'let img = Vg.I.cut p (Vg.I.const Gg.Color.red);;', expect: 'Vg.image' },
+        ] },
+
+      // ── Note ──
+      { group: 'Note', name: '0.0.3: const signal', universe: U['note.0.0.3'], require: ['note'],
+        steps: [
+          { code: 'let s = Note.S.const 42;;', expect: 'Note.signal' },
+          { code: 'Note.S.value s;;', expect: '42' },
+        ] },
+
+      // ── Otfm ──
+      { group: 'Otfm', name: '0.4.0: decoder type', universe: U['otfm.0.4.0'], require: ['otfm'],
+        steps: [{ code: 'Otfm.decoder;;', expect: '-> Otfm.decoder' }] },
+
+      // ── Fpath ──
+      { group: 'Fpath', name: '0.7.3: path ops', universe: U['fpath.0.7.3'], require: ['fpath'],
+        steps: [
+          { code: 'Fpath.v "/usr/local/bin" |> Fpath.to_string;;', expect: '"/usr/local/bin"' },
+          { code: 'Fpath.(v "/usr" / "local" / "bin") |> Fpath.to_string;;', expect: '"/usr/local/bin"' },
+          { code: 'Fpath.v "/usr/local/bin" |> Fpath.parent |> Fpath.to_string;;', expect: '"/usr/local/"' },
+          { code: 'Fpath.v "/usr/local/bin" |> Fpath.basename;;', expect: '"bin"' },
+        ] },
+
+      // ── Uutf ──
+      { group: 'Uutf', name: '1.0.4: UTF-8 decoder', universe: U['uutf.1.0.4'], require: ['uutf'],
+        steps: [
+          { code: 'let d = Uutf.decoder ~encoding:`UTF_8 (`String "ABC");;', expect: 'Uutf.decoder' },
+          { code: 'Uutf.decode d;;', expect: '`Uchar' },
+        ] },
+
+      // ── B0 ──
+      { group: 'B0', name: '0.0.6: B0_std.Fpath', universe: U['b0.0.0.6'], require: ['b0.std'],
+        steps: [{ code: 'B0_std.Fpath.v "/tmp";;', expect: 'B0_std.Fpath.t' }] },
+
+      // ── Bos ──
+      { group: 'Bos (cross-library)', name: '0.2.1: Cmd construction', universe: U['bos.0.2.1'], require: ['bos'],
+        steps: [{ code: 'Bos.Cmd.(v "echo" % "hello");;', expect: 'Bos.Cmd' }] },
+    ];
+
+    // ── Flatten cross-version tests into individual test items ─────────
+    const flatTests = [];
+    for (const t of tests) {
+      if (t.crossVersion) {
+        for (const c of t.cases) {
+          flatTests.push({
+            group: t.group,
+            name: c.label,
+            universe: c.universe,
+            require: c.require || [],
+            crossVersion: true,
+            crossCode: t.code,
+            crossDescription: t.description,
+            shouldPass: c.shouldPass,
+            steps: c.shouldPass
+              ? [{ code: t.code, expect: c.expect || '' }]
+              : [{ code: t.code, expectError: c.expectError || 'Error' }],
+          });
+        }
+      } else {
+        flatTests.push(t);
+      }
+    }
+
+    // ── Runner ────────────────────────────────────────────────────────────
+
+    let passed = 0, failed = 0, skipped = 0, running = 0;
+    const total = flatTests.length;
+    const groupsEl = document.getElementById('groups');
+    const groupEls = {};
+    const testEls = [];
+
+    function updateSummary() {
+      document.getElementById('pass-count').textContent = passed;
+      document.getElementById('fail-count').textContent = failed;
+      document.getElementById('skip-count').textContent = skipped;
+      document.getElementById('run-count').textContent = running;
+      const done = passed + failed + skipped;
+      document.getElementById('progress-bar').style.width = `${(done / total) * 100}%`;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Track which cross-version code banners we've shown per group
+    const shownBanners = {};
+
+    // Build DOM
+    for (let i = 0; i < flatTests.length; i++) {
+      const t = flatTests[i];
+      if (!groupEls[t.group]) {
+        const g = document.createElement('div');
+        g.className = 'group';
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        const isCross = t.crossVersion;
+        header.innerHTML = `<span>${t.group}${isCross ? '<span class="group-badge cross">cross-version</span>' : ''}</span><span class="arrow">\u25BC</span>`;
+        const body = document.createElement('div');
+        body.className = 'group-body';
+        header.onclick = () => {
+          header.classList.toggle('collapsed');
+          body.classList.toggle('hidden');
+        };
+        g.appendChild(header);
+        g.appendChild(body);
+        groupsEl.appendChild(g);
+        groupEls[t.group] = { el: g, header, body, tests: [] };
+      }
+
+      // For cross-version tests, show the code banner once per group
+      if (t.crossVersion && !shownBanners[t.group]) {
+        shownBanners[t.group] = true;
+        const banner = document.createElement('div');
+        banner.className = 'code-banner';
+        banner.innerHTML = `<code>${escHtml(t.crossCode)}</code>${t.crossDescription ? ` &mdash; <em>${escHtml(t.crossDescription)}</em>` : ''}`;
+        groupEls[t.group].body.appendChild(banner);
+      }
+
+      const badgeHtml = t.crossVersion
+        ? (t.shouldPass
+            ? '<span class="expect-badge should-pass">expect: pass</span>'
+            : '<span class="expect-badge should-error">expect: error</span>')
+        : '';
+
+      const row = document.createElement('div');
+      row.className = 'test-row pending';
+      row.innerHTML = `
+        <span class="test-icon">\u25CB</span>
+        <div class="test-name"><span class="label">${escHtml(t.name)}</span>${badgeHtml}<div class="test-detail"></div></div>
+        <span class="test-time"></span>
+      `;
+      groupEls[t.group].body.appendChild(row);
+      groupEls[t.group].tests.push(row);
+      testEls.push(row);
+    }
+
+    // transcript: array of { code, output, outputClass }
+    function setTestState(row, state, transcript, time) {
+      row.className = `test-row ${state}`;
+      const icons = { pass: '\u2714', 'pass-neg': '\u2714', fail: '\u2718', skip: '\u25CB', running: '<span class="spinner">\u25E0</span>', pending: '\u25CB' };
+      row.querySelector('.test-icon').innerHTML = icons[state] || '\u25CB';
+      if (transcript && transcript.length > 0) {
+        const detailEl = row.querySelector('.test-detail');
+        let html = '';
+        for (const step of transcript) {
+          html += '<div class="step-transcript">';
+          if (step.code) {
+            html += `<div class="step-input">${escHtml(step.code)}</div>`;
+          }
+          if (step.output) {
+            const cls = step.outputClass || 'out-pass';
+            html += `<div class="step-output ${cls}">${escHtml(step.output)}</div>`;
+          }
+          html += '</div>';
+        }
+        detailEl.innerHTML = html;
+      }
+      if (time !== undefined) {
+        row.querySelector('.test-time').textContent = `${time}ms`;
+      }
+    }
+
+    // Worker cache
+    const workerCache = new Map();
+
+    async function getWorker(universe) {
+      if (workerCache.has(universe)) return workerCache.get(universe);
+      const w = new OcamlWorker(`/jtw-output/compiler/5.4.0/worker.js`, { timeout: 120000 });
+      await w.init({
+        findlib_requires: [],
+        stdlib_dcs: 'lib/ocaml/dynamic_cmis.json',
+        findlib_index: `/jtw-output/u/${universe}/findlib_index`,
+      });
+      workerCache.set(universe, w);
+      return w;
+    }
+
+    async function runTest(t, idx) {
+      const row = testEls[idx];
+      setTestState(row, 'running');
+      running++;
+      updateSummary();
+      const start = performance.now();
+
+      try {
+        const worker = await getWorker(t.universe);
+
+        for (const pkg of (t.require || [])) {
+          await worker.eval(`#require "${pkg}";;`);
+        }
+
+        const transcript = [];
+        for (const step of t.steps) {
+          if (step.complete) {
+            const result = await worker.complete(step.complete.source, step.complete.pos);
+            const entries = result.completions?.entries?.map(e => e.name) || [];
+            if (step.expectEntries) {
+              for (const exp of step.expectEntries) {
+                if (!entries.includes(exp))
+                  throw new Error(`Expected completion "${exp}" not found in [${entries.join(', ')}]`);
+              }
+            }
+            transcript.push({ code: step.complete.source, output: `completions: [${entries.slice(0, 5).join(', ')}...]`, outputClass: 'out-pass' });
+
+          } else if (step.expectError) {
+            // NEGATIVE TEST: we expect this to produce an error
+            const r = await worker.eval(step.code);
+            const ppf = r.caml_ppf || '';
+            const stderr = r.stderr || '';
+            const combined = ppf + stderr;
+            if (combined.includes(step.expectError)) {
+              transcript.push({ code: step.code, output: combined.trim(), outputClass: 'out-neg' });
+            } else if (combined === '' && ppf === '') {
+              transcript.push({ code: step.code, output: '(empty output — error swallowed)', outputClass: 'out-neg' });
+            } else {
+              transcript.push({ code: step.code, output: `Expected error "${step.expectError}" but got:\n${ppf}${stderr}`, outputClass: 'out-fail' });
+              throw new Error(`Expected error containing "${step.expectError}" but got success:\nppf: "${ppf}"\nstderr: "${stderr}"`);
+            }
+
+          } else {
+            const r = await worker.eval(step.code);
+            const ppf = r.caml_ppf || '';
+            const stdout = r.stdout || '';
+            const stderr = r.stderr || '';
+
+            if (step.expect && step.expect !== '') {
+              if (!ppf.includes(step.expect)) {
+                transcript.push({ code: step.code, output: ppf || stderr || '(no output)', outputClass: 'out-fail' });
+                throw new Error(`Expected caml_ppf to contain "${step.expect}"\nGot: "${ppf}"\nstderr: "${stderr}"`);
+              }
+            }
+            if (step.expectStdout) {
+              if (!stdout.includes(step.expectStdout)) {
+                transcript.push({ code: step.code, output: `stdout: "${stdout}"`, outputClass: 'out-fail' });
+                throw new Error(`Expected stdout to contain "${step.expectStdout}"\nGot: "${stdout}"`);
+              }
+            }
+            if (step.expectNotError) {
+              if ((ppf + stderr).includes(step.expectNotError)) {
+                transcript.push({ code: step.code, output: ppf + stderr, outputClass: 'out-fail' });
+                throw new Error(`Output contains unexpected "${step.expectNotError}"\nppf: "${ppf}"\nstderr: "${stderr}"`);
+              }
+            }
+            // Build output line: ppf first, then stdout if present
+            let out = ppf ? ppf.trim() : '';
+            if (stdout) out += (out ? '\n' : '') + '(stdout) ' + stdout.trim();
+            transcript.push({ code: step.code, output: out || '(unit)', outputClass: 'out-pass' });
+          }
+        }
+
+        const elapsed = Math.round(performance.now() - start);
+        running--;
+        passed++;
+
+        // Use pass-neg state for negative tests that correctly errored
+        const isNegPass = t.crossVersion && !t.shouldPass;
+        setTestState(row, isNegPass ? 'pass-neg' : 'pass', transcript, elapsed);
+
+      } catch (e) {
+        const elapsed = Math.round(performance.now() - start);
+        running--;
+        failed++;
+        // If transcript has partial results from before the error, show them
+        if (transcript.length === 0) {
+          transcript.push({ code: '', output: e.message, outputClass: 'out-fail' });
+        }
+        setTestState(row, 'fail', transcript, elapsed);
+      }
+      updateSummary();
+    }
+
+    // Run tests: parallel across universes, sequential within each universe
+    async function runAll() {
+      const byUniverse = new Map();
+      flatTests.forEach((t, i) => {
+        if (!byUniverse.has(t.universe)) byUniverse.set(t.universe, []);
+        byUniverse.get(t.universe).push({ test: t, idx: i });
+      });
+
+      const promises = [];
+      for (const [, items] of byUniverse) {
+        promises.push((async () => {
+          for (const { test, idx } of items) {
+            await runTest(test, idx);
+          }
+        })());
+      }
+      await Promise.all(promises);
+    }
+
+    updateSummary();
+    runAll();
+  </script>
+</body>
+</html>

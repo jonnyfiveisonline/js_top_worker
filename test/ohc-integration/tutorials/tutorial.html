@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Loading tutorial...</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace; background: #0d1117; color: #c9d1d9; line-height: 1.6; }
+
+    .top-bar { background: #161b22; border-bottom: 1px solid #30363d; padding: 12px 24px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10; }
+    .top-bar a { color: #58a6ff; text-decoration: none; font-size: 13px; }
+    .top-bar a:hover { text-decoration: underline; }
+    .top-bar .status { margin-left: auto; font-size: 13px; }
+    .top-bar .status .pass { color: #3fb950; }
+    .top-bar .status .fail { color: #f85149; }
+    .top-bar .status .total { color: #8b949e; }
+    .progress { height: 3px; background: #21262d; }
+    .progress-bar { height: 100%; background: #58a6ff; transition: width 0.3s; width: 0%; }
+    .progress-bar.done { background: #3fb950; }
+    .progress-bar.has-fail { background: #f85149; }
+
+    .hero { padding: 40px 24px 32px; max-width: 900px; margin: 0 auto; }
+    .hero h1 { font-size: 28px; color: #f0f6fc; font-weight: 700; }
+    .hero h1 .version { color: #8b949e; font-weight: 400; }
+    .hero .desc { color: #8b949e; font-size: 15px; margin-top: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .hero .meta { margin-top: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+    .hero .meta .tag { font-size: 12px; padding: 2px 8px; border-radius: 12px; background: #21262d; color: #8b949e; }
+    .hero .meta .tag code { color: #d2a8ff; }
+
+    main { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+
+    .section { margin-bottom: 40px; }
+    .section h2 { font-size: 16px; color: #f0f6fc; font-weight: 600; margin-bottom: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .section .section-desc { color: #8b949e; font-size: 14px; margin-bottom: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .step { margin-bottom: 12px; border: 1px solid #21262d; border-radius: 8px; overflow: hidden; transition: border-color 0.3s; }
+    .step.pass { border-color: #238636; }
+    .step.fail { border-color: #da3633; }
+    .step.running { border-color: #1f6feb; }
+
+    .step-desc { padding: 6px 12px; font-size: 13px; color: #8b949e; background: #161b22; border-bottom: 1px solid #21262d; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .step-code { padding: 8px 12px; background: #0d1117; display: flex; align-items: baseline; gap: 8px; }
+    .step-code .prompt { color: #484f58; user-select: none; }
+    .step-code code { color: #d2a8ff; white-space: pre-wrap; word-break: break-all; flex: 1; }
+    .step-code .step-time { color: #484f58; font-size: 11px; flex-shrink: 0; }
+    .step-code .step-icon { flex-shrink: 0; width: 16px; text-align: center; font-size: 13px; }
+    .step-code .step-icon.pass { color: #3fb950; }
+    .step-code .step-icon.fail { color: #f85149; }
+    .step-code .step-icon.running { color: #58a6ff; }
+
+    .step-output { padding: 8px 12px; background: #161b22; border-top: 1px solid #21262d; font-size: 13px; white-space: pre-wrap; word-break: break-all; color: #3fb950; min-height: 20px; }
+    .step-output.empty { color: #484f58; font-style: italic; }
+    .step-output .stderr { color: #f85149; }
+    .step-output .stdout-line { color: #c9d1d9; }
+
+    .step-error { padding: 6px 12px; background: #1c1215; border-top: 1px solid #f8514933; font-size: 12px; color: #f85149; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { display: inline-block; animation: spin 1s linear infinite; }
+
+    .init-status { text-align: center; padding: 40px; color: #8b949e; font-size: 14px; }
+    .init-status.error { color: #f85149; }
+
+    .error-page { text-align: center; padding: 80px 24px; }
+    .error-page h1 { color: #f85149; font-size: 20px; margin-bottom: 8px; }
+    .error-page p { color: #8b949e; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="index.html">&larr; All tutorials</a>
+    <span id="pkg-label" style="color:#8b949e; font-size: 13px;"></span>
+    <div class="status" id="status-bar"></div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div class="hero" id="hero" style="display:none;">
+    <h1 id="title"></h1>
+    <p class="desc" id="description"></p>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="init-status" id="init-status"><span class="spinner">&#x25E0;</span> Loading tutorial...</div>
+
+  <main id="content" style="display:none;"></main>
+
+  <script type="module">
+    import { TUTORIALS } from './test-defs.js';
+    import { OcamlWorker } from '/client/ocaml-worker.js';
+
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    const pkg = new URLSearchParams(window.location.search).get('pkg');
+    const tutorial = TUTORIALS[pkg];
+    const initEl = document.getElementById('init-status');
+
+    if (!tutorial) {
+      initEl.innerHTML = '';
+      document.getElementById('hero').style.display = 'none';
+      const err = document.createElement('div');
+      err.className = 'error-page';
+      err.innerHTML = `<h1>Tutorial not found</h1><p>No tutorial for <code>${esc(pkg || '(none)')}</code>.</p><p style="margin-top:12px"><a href="index.html" style="color:#58a6ff">Back to index</a></p>`;
+      document.body.appendChild(err);
+      throw new Error('Unknown package: ' + pkg);
+    }
+
+    document.title = `${tutorial.name} ${tutorial.version} \u2014 Tutorial`;
+    document.getElementById('pkg-label').textContent = `${tutorial.name} ${tutorial.version}`;
+    document.getElementById('title').innerHTML = `${esc(tutorial.name)} <span class="version">${esc(tutorial.version)}</span>`;
+    document.getElementById('description').textContent = tutorial.description;
+    document.getElementById('meta').innerHTML = [
+      `<span class="tag">require: <code>${tutorial.require.join(', ')}</code></span>`,
+      `<span class="tag">universe: <code>${tutorial.universe.slice(0,12)}&hellip;</code></span>`,
+      `<span class="tag">compiler: <code>${tutorial.compiler || '5.4.0'}</code></span>`,
+    ].join('');
+    document.getElementById('hero').style.display = 'block';
+
+    // Count total steps
+    const totalSteps = tutorial.sections.reduce((n, s) => n + s.steps.length, 0);
+    let passed = 0, failed = 0, completed = 0;
+
+    function updateStatus() {
+      const bar = document.getElementById('progress-bar');
+      bar.style.width = `${(completed / totalSteps) * 100}%`;
+      if (completed === totalSteps) {
+        bar.classList.add('done');
+        if (failed > 0) bar.classList.add('has-fail');
+      }
+      const parts = [];
+      if (passed > 0) parts.push(`<span class="pass">${passed} passed</span>`);
+      if (failed > 0) parts.push(`<span class="fail">${failed} failed</span>`);
+      parts.push(`<span class="total">${completed}/${totalSteps}</span>`);
+      document.getElementById('status-bar').innerHTML = parts.join(' &middot; ');
+    }
+    updateStatus();
+
+    // Build DOM
+    const content = document.getElementById('content');
+    const stepRecords = [];
+
+    for (const section of tutorial.sections) {
+      const sEl = document.createElement('div');
+      sEl.className = 'section';
+      let html = `<h2>${esc(section.title)}</h2>`;
+      if (section.description) html += `<p class="section-desc">${esc(section.description)}</p>`;
+      sEl.innerHTML = html;
+
+      for (const step of section.steps) {
+        const div = document.createElement('div');
+        div.className = 'step pending';
+        let inner = '';
+        if (step.description) inner += `<div class="step-desc">${esc(step.description)}</div>`;
+        inner += `<div class="step-code"><span class="step-icon pending">\u25CB</span><span class="prompt">#</span> <code>${esc(step.code || step.complete?.source || '')}</code><span class="step-time"></span></div>`;
+        inner += `<div class="step-output empty">&hellip;</div>`;
+        div.innerHTML = inner;
+        sEl.appendChild(div);
+        stepRecords.push({ el: div, step });
+      }
+      content.appendChild(sEl);
+    }
+
+    // Init worker
+    initEl.innerHTML = '<span class="spinner">&#x25E0;</span> Initializing OCaml worker...';
+    let worker;
+    try {
+      worker = new OcamlWorker(`/jtw-output/compiler/${tutorial.compiler || '5.4.0'}/worker.js`, { timeout: 120000 });
+      await worker.init({
+        findlib_requires: [],
+        stdlib_dcs: 'lib/ocaml/dynamic_cmis.json',
+        findlib_index: `/jtw-output/u/${tutorial.universe}/findlib_index`,
+      });
+
+      initEl.innerHTML = '<span class="spinner">&#x25E0;</span> Loading packages...';
+      for (const req of tutorial.require) {
+        await worker.eval(`#require "${req}";;`);
+      }
+
+      initEl.style.display = 'none';
+      content.style.display = 'block';
+    } catch (e) {
+      initEl.className = 'init-status error';
+      initEl.textContent = 'Failed to initialize: ' + e.message;
+      throw e;
+    }
+
+    // Run steps sequentially
+    for (const { el, step } of stepRecords) {
+      el.className = 'step running';
+      const iconEl = el.querySelector('.step-icon');
+      iconEl.className = 'step-icon running';
+      iconEl.innerHTML = '<span class="spinner">&#x25E0;</span>';
+      const outEl = el.querySelector('.step-output');
+      const timeEl = el.querySelector('.step-time');
+      const start = performance.now();
+
+      try {
+        if (step.complete) {
+          const result = await worker.complete(step.complete.source, step.complete.pos);
+          const entries = result.completions?.entries?.map(e => e.name) || [];
+          const elapsed = Math.round(performance.now() - start);
+          outEl.className = 'step-output';
+          outEl.textContent = `Completions: ${entries.join(', ')}`;
+          if (step.expectEntries) {
+            for (const exp of step.expectEntries) {
+              if (!entries.includes(exp)) throw new Error(`Expected completion "${exp}" not in [${entries.join(', ')}]`);
+            }
+          }
+          timeEl.textContent = elapsed + 'ms';
+          passed++;
+        } else {
+          const r = await worker.eval(step.code);
+          const ppf = r.caml_ppf || '';
+          const stdout = r.stdout || '';
+          const stderr = r.stderr || '';
+          const elapsed = Math.round(performance.now() - start);
+          timeEl.textContent = elapsed + 'ms';
+
+          // Render output
+          outEl.className = 'step-output';
+          let html = '';
+          if (ppf) html += esc(ppf.trimEnd());
+          if (stdout) html += (html ? '\n' : '') + `<span class="stdout-line">${esc(stdout.trimEnd())}</span>`;
+          if (stderr && !step.expectError) html += (html ? '\n' : '') + `<span class="stderr">${esc(stderr.trimEnd())}</span>`;
+          if (step.expectError) {
+            // Negative test
+            html += (html ? '\n' : '') + `<span class="stderr">${esc(stderr.trimEnd())}</span>`;
+          }
+          if (!html) { outEl.className = 'step-output empty'; html = 'unit'; }
+          outEl.innerHTML = html;
+
+          // Check expectations
+          if (step.expectError) {
+            const combined = ppf + stderr;
+            if (!combined.includes(step.expectError))
+              throw new Error(`Expected error containing "${step.expectError}" but got: ${ppf || stderr || '(empty)'}`);
+          } else if (step.expect !== undefined && step.expect !== '') {
+            if (!ppf.includes(step.expect))
+              throw new Error(`Expected output containing "${step.expect}", got: "${ppf}"`);
+          }
+          if (step.expectStdout && !stdout.includes(step.expectStdout))
+            throw new Error(`Expected stdout containing "${step.expectStdout}", got: "${stdout}"`);
+
+          passed++;
+        }
+        el.className = 'step pass';
+        iconEl.className = 'step-icon pass';
+        iconEl.textContent = '\u2714';
+      } catch (e) {
+        failed++;
+        el.className = 'step fail';
+        iconEl.className = 'step-icon fail';
+        iconEl.textContent = '\u2718';
+        const errDiv = document.createElement('div');
+        errDiv.className = 'step-error';
+        errDiv.textContent = e.message;
+        el.appendChild(errDiv);
+      }
+
+      completed++;
+      updateStatus();
+    }
+  </script>
+</body>
+</html>
