@@ -112,6 +112,27 @@ export class OcamlWorker {
   }
 
   /**
+   * Create a worker from a manifest.json URL.
+   * Fetches the manifest to discover content-hashed worker and stdlib_dcs URLs.
+   * @param {string} manifestUrl - URL to manifest.json (e.g., '/jtw-output/manifest.json')
+   * @param {string} [ocamlVersion='5.4.0'] - OCaml compiler version
+   * @param {Object} [options] - Options passed to OcamlWorker constructor
+   * @returns {Promise<{worker: OcamlWorker, stdlib_dcs: string}>}
+   */
+  static async fromManifest(manifestUrl, ocamlVersion = '5.4.0', options = {}) {
+    const resp = await fetch(manifestUrl);
+    if (!resp.ok) throw new Error(`Failed to fetch manifest: ${resp.status}`);
+    const manifest = await resp.json();
+    const compiler = manifest.compilers[ocamlVersion];
+    if (!compiler) throw new Error(`OCaml ${ocamlVersion} not found in manifest`);
+    const baseUrl = new URL(manifestUrl, window.location.href);
+    const workerUrl = new URL(compiler.worker_url, baseUrl).href;
+    const stdlibDcs = compiler.stdlib_dcs;
+    const worker = new OcamlWorker(workerUrl, options);
+    return { worker, stdlib_dcs: stdlibDcs };
+  }
+
+  /**
    * Create a new OCaml worker client.
    * @param {string} workerUrl - URL to the worker script (e.g., '_opam/worker.js')
    * @param {Object} [options] - Options

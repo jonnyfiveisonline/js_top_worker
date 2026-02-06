@@ -29,12 +29,10 @@
       throw new Error('universe parameter required');
     }
 
-    const workerUrl = `/jtw-output/compiler/${compilerVersion}/worker.js`;
+    status.textContent = 'Fetching manifest...';
+    const { worker, stdlib_dcs } = await OcamlWorker.fromManifest(
+      '/jtw-output/manifest.json', compilerVersion, { timeout: 120000 });
     const findlib_index = `/jtw-output/u/${universe}/findlib_index`;
-    const stdlib_dcs = `lib/ocaml/dynamic_cmis.json`;
-
-    status.textContent = 'Creating worker...';
-    const worker = new OcamlWorker(workerUrl, { timeout: 120000 });
 
     try {
       status.textContent = 'Initializing...';

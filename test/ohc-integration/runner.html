@@ -481,13 +481,17 @@
 
     // Worker cache
     const workerCache = new Map();
+    const manifestPromise = fetch('/jtw-output/manifest.json').then(r => r.json());
 
     async function getWorker(universe) {
       if (workerCache.has(universe)) return workerCache.get(universe);
-      const w = new OcamlWorker(`/jtw-output/compiler/5.4.0/worker.js`, { timeout: 120000 });
+      const manifest = await manifestPromise;
+      const compiler = manifest.compilers['5.4.0'];
+      const workerUrl = `/jtw-output/${compiler.worker_url}`;
+      const w = new OcamlWorker(workerUrl, { timeout: 120000 });
       await w.init({
         findlib_requires: [],
-        stdlib_dcs: 'lib/ocaml/dynamic_cmis.json',
+        stdlib_dcs: compiler.stdlib_dcs,
         findlib_index: `/jtw-output/u/${universe}/findlib_index`,
       });
       workerCache.set(universe, w);
