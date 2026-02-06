@@ -20,6 +20,9 @@ depends: [
   "logs"
   "angstrom"
   "uri"
+  "ocamlfind"
+  "fpath"
+  "js_of_ocaml-ppx" {>= "5.0"}
 ]
 build : [
   ["dune" "subst"] {pinned}
