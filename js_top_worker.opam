@@ -16,6 +16,12 @@ depends: [
   "js_of_ocaml-ppx"
   "js_top_worker-rpc"
   "rpclib-lwt"
+  "ppx_deriving" {>= "5.0"}
+  "ppxlib"
+  "merlin-lib" {>= "4.7"}
+  "mime_printer"
+  "logs"
+  "cppo" {build}
 ]
 build : [
   ["dune" "subst"] {pinned}
