@@ -52,51 +52,52 @@ async function evalExpectError(page, code) {
 const U = {
   // fmt versions
   'fmt.0.9.0':    '9901393f978b0a6627c5eab595111f50',
-  'fmt.0.10.0':   'dc92d356407d44e1eae7e39acefce214',
-  'fmt.0.11.0':   '5c8d38716cee871f1a6a1f164c9171e6',
+  'fmt.0.10.0':   'd8140118651d08430f933d410a909e3b',
+  'fmt.0.11.0':   '7663cce356513833b908ae5e4f521106',
 
   // cmdliner versions
-  'cmdliner.1.0.4': '1c3783a51f479ccb97503596896eb40b',
-  'cmdliner.1.3.0': 'bcb1b5485952a387d9a1a626d018fc5b',
-  'cmdliner.2.0.0': 'e6cf251f6257587fa235157819c1be21',
-  'cmdliner.2.1.0': '146d116fd47cdde3a5912f6c3c43a06c',
+  'cmdliner.1.0.4': '0dd34259dc0892e543b03b3afb0a77fa',
+  'cmdliner.1.3.0': '258e7979b874502ea546e90a0742184a',
+  'cmdliner.2.0.0': '91c3d96cea9b89ddd24cf7b78786a5ca',
+  'cmdliner.2.1.0': 'f3e665d5388ac380a70c5ed67f465bbb',
 
   // mtime versions
-  'mtime.1.3.0': '405772d8c1d5fcfb52a34bc074e9b2bf',
-  'mtime.1.4.0': 'd07582e1ae666064d4e2cf55b8f966f2',
-  'mtime.2.1.0': '427565ec9f440e77ea8cda7a5baf2f16',
+  'mtime.1.3.0': 'b6735658fd307bba23a7c5f21519b910',
+  'mtime.1.4.0': 'ebccfc43716c6da0ca4a065e60d0f875',
+  'mtime.2.1.0': '7db699c334606d6f66e65c8b515d298d',
 
   // logs versions
-  'logs.0.7.0':  '2579ce9998e74d858251a8467a2d3acc',
-  'logs.0.8.0':  '87870a13519516a235ea0651450f3d3a',
-  'logs.0.10.0': '1447d6620c603faabafd2a4af8180e64',
+  'logs.0.7.0':  '2c014cfbbee1d278b162002eae03eaa8',
+  'logs.0.10.0': '07a565e7588ce100ffd7c8eb8b52df07',
 
   // uucp versions (Unicode version tracking)
-  'uucp.14.0.0': '61994aea366afe63fbbdfbec3a6c1c17',
-  'uucp.15.0.0': '1676ff3253642b3d3380da595576d048',
-  'uucp.16.0.0': '2536abe6336b2597409378c985af206f',
-  'uucp.17.0.0': '9f478f56c02c6b75ad53e569576ac528',
+  'uucp.14.0.0': '60e1409eb30c0650c4d4cbcf3c453e65',
+  'uucp.15.0.0': '6a96a3f145249f110bf14739c78e758c',
+  'uucp.16.0.0': '2bf0fbf12aa05c8f99989a759d2dc8cf',
+  'uucp.17.0.0': '58b9c48e9528ce99586b138d8f4778c2',
 
   // uunf versions
-  'uunf.14.0.0': 'c49889fbf46b81974819b189749084eb',
-  'uunf.17.0.0': 'd41feec064e2a5ca2ca9ce644b490c35',
+  'uunf.14.0.0': 'cac36534f1bf353fd2192efd015dd0e6',
+  'uunf.17.0.0': '96704cd9810ea1ed504e4ed71cde82b0',
 
   // Single-version libraries
-  'astring.0.8.5': '77fa5901f826c06565dd83b8f758980c',
-  'jsonm.1.0.2':   '331ba04a1674f61d6eb297de762940ea',
-  'xmlm.1.4.0':    'de0c6b460a24c08865ced16ef6a90978',
-  'ptime.1.2.0':   '0e977ea260d75026d2cdd4a7d007b2a5',
-  'react.1.2.2':   '8b8f1bafe428e743bbb3e9f6a24753a5',
-  'hmap.0.8.1':    '9cbc1bea29fe2a32ff73726147a24f7f',
-  'gg.1.0.0':      '0c7a6cc72b0eef74ddf88e8512b418e1',
-  'note.0.0.3':    '7497fed22490d2257a6fb4ac44bb1316',
-  'otfm.0.4.0':    'af7a1a159d4a1c27da168df5cad06ad9',
-  'vg.0.9.4':      'acac36a3d697c95764ca16a19c0402e8',
-  'vg.0.9.5':      '8a313572e25666862de0bc23fc09c53d',
-  'bos.0.2.1':     '1447d6620c603faabafd2a4af8180e64',
-  'fpath.0.7.3':   'b034f0f4718c8842fdec8d4ff3430b97',
-  'uutf.1.0.4':    '331ba04a1674f61d6eb297de762940ea',
-  'b0.0.0.6':      '3125f46428fef2c0920ae254a3678000',
+  'astring.0.8.5': '1cdbe76f0ec91a6eb12bd0279a394492',
+  'jsonm.1.0.2':   'ac28e00ecd46c9464f5575c461b5d48f',
+  'xmlm.1.4.0':    'c4c22d0db3ea01343c1a868bab35e1b4',
+  'ptime.1.2.0':   'd57c69f3dd88b91454622c1841971354',
+  'react.1.2.2':   'f438ba61693a5448718c73116b228f3c',
+  'hmap.0.8.1':    '753d7c421afb866e7ffe07ddea3b8349',
+  'gg.1.0.0':      '02a9bababc92d6639cdbaf20233597ba',
+  'note.0.0.3':    '2545f914c274aa806d29749eb96836fa',
+  'otfm.0.4.0':    '4f870a70ee71e41dff878af7123b2cd6',
+  'vg.0.9.5':      '0e2e71cfd8fe2e81bff124849421f662',
+  'bos.0.2.1':     '0e04faa6cc5527bc124d8625bded34fc',
+  'fpath.0.7.3':   '6c4fe09a631d871865fd38aa15cd61d4',
+  'uutf.1.0.4':    'ac04fa0671533316f94dacbd14ffe0bf',
+  'b0.0.0.6':      'bfc34a228f53ac5ced707eed285a6e5c',
+
+  // Cross-version: packages requiring OCaml < 5.4 (solved with 5.3.0)
+  'containers.3.14': 'bc149e85833934caf6ad41a745e35cfd',
 };
 
 
@@ -499,29 +500,8 @@ test.describe('Vg', () => {
       'Vg.image');
   });
 
-  test('vg 0.9.4: also works (older version)', async ({ page }) => {
-    // vg 0.9.4's universe has many large deps, skip if too slow
-    // The require may timeout because there are lots of .cma.js to load
-    test.setTimeout(180000);
-    await initWorker(page, U['vg.0.9.4']);
-    // Use page.evaluate with an extended timeout for the large requires
-    const reqResult = await page.evaluate(async () => {
-      try {
-        await window.workerEval('#require "vg";;');
-        await window.workerEval('#require "gg";;');
-        return { ok: true };
-      } catch (e) {
-        return { ok: false, error: e.message };
-      }
-    });
-    if (!reqResult.ok) {
-      test.skip(true, `Skipped: ${reqResult.error}`);
-      return;
-    }
-
-    await evalExpect(page,
-      'Vg.P.empty |> Vg.P.line (Gg.V2.v 1.0 1.0);;',
-      'Vg.path');
+  test.skip('vg 0.9.4: also works (older version) — not built', async ({ page }) => {
+    // vg 0.9.4 is not included in the current batch build
   });
 });
 
@@ -638,5 +618,28 @@ test.describe('Bos (cross-library)', () => {
     await evalExpect(page,
       'Bos.Cmd.(v "echo" % "hello");;',
       'Bos.Cmd');
+  });
+});
+
+
+// ── Containers: OCaml 5.3.0 (< 5.4 constraint) ────────────────────────────
+
+test.describe('Containers (OCaml 5.3.0)', () => {
+  test.setTimeout(120000);
+
+  test('containers 3.14: loads with OCaml 5.3.0 compiler', async ({ page }) => {
+    // containers.3.14 requires ocaml < 5.4, so it was solved with OCaml 5.3.0
+    await initWorker(page, U['containers.3.14'], '5.3.0');
+    await requirePkg(page, 'containers');
+
+    // CCList is a core module in containers
+    await evalExpect(page,
+      'CCList.filter_map (fun x -> if x > 2 then Some (x * 10) else None) [1;2;3;4];;',
+      '[30; 40]');
+
+    // CCString basic usage
+    await evalExpect(page,
+      'CCString.prefix ~pre:"hello" "hello world";;',
+      'true');
   });
 });
