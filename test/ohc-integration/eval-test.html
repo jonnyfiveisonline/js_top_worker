@@ -19,18 +19,32 @@
       console.log(msg);
     }
 
+    // Blessed: ?package=name.ver  → p/{name}/{ver}/findlib_index
+    // Non-blessed: ?universe=HASH&package=name.ver → u/{hash}/{name}/{ver}/findlib_index
+    // Legacy: ?universe=HASH (no package) → u/{hash}/findlib_index
     const params = new URLSearchParams(window.location.search);
     const universe = params.get('universe');
+    const pkg = params.get('package');
     const compilerVersion = params.get('compiler') || '5.4.0';
 
-    if (!universe) {
-      status.textContent = 'Error: ?universe= parameter required';
-      status.dataset.error = 'universe parameter required';
-      throw new Error('universe parameter required');
+    if (!universe && !pkg) {
+      status.textContent = 'Error: ?package= or ?universe= parameter required';
+      status.dataset.error = 'package or universe parameter required';
+      throw new Error('package or universe parameter required');
     }
 
     status.textContent = 'Fetching findlib_index...';
-    const indexUrl = `/jtw-output/u/${universe}/findlib_index`;
+    let indexUrl;
+    if (pkg) {
+      const [name, ver] = [pkg.substring(0, pkg.lastIndexOf('.')), pkg.substring(pkg.lastIndexOf('.') + 1)];
+      if (universe) {
+        indexUrl = `/jtw-output/u/${universe}/${name}/${ver}/findlib_index`;
+      } else {
+        indexUrl = `/jtw-output/p/${name}/${ver}/findlib_index`;
+      }
+    } else {
+      indexUrl = `/jtw-output/u/${universe}/findlib_index`;
+    }
     const { worker, stdlib_dcs, findlib_index } = await OcamlWorker.fromIndex(
       indexUrl, '/jtw-output', { timeout: 120000 });
 

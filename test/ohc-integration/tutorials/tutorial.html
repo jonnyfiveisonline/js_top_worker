@@ -109,11 +109,16 @@
     document.getElementById('pkg-label').textContent = `${tutorial.name} ${tutorial.version}`;
     document.getElementById('title').innerHTML = `${esc(tutorial.name)} <span class="version">${esc(tutorial.version)}</span>`;
     document.getElementById('description').textContent = tutorial.description;
-    document.getElementById('meta').innerHTML = [
+    const metaTags = [
       `<span class="tag">require: <code>${tutorial.require.join(', ')}</code></span>`,
-      `<span class="tag">universe: <code>${tutorial.universe.slice(0,12)}&hellip;</code></span>`,
-      `<span class="tag">compiler: <code>${tutorial.compiler || '5.4.0'}</code></span>`,
-    ].join('');
+    ];
+    if (tutorial.universe) {
+      metaTags.push(`<span class="tag">universe: <code>${tutorial.universe.slice(0,12)}&hellip;</code></span>`);
+    } else {
+      metaTags.push(`<span class="tag">blessed</span>`);
+    }
+    metaTags.push(`<span class="tag">compiler: <code>${tutorial.compiler || '5.4.0'}</code></span>`);
+    document.getElementById('meta').innerHTML = metaTags.join('');
     document.getElementById('hero').style.display = 'block';
 
     // Count total steps
@@ -161,10 +166,16 @@
     }
 
     // Init worker via findlib_index for content-hashed URLs
+    // Blessed tutorials have no universe field; non-blessed have universe.
     initEl.innerHTML = '<span class="spinner">&#x25E0;</span> Initializing OCaml worker...';
     let worker;
     try {
-      const indexUrl = `/jtw-output/u/${tutorial.universe}/findlib_index`;
+      let indexUrl;
+      if (tutorial.universe) {
+        indexUrl = `/jtw-output/u/${tutorial.universe}/${tutorial.name}/${tutorial.version}/findlib_index`;
+      } else {
+        indexUrl = `/jtw-output/p/${tutorial.name}/${tutorial.version}/findlib_index`;
+      }
       const { worker: w, stdlib_dcs, findlib_index } = await OcamlWorker.fromIndex(
         indexUrl, '/jtw-output', { timeout: 120000 });
       worker = w;
