@@ -986,7 +986,11 @@ module Make (S : S) = struct
     Printf.fprintf oc "%s" source;
     close_out oc;
     (try Sys.remove (prefix ^ ".cmi") with Sys_error _ -> ());
+#if OCAML_VERSION >= (5, 3, 0)
     let unit_info = Unit_info.make ~source_file:filename Impl prefix in
+#else
+    let unit_info = Unit_info.make ~source_file:filename prefix in
+#endif
     try
       let store = Local_store.fresh () in
       Local_store.with_store store (fun () ->

@@ -26,6 +26,7 @@
   (per_module
    ((action
      (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file}))
+    impl
     uTop_complete
     uTop_compat
     uTop))))
