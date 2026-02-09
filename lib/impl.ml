@@ -279,7 +279,11 @@ module Make (S : S) = struct
       if dcs.dcs_file_prefixes <> [] then begin
         let open Persistent_env.Persistent_signature in
         let old_loader = !load in
+#if OCAML_VERSION >= (5, 2, 0)
         load := fun ~allow_hidden ~unit_name ->
+#else
+        load := fun ~unit_name ->
+#endif
           let filename = to_cmi_filename unit_name in
           let fs_name = Filename.(concat path filename) in
           if (not (Sys.file_exists fs_name))
@@ -293,7 +297,11 @@ module Make (S : S) = struct
                 (try S.create_file ~name:fs_name ~content with _ -> ())
             | None -> ()
           end;
+#if OCAML_VERSION >= (5, 2, 0)
           old_loader ~allow_hidden ~unit_name
+#else
+          old_loader ~unit_name
+#endif
       end
     end
 
