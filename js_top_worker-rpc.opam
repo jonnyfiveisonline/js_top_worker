@@ -12,9 +12,7 @@ depends: [
   "rresult"
   "merlin-lib"
   "rpclib"
-  "cbort"
   "zarith"
-  "bytesrw"
   "js_of_ocaml" {>= "5.0"}
   "js_of_ocaml-ppx" {>= "5.0"}
 ]
@@ -28,5 +26,4 @@ An OCaml toplevel designed to run as a web worker
 """
 pin-depends: [
   [ "mime_printer.dev" "git+https://github.com/jonludlam/mime_printer.git#odoc_notebook" ]
-  [ "cbort.dev" "git+https://tangled.org/@anil.recoil.org/ocaml-cbort.git" ]
 ]
