@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>stdcompat 19 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'stdcompat.19', compiler: '5.1.1', require: 'stdcompat',
+  title: 'stdcompat 19', subtitle: 'OCaml 5.1.1',
+  description: 'Standard library compatibility — Stdcompat.List operations.',
+  tests: [
+    { name: 'Stdcompat.List.filter_map', code: 'Stdcompat.List.filter_map (fun x -> if x > 3 then Some x else None) [1;2;3;4;5];;', contains: '[4; 5]' },
+    { name: 'Stdcompat.Option.value', code: 'Stdcompat.Option.value ~default:0 (Some 42);;', contains: '42' },
+  ]
+});
+</script></body></html>

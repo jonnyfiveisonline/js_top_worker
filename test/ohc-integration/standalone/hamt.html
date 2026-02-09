@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>hamt 1.0.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'hamt.1.0.0', compiler: '4.14.2', require: 'hamt',
+  title: 'hamt 1.0.0', subtitle: 'OCaml 4.14.2',
+  description: 'Hash Array Mapped Trie — add, find_exn, mem on integer-keyed maps.',
+  tests: [
+    { name: 'add + find_exn retrieves value', code: 'Hamt.Int.(add 1 "hello" empty |> add 2 "world" |> find_exn 1);;', contains: '"hello"' },
+    { name: 'mem returns true for present key', code: 'Hamt.Int.(add 1 "a" empty |> add 2 "b" |> mem 2);;', contains: 'true' },
+    { name: 'mem returns false for missing key', code: 'Hamt.Int.(add 1 "a" empty |> mem 99);;', contains: 'false' },
+  ]
+});
+</script></body></html>

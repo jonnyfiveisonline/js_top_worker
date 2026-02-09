@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>digestif 1.3.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'digestif.1.3.0', universe: 'c3664212cf01a38aa9af7c54123056cf', compiler: '5.3.0', require: 'digestif',
+  title: 'digestif 1.3.0', subtitle: 'OCaml 5.3.0',
+  description: 'Cryptographic hash functions — MD5 module loads.',
+  tests: [
+    { name: 'Digestif.MD5.digest_string is bound', code: 'Digestif.MD5.digest_string;;', notContains: 'Unbound', field: 'combined' },
+  ]
+});
+</script></body></html>

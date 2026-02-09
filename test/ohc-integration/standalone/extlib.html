@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>extlib 1.7.9 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'extlib.1.7.9', compiler: '5.2.1', require: 'extlib',
+  title: 'extlib 1.7.9', subtitle: 'OCaml 5.2.1',
+  description: 'Extended standard library — ExtList operations.',
+  tests: [
+    { name: 'ExtList.List.unique', code: 'ExtList.List.unique [1;2;2;3;3;3;4];;', contains: '[1; 2; 3; 4]' },
+    { name: 'ExtString.String.starts_with', code: 'ExtString.String.starts_with "hello world" "hello";;', contains: 'true' },
+  ]
+});
+</script></body></html>

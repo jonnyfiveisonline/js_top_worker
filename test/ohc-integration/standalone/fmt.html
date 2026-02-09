@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>fmt 0.9.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'fmt.0.9.0', universe: '9901393f978b0a6627c5eab595111f50', compiler: '5.4.0', require: 'fmt',
+  title: 'fmt 0.9.0', subtitle: 'OCaml 5.4.0',
+  description: 'Format combinators — Fmt.str and Fmt.pr.',
+  tests: [
+    { name: 'Fmt.str formats an integer', code: 'Fmt.str "%d" 42;;', contains: '"42"' },
+    { name: 'Fmt.pr prints to stdout', code: 'Fmt.pr "hello %s" "world";;', contains: 'hello world', field: 'stdout' },
+  ]
+});
+</script></body></html>

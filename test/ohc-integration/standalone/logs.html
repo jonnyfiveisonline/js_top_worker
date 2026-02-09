@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>logs 0.10.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'logs.0.10.0', universe: '07a565e7588ce100ffd7c8eb8b52df07', compiler: '5.3.0', require: 'logs',
+  title: 'logs 0.10.0', subtitle: 'OCaml 5.3.0',
+  description: 'Logging library — Logs.err function type.',
+  tests: [
+    { name: 'Logs.err has expected type', code: 'Logs.err;;', contains: 'Logs.log' },
+  ]
+});
+</script></body></html>

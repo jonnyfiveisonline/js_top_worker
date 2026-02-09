@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>wamp 1.2 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'wamp.1.2', compiler: '4.14.2', require: 'wamp',
+  title: 'wamp 1.2', subtitle: 'OCaml 4.14.2',
+  tag: 'csexp 1.5.2', tagClass: 'tag-csexp',
+  description: 'Web Application Messaging Protocol — role types and message constructors.',
+  tests: [
+    { name: 'Role constructors accessible', code: 'List.length [Wamp.Subscriber; Wamp.Publisher];;', contains: '2' },
+    { name: 'Wamp.hello is bound', code: 'Wamp.hello;;', notContains: 'Unbound', field: 'combined' },
+    { name: 'Wamp.HELLO message type', code: 'Wamp.HELLO;;', notContains: 'Unbound', field: 'combined' },
+  ]
+});
+</script></body></html>

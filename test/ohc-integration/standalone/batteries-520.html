@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>batteries 3.8.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'batteries.3.8.0', compiler: '5.2.1', require: 'batteries',
+  title: 'batteries 3.8.0', subtitle: 'OCaml 5.2.1',
+  description: 'Batteries Included — BatList functional operations.',
+  tests: [
+    { name: 'BatList.filter_map', code: 'BatList.filter_map (fun x -> if x > 2 then Some (x*10) else None) [1;2;3;4;5];;', contains: '[30; 40; 50]' },
+    { name: 'BatList.sum', code: 'BatList.sum [1;2;3;4;5];;', contains: '15' },
+  ]
+});
+</script></body></html>

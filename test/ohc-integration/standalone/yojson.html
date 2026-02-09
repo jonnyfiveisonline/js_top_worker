@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>yojson 3.0.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'yojson.3.0.0', universe: 'e52f084da1b654e881d2dba81775b440', compiler: '5.4.0', require: 'yojson',
+  title: 'yojson 3.0.0', subtitle: 'OCaml 5.4.0',
+  description: 'JSON parsing and serialization round-trip.',
+  tests: [
+    { name: 'to_string produces JSON', code: 'Yojson.Basic.to_string (`Assoc [("x", `Int 1); ("y", `Bool true)]);;', contains: 'x' },
+    { name: 'from_string + Util.member', code: 'Yojson.Basic.from_string {|{"a":42}|} |> Yojson.Basic.Util.member "a";;', contains: 'Int 42' },
+  ]
+});
+</script></body></html>

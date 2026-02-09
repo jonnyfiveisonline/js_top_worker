@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>mtime 2.1.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'mtime.2.1.0', universe: '7db699c334606d6f66e65c8b515d298d', compiler: '5.3.0', require: 'mtime',
+  title: 'mtime 2.1.0', subtitle: 'OCaml 5.3.0',
+  description: 'Monotonic clock — Span.zero to nanoseconds.',
+  tests: [
+    { name: 'Mtime.Span.zero → 0L', code: 'Mtime.Span.zero |> Mtime.Span.to_uint64_ns;;', contains: '0L' },
+  ]
+});
+</script></body></html>

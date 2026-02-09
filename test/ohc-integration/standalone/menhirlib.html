@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>menhirLib 20250912 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'menhirLib.20250912', compiler: '5.4.0', require: 'menhirLib',
+  title: 'menhirLib 20250912', subtitle: 'OCaml 5.4.0',
+  description: 'Parser generator runtime library — module loads and General.length is accessible.',
+  tests: [
+    { name: 'MenhirLib.General.length is bound', code: 'MenhirLib.General.length;;', notContains: 'Unbound', field: 'combined' },
+  ]
+});
+</script></body></html>

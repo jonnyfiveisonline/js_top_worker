@@ -36,7 +36,7 @@
     status.textContent = 'Fetching findlib_index...';
     let indexUrl;
     if (pkg) {
-      const [name, ver] = [pkg.substring(0, pkg.lastIndexOf('.')), pkg.substring(pkg.lastIndexOf('.') + 1)];
+      const [name, ver] = [pkg.substring(0, pkg.indexOf('.')), pkg.substring(pkg.indexOf('.') + 1)];
       if (universe) {
         indexUrl = `/jtw-output/u/${universe}/${name}/${ver}/findlib_index`;
       } else {

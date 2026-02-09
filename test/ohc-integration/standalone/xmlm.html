@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>xmlm 1.4.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'xmlm.1.4.0', universe: 'c4c22d0db3ea01343c1a868bab35e1b4', compiler: '5.4.0', require: 'xmlm',
+  title: 'xmlm 1.4.0', subtitle: 'OCaml 5.4.0',
+  description: 'Streaming XML codec — XML namespace constant.',
+  tests: [
+    { name: 'Xmlm.ns_xml returns XML namespace URI', code: 'Xmlm.ns_xml;;', contains: '"http://www.w3.org/XML/1998/namespace"' },
+  ]
+});
+</script></body></html>

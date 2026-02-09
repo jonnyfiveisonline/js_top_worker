@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JTW Worker Tests – All Packages</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="index">
+  <h1>JTW Worker Tests</h1>
+  <p>
+    Standalone test pages for each package. Each page initializes a
+    web worker, loads the package's library, and runs functional tests.
+  </p>
+  <p class="compiler-info">26 packages across 6 compiler versions (4.14.2 – 5.4.0)</p>
+
+  <h2>OCaml 5.4.0 <span style="font-weight:normal;color:#888">(5 packages)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><a href="fmt.html">fmt 0.9.0</a></td><td>Fmt.str, Fmt.pr stdout</td></tr>
+      <tr><td><a href="yojson.html">yojson 3.0.0</a></td><td>JSON to_string, from_string + Util.member</td></tr>
+      <tr><td><a href="menhirlib.html">menhirLib 20250912</a></td><td>General.length bound</td></tr>
+      <tr><td><a href="0install-solver.html">0install-solver 2.18</a></td><td>Diagnostics.of_result bound</td></tr>
+      <tr><td><a href="xmlm.html">xmlm 1.4.0</a></td><td>ns_xml namespace URI</td></tr>
+    </tbody>
+  </table>
+
+  <h2>OCaml 5.3.0 <span style="font-weight:normal;color:#888">(10 packages)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><a href="containers.html">containers 3.17</a></td><td>CCList.filter_map, CCString.prefix</td></tr>
+      <tr><td><a href="re.html">re 1.14.0</a></td><td>Re.execp pattern match</td></tr>
+      <tr><td><a href="cmdliner.html">cmdliner 1.3.0</a></td><td>Arg.info bound</td></tr>
+      <tr><td><a href="logs.html">logs 0.10.0</a></td><td>Logs.err type</td></tr>
+      <tr><td><a href="ptime.html">ptime 1.2.0</a></td><td>epoch to RFC 3339</td></tr>
+      <tr><td><a href="uri.html">uri 4.4.0</a></td><td>URI host extraction</td></tr>
+      <tr><td><a href="angstrom.html">angstrom 0.16.1</a></td><td>parse_string combinator</td></tr>
+      <tr><td><a href="mtime.html">mtime 2.1.0</a></td><td>Span.zero to 0L</td></tr>
+      <tr><td><a href="digestif.html">digestif 1.3.0</a></td><td>MD5.digest_string bound</td></tr>
+      <tr><td><a href="num.html">num 1.6</a></td><td>100 * 200 = 20000</td></tr>
+    </tbody>
+  </table>
+
+  <h2>OCaml 5.2.1 <span style="font-weight:normal;color:#888">(2 packages)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><a href="batteries-520.html">batteries 3.8.0</a></td><td>BatList.filter_map, BatList.sum</td></tr>
+      <tr><td><a href="extlib.html">extlib 1.7.9</a></td><td>ExtList.List.unique, ExtString.starts_with</td></tr>
+    </tbody>
+  </table>
+
+  <h2>OCaml 5.1.1 <span style="font-weight:normal;color:#888">(2 packages)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><a href="batteries-511.html">batteries 3.7.2</a></td><td>BatString.starts_with, BatString.ends_with</td></tr>
+      <tr><td><a href="stdcompat.html">stdcompat 19</a></td><td>Stdcompat.List.filter_map, Stdcompat.Option.value</td></tr>
+    </tbody>
+  </table>
+
+  <h2>OCaml 5.0.0 <span style="font-weight:normal;color:#888">(2 packages)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td><a href="batteries-500.html">batteries 3.6.0</a></td><td>basic arithmetic, List.map</td></tr>
+      <tr><td><a href="grenier.html">grenier 0.14</a></td><td>Dbseq.empty, Dbseq.cons + length</td></tr>
+    </tbody>
+  </table>
+
+  <h2>OCaml 4.14.2 <span style="font-weight:normal;color:#888">(5 packages, 3 worker variants)</span></h2>
+  <table>
+    <thead><tr><th>Package</th><th>Worker variant</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="olinq.html">olinq 0.3</a></td>
+        <td><span class="tag tag-none">no critical pkgs</span></td>
+        <td>filter, sort, map</td>
+      </tr>
+      <tr>
+        <td><a href="hamt.html">hamt 1.0.0</a></td>
+        <td><span class="tag tag-none">no critical pkgs</span></td>
+        <td>add, find_exn, mem</td>
+      </tr>
+      <tr>
+        <td><a href="vlq.html">vlq 0.2.1</a></td>
+        <td><span class="tag tag-none">no critical pkgs</span></td>
+        <td>Base64 encode 0, 1, -1</td>
+      </tr>
+      <tr>
+        <td><a href="wamp.html">wamp 1.2</a></td>
+        <td><span class="tag tag-csexp">csexp 1.5.2</span></td>
+        <td>role types, hello, HELLO</td>
+      </tr>
+      <tr>
+        <td><a href="wseg.html">wseg 0.3.0</a></td>
+        <td><span class="tag tag-sexplib0">csexp + sexplib0</span></td>
+        <td>buildEntries, rule1, result_of_cand</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

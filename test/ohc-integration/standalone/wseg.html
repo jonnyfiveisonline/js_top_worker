@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>wseg 0.3.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'wseg.0.3.0', compiler: '4.14.2', require: 'wseg',
+  title: 'wseg 0.3.0', subtitle: 'OCaml 4.14.2',
+  tag: 'csexp + sexplib0', tagClass: 'tag-sexplib0',
+  description: 'MMSEG Chinese word segmentation — Dict.buildEntries and rule functions.',
+  tests: [
+    { name: 'Dict.buildEntries converts counts', code: 'let entries = Wseg.Dict.buildEntries [("a", 3.0); ("b", 7.0)] in List.length entries;;', contains: '2' },
+    { name: 'MMSEG.rule1 is bound', code: 'Wseg.MMSEG.rule1;;', notContains: 'Unbound', field: 'combined' },
+    { name: 'Dict.result_of_cand is bound', code: 'Wseg.Dict.result_of_cand;;', notContains: 'Unbound', field: 'combined' },
+  ]
+});
+</script></body></html>

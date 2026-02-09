@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>vlq 0.2.1 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'vlq.0.2.1', compiler: '4.14.2', require: 'vlq',
+  title: 'vlq 0.2.1', subtitle: 'OCaml 4.14.2',
+  description: 'Variable-Length Quantity Base64 encoding — used in source maps.',
+  tests: [
+    { name: 'encode 0 → "A"', code: 'let buf = Buffer.create 10 in Vlq.Base64.encode buf 0; Buffer.contents buf;;', contains: '"A"' },
+    { name: 'encode 1 → "C"', code: 'let buf = Buffer.create 10 in Vlq.Base64.encode buf 1; Buffer.contents buf;;', contains: '"C"' },
+    { name: 'encode -1 → "D"', code: 'let buf = Buffer.create 10 in Vlq.Base64.encode buf (-1); Buffer.contents buf;;', contains: '"D"' },
+  ]
+});
+</script></body></html>

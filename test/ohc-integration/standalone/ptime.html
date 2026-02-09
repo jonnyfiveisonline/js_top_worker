@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>ptime 1.2.0 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'ptime.1.2.0', universe: 'd57c69f3dd88b91454622c1841971354', compiler: '5.3.0', require: 'ptime',
+  title: 'ptime 1.2.0', subtitle: 'OCaml 5.3.0',
+  description: 'POSIX time — epoch to RFC 3339.',
+  tests: [
+    { name: 'Ptime.epoch → RFC 3339', code: 'Ptime.epoch |> Ptime.to_rfc3339;;', contains: '"1970-01-01' },
+  ]
+});
+</script></body></html>

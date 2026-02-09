@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>grenier 0.14 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'grenier.0.14', compiler: '5.0.0', require: 'grenier.dbseq',
+  title: 'grenier 0.14', subtitle: 'OCaml 5.0.0',
+  description: 'Data structures library — Dbseq sequence operations.',
+  tests: [
+    { name: 'Dbseq.empty length', code: 'Dbseq.empty |> Dbseq.length;;', contains: '0' },
+    { name: 'Dbseq.cons + length', code: 'Dbseq.empty |> Dbseq.cons 1 |> Dbseq.cons 2 |> Dbseq.length;;', contains: '2' },
+  ]
+});
+</script></body></html>

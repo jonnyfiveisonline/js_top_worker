@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>0install-solver 2.18 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: '0install-solver.2.18', compiler: '5.4.0', require: '0install-solver',
+  title: '0install-solver 2.18', subtitle: 'OCaml 5.4.0',
+  description: 'Package dependency solver — module loads and has expected types.',
+  tests: [
+    { name: 'Zeroinstall_solver.Diagnostics.of_result is bound', code: 'Zeroinstall_solver.Diagnostics.of_result;;', notContains: 'Unbound', field: 'combined' },
+  ]
+});
+</script></body></html>

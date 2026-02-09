@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>containers 3.17 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'containers.3.17', universe: '62a1dfab4e79dda21e6775fc35bac90b', compiler: '5.3.0', require: 'containers',
+  title: 'containers 3.17', subtitle: 'OCaml 5.3.0',
+  description: 'Modular standard library extension — CCList and CCString.',
+  tests: [
+    { name: 'CCList.filter_map', code: 'CCList.filter_map (fun x -> if x > 2 then Some (x * 10) else None) [1;2;3;4];;', contains: '[30; 40]' },
+    { name: 'CCString.prefix', code: 'CCString.prefix ~pre:"hello" "hello world";;', contains: 'true' },
+  ]
+});
+</script></body></html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>num 1.6 – JTW Test</title><link rel="stylesheet" href="style.css"></head>
+<body><script type="module">
+import { runTests } from './test-runner.js';
+runTests({
+  pkg: 'num.1.6', universe: '899976ac0dc15192e669f652bf29f29e', compiler: '5.3.0', require: 'num',
+  title: 'num 1.6', subtitle: 'OCaml 5.3.0',
+  description: 'Arbitrary precision arithmetic — multiply and convert to string.',
+  tests: [
+    { name: 'Num: 100 * 200 = 20000', code: 'Num.(string_of_num (mult_num (Int 100) (Int 200)));;', contains: '"20000"' },
+  ]
+});
+</script></body></html>
