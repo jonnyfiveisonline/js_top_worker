@@ -6,7 +6,7 @@ license: "ISC"
 homepage: "https://github.com/jonludlam/js_top_worker"
 bug-reports: "https://github.com/jonludlam/js_top_worker/issues"
 depends: [
-  "ocaml" {>= "5.1"}
+  "ocaml" {>= "4.14"}
   "dune" {>= "3.10"}
   "mime_printer"
   "rresult"
