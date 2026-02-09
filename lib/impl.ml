@@ -533,21 +533,33 @@ module Make (S : S) = struct
     Printf.sprintf "%s.cmi" (String.uncapitalize_ascii unit_name)
 
   let get_dirs () =
+#if OCAML_VERSION >= (5, 2, 0)
     let { Load_path.visible; hidden } = Load_path.get_paths () in
     visible @ hidden
+#else
+    Load_path.get_paths ()
+#endif
 
   let reset_dirs () =
     Ocaml_utils.Directory_content_cache.clear ();
     let open Ocaml_utils.Load_path in
     let dirs = get_dirs () in
     reset ();
+#if OCAML_VERSION >= (5, 2, 0)
     List.iter (fun p -> prepend_dir (Dir.create ~hidden:false p)) dirs
+#else
+    List.iter (fun p -> prepend_dir (Dir.create p)) dirs
+#endif
 
   let reset_dirs_comp () =
     let open Load_path in
     let dirs = get_dirs () in
     reset ();
+#if OCAML_VERSION >= (5, 2, 0)
     List.iter (fun p -> prepend_dir (Dir.create ~hidden:false p)) dirs
+#else
+    List.iter (fun p -> prepend_dir (Dir.create p)) dirs
+#endif
 
   let add_dynamic_cmis dcs =
     let fetch filename =
@@ -581,7 +593,11 @@ module Make (S : S) = struct
         dcs.dcs_toplevel_modules
     in
 
+#if OCAML_VERSION >= (5, 2, 0)
     let new_load ~s ~old_loader ~allow_hidden ~unit_name =
+#else
+    let new_load ~s ~old_loader ~unit_name =
+#endif
       (* Logs.info (fun m -> m "%s Loading: %s" s unit_name); *)
       let filename = filename_of_module unit_name in
 
@@ -609,7 +625,11 @@ module Make (S : S) = struct
             Printf.eprintf "Warning: Expected to find cmi at: %s\n%!"
               (Filename.concat dcs.Toplevel_api_gen.dcs_url filename));
       if s = "merl" then reset_dirs () else reset_dirs_comp ();
+#if OCAML_VERSION >= (5, 2, 0)
       old_loader ~allow_hidden ~unit_name
+#else
+      old_loader ~unit_name
+#endif
     in
     let furl = "file://" in
     let l = String.length furl in
@@ -996,7 +1016,7 @@ module Make (S : S) = struct
     (try Sys.remove (prefix ^ ".cmi") with Sys_error _ -> ());
 #if OCAML_VERSION >= (5, 3, 0)
     let unit_info = Unit_info.make ~source_file:filename Impl prefix in
-#else
+#elif OCAML_VERSION >= (5, 0, 0)
     let unit_info = Unit_info.make ~source_file:filename prefix in
 #endif
     try
@@ -1004,13 +1024,24 @@ module Make (S : S) = struct
       Local_store.with_store store (fun () ->
           Local_store.reset ();
           let env =
+#if OCAML_VERSION >= (5, 0, 0)
             Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib")
               ~open_implicit_modules:dep_modules
+#else
+            Typemod.initial_env ~loc ~safe_string:true
+              ~initially_opened_module:(Some "Stdlib")
+              ~open_implicit_modules:dep_modules
+#endif
           in
           let lexbuf = Lexing.from_string source in
           let ast = Parse.implementation lexbuf in
           Logs.info (fun m -> m "About to type_implementation");
+#if OCAML_VERSION >= (5, 0, 0)
           let _ = Typemod.type_implementation unit_info env ast in
+#else
+          let modulename = String.capitalize_ascii (Filename.basename prefix) in
+          let _ = Typemod.type_implementation filename prefix modulename env ast in
+#endif
           let b = Sys.file_exists (prefix ^ ".cmi") in
           Environment.remove_failed_cell execution_env id;
           Logs.info (fun m -> m "file_exists: %s = %b" (prefix ^ ".cmi") b));
