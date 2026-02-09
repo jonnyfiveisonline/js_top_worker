@@ -1016,7 +1016,7 @@ module Make (S : S) = struct
     (try Sys.remove (prefix ^ ".cmi") with Sys_error _ -> ());
 #if OCAML_VERSION >= (5, 3, 0)
     let unit_info = Unit_info.make ~source_file:filename Impl prefix in
-#elif OCAML_VERSION >= (5, 0, 0)
+#elif OCAML_VERSION >= (5, 2, 0)
     let unit_info = Unit_info.make ~source_file:filename prefix in
 #endif
     try
@@ -1024,19 +1024,19 @@ module Make (S : S) = struct
       Local_store.with_store store (fun () ->
           Local_store.reset ();
           let env =
-#if OCAML_VERSION >= (5, 0, 0)
-            Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib")
-              ~open_implicit_modules:dep_modules
-#else
+#if OCAML_VERSION < (5, 0, 0)
             Typemod.initial_env ~loc ~safe_string:true
               ~initially_opened_module:(Some "Stdlib")
+              ~open_implicit_modules:dep_modules
+#else
+            Typemod.initial_env ~loc ~initially_opened_module:(Some "Stdlib")
               ~open_implicit_modules:dep_modules
 #endif
           in
           let lexbuf = Lexing.from_string source in
           let ast = Parse.implementation lexbuf in
           Logs.info (fun m -> m "About to type_implementation");
-#if OCAML_VERSION >= (5, 0, 0)
+#if OCAML_VERSION >= (5, 2, 0)
           let _ = Typemod.type_implementation unit_info env ast in
 #else
           let modulename = String.capitalize_ascii (Filename.basename prefix) in
