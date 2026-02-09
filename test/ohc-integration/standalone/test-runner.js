@@ -46,6 +46,7 @@ export async function runTests(config) {
 
   // Dependency info section (populated after fetching findlib_index)
   const depsSection = el('details', { className: 'deps-section' });
+  depsSection.open = true;
   const depsSummary = el('summary', {}, 'Dependencies');
   depsSection.appendChild(depsSummary);
   document.body.appendChild(depsSection);
