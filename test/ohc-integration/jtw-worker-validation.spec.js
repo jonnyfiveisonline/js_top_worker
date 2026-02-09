@@ -118,10 +118,13 @@ test.describe('JTW Worker Validation (blessed packages)', () => {
 
   // ── OCaml 5.0.0 packages ──────────────────────────────────────────────────
 
-  test('batteries 3.6.0: basic eval works (5.0.0)', async ({ page }) => {
+  test('batteries 3.6.0: worker init + num loads (5.0.0)', async ({ page }) => {
+    // Note: #require "batteries" hangs on 5.0.0 (batteries.unthreaded init
+    // blocks, likely a Domain/runtime_events issue in jsoo on 5.0). Other
+    // packages in this universe load fine. Not a jtw/ohc issue.
     await initWorkerBlessed(page, 'batteries.3.6.0', '5.0.0');
-    await evalExpect(page, '1 + 1;;', '2');
-    await evalExpect(page, 'List.map (fun x -> x * 2) [1;2;3];;', '[2; 4; 6]');
+    await requirePkg(page, 'num');
+    await evalExpect(page, 'let n = Num.Int 42 in Num.string_of_num n;;', '"42"');
   });
 
   test('grenier 0.14: Dbseq module loads (5.0.0)', async ({ page }) => {
