@@ -1,4 +1,4 @@
-import { OcamlWorker } from '/client/ocaml-worker.js';
+import { OcamlWorker } from './ocaml-worker.js';
 
 /**
  * Run a set of tests for a blessed package in the browser.
