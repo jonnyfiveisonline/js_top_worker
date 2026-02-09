@@ -44,6 +44,12 @@ export async function runTests(config) {
   const statusEl = el('div', { id: 'status', className: 'status-loading' }, 'Initializing worker\u2026');
   document.body.appendChild(statusEl);
 
+  // Dependency info section (populated after fetching findlib_index)
+  const depsSection = el('details', { className: 'deps-section' });
+  const depsSummary = el('summary', {}, 'Dependencies');
+  depsSection.appendChild(depsSummary);
+  document.body.appendChild(depsSection);
+
   const testsEl = el('div', { id: 'tests' });
   document.body.appendChild(testsEl);
 
@@ -68,16 +74,31 @@ export async function runTests(config) {
 
   try {
     // Resolve findlib_index URL: prefer universe path, fall back to blessed
-    let indexUrl;
+    let indexUrl, universeJsonUrl;
     if (config.universe) {
       indexUrl = `/jtw-output/u/${config.universe}/findlib_index`;
     } else {
-      const [name, ver] = [
-        config.pkg.substring(0, config.pkg.indexOf('.')),
-        config.pkg.substring(config.pkg.indexOf('.') + 1),
-      ];
+      const [name, ver] = splitPkg(config.pkg);
       indexUrl = `/jtw-output/p/${name}/${ver}/findlib_index`;
+      universeJsonUrl = `/jtw-output/p/${name}/${ver}/universe.json`;
     }
+
+    // Fetch findlib_index (needed for worker init)
+    const indexResp = await fetch(indexUrl);
+    const indexData = await indexResp.json();
+
+    // Fetch universe.json if available (for full dep versions)
+    let universeData = null;
+    if (universeJsonUrl) {
+      try {
+        const uResp = await fetch(universeJsonUrl);
+        if (uResp.ok) universeData = await uResp.json();
+      } catch (_) { /* ignore */ }
+    }
+
+    // Build dependency info from metas paths and universe.json
+    renderDeps(depsSection, indexData, universeData, indexUrl);
+
     const { worker, stdlib_dcs, findlib_index } = await OcamlWorker.fromIndex(
       indexUrl, '/jtw-output', { timeout: 120000 });
 
@@ -130,6 +151,121 @@ export async function runTests(config) {
     statusEl.textContent = 'Error: ' + err.message;
     statusEl.className = 'status-error';
   }
+}
+
+/**
+ * Parse meta paths from findlib_index to extract package info.
+ *
+ * Meta paths look like:
+ *   ../../p/fmt/0.9.0/e6ef49d5/lib/fmt/META             → blessed: p/fmt/0.9.0
+ *   ../../../u/9901393f/ocaml-compiler/5.4.0/d0f633/...  → universe: u/9901393f/ocaml-compiler/5.4.0
+ *   ../../ocaml-base-compiler/5.0.0/943ab89d/...         → blessed (relative): p/ocaml-base-compiler/5.0.0
+ */
+function parseMetas(metas) {
+  const packages = new Map(); // name → { version, path, hash }
+
+  for (const meta of metas) {
+    const parts = meta.split('/');
+
+    // Find p/ or u/ marker in the path
+    const pIdx = parts.indexOf('p');
+    const uIdx = parts.indexOf('u');
+
+    if (pIdx >= 0 && pIdx + 3 < parts.length) {
+      // p/name/version/hash/...
+      const name = parts[pIdx + 1];
+      const version = parts[pIdx + 2];
+      const hash = parts[pIdx + 3];
+      if (!packages.has(name)) {
+        packages.set(name, { version, path: `p/${name}/${version}`, hash });
+      }
+    } else if (uIdx >= 0 && uIdx + 4 < parts.length) {
+      // u/universe_hash/name/version/hash/...
+      const uHash = parts[uIdx + 1];
+      const name = parts[uIdx + 2];
+      const version = parts[uIdx + 3];
+      const hash = parts[uIdx + 4];
+      if (!packages.has(name)) {
+        packages.set(name, { version, path: `u/${uHash.substring(0, 8)}\u2026/${name}/${version}`, hash, fullPath: `u/${uHash}/${name}/${version}` });
+      }
+    } else {
+      // Relative blessed path: ../../name/version/hash/...
+      // Find the pattern: skip leading ../ then name/version/hash/lib/...
+      const nonDots = parts.filter(p => p !== '..');
+      if (nonDots.length >= 3) {
+        const name = nonDots[0];
+        const version = nonDots[1];
+        const hash = nonDots[2];
+        if (!packages.has(name) && version.match(/^[\d.]+$|^base$/)) {
+          packages.set(name, { version, path: `p/${name}/${version}`, hash });
+        }
+      }
+    }
+  }
+
+  return packages;
+}
+
+/**
+ * Render the dependency info section.
+ */
+function renderDeps(container, indexData, universeData, indexUrl) {
+  const compiler = indexData.compiler;
+  const metaPackages = parseMetas(indexData.metas || []);
+
+  // Merge universe.json data (has all packages, even those without META)
+  const allDeps = new Map();
+
+  if (universeData) {
+    for (const [name, version] of Object.entries(universeData)) {
+      if (name === 'ocaml' || name === 'ocaml-config' || name.startsWith('base-')) continue;
+      const fromMeta = metaPackages.get(name);
+      allDeps.set(name, {
+        version,
+        path: fromMeta ? fromMeta.path : null,
+        hash: fromMeta ? fromMeta.hash : null,
+      });
+    }
+  } else {
+    // No universe.json — use what we parsed from metas
+    for (const [name, info] of metaPackages) {
+      allDeps.set(name, info);
+    }
+  }
+
+  // Worker.js info
+  const workerInfo = el('div', { className: 'deps-worker' });
+  workerInfo.innerHTML = `<strong>worker.js</strong>: compiler/${esc(compiler.version)}/${esc(compiler.content_hash)}/worker.js`;
+  container.appendChild(workerInfo);
+
+  // findlib_index source
+  const indexInfo = el('div', { className: 'deps-index' });
+  indexInfo.innerHTML = `<strong>findlib_index</strong>: ${esc(indexUrl.replace('/jtw-output/', ''))}`;
+  container.appendChild(indexInfo);
+
+  // Dependency table
+  if (allDeps.size > 0) {
+    const table = document.createElement('table');
+    table.className = 'deps-table';
+    table.innerHTML = '<thead><tr><th>Package</th><th>Version</th><th>Path</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+
+    const sorted = [...allDeps.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [name, info] of sorted) {
+      const tr = document.createElement('tr');
+      const pathDisplay = info.path || '\u2014';
+      const hashBit = info.hash ? `<span class="deps-hash">${esc(info.hash.substring(0, 8))}\u2026</span>` : '';
+      tr.innerHTML = `<td>${esc(name)}</td><td><code>${esc(info.version)}</code></td><td><code>${esc(pathDisplay)}</code> ${hashBit}</td>`;
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+}
+
+function splitPkg(pkg) {
+  const i = pkg.indexOf('.');
+  return [pkg.substring(0, i), pkg.substring(i + 1)];
 }
 
 function formatResult(r) {

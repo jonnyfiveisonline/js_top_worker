@@ -31,3 +31,14 @@ h1 { font-size: 1.4em; }
 .index td a { color: #0366d6; text-decoration: none; font-weight: 500; }
 .index td a:hover { text-decoration: underline; }
 .index h2 { font-size: 1.15em; margin: 1.5em 0 0.3em; color: #333; }
+
+/* Dependencies section */
+.deps-section { margin: 1em 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: 0.6em 1em; font-size: 0.85em; }
+.deps-section summary { cursor: pointer; font-weight: 600; color: #555; }
+.deps-section summary:hover { color: #333; }
+.deps-worker, .deps-index { margin: 0.5em 0; color: #555; font-family: monospace; font-size: 0.9em; word-break: break-all; }
+.deps-table { width: 100%; border-collapse: collapse; margin-top: 0.6em; }
+.deps-table th { text-align: left; font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3em 0.5em; border-bottom: 1px solid #ddd; }
+.deps-table td { padding: 0.25em 0.5em; border-bottom: 1px solid #f0f0f0; font-size: 0.9em; }
+.deps-table code { background: #f5f5f5; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.95em; }
+.deps-hash { color: #999; font-family: monospace; font-size: 0.85em; }
