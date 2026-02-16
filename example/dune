@@ -41,6 +41,17 @@
  (libraries js_top_worker-web logs.browser mime_printer tyxml))
 
 (executable
+ (name rpc_worker)
+ (modes js)
+ (modules rpc_worker)
+ (link_flags (-linkall))
+ (preprocess (pps js_of_ocaml-ppx))
+ (js_of_ocaml
+  (javascript_files ../lib/stubs.js)
+  (flags --effects=disabled --toplevel --opt 3 +toplevel.js +dynlink.js))
+ (libraries js_top_worker js_top_worker-web js_top_worker-rpc logs.browser mime_printer tyxml))
+
+(executable
  (name unix_worker)
  (public_name unix_worker)
  (modes byte)
