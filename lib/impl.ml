@@ -279,8 +279,13 @@ module Make (S : S) = struct
       if dcs.dcs_file_prefixes <> [] then begin
         let open Persistent_env.Persistent_signature in
         let old_loader = !load in
+#if defined OXCAML
+        load := fun ~allow_hidden ~unit_name ->
+          let filename = to_cmi_filename (Compilation_unit.Name.to_string unit_name) in
+#else
         load := fun ~allow_hidden ~unit_name ->
           let filename = to_cmi_filename unit_name in
+#endif
           let fs_name = Filename.(concat path filename) in
           if (not (Sys.file_exists fs_name))
              && List.exists
@@ -573,9 +578,21 @@ module Make (S : S) = struct
         dcs.dcs_toplevel_modules
     in
 
+#if defined OXCAML
+    let new_load :
+        'a 'b.
+        s:string ->
+        to_string:('a -> string) ->
+        old_loader:(allow_hidden:bool -> unit_name:'a -> 'b option) ->
+        allow_hidden:bool ->
+        unit_name:'a ->
+        'b option =
+     fun ~s ~to_string ~old_loader ~allow_hidden ~unit_name ->
+      let filename = filename_of_module (to_string unit_name) in
+#else
     let new_load ~s ~old_loader ~allow_hidden ~unit_name =
-      (* Logs.info (fun m -> m "%s Loading: %s" s unit_name); *)
       let filename = filename_of_module unit_name in
+#endif
 
       let fs_name = Filename.(concat path filename) in
       (* Check if it's already been downloaded. This will be the
@@ -612,11 +629,21 @@ module Make (S : S) = struct
       else
         let open Persistent_env.Persistent_signature in
         let old_loader = !load in
+#if defined OXCAML
+        load := new_load ~s:"comp" ~to_string:Compilation_unit.Name.to_string ~old_loader;
+#else
         load := new_load ~s:"comp" ~old_loader;
+#endif
 
+#if defined OXCAML
+        let open Persistent_env.Persistent_signature in
+        let old_loader = !load in
+        load := new_load ~s:"merl" ~to_string:Compilation_unit.Name.to_string ~old_loader
+#else
         let open Ocaml_typing.Persistent_env.Persistent_signature in
         let old_loader = !load in
         load := new_load ~s:"merl" ~old_loader
+#endif
     in
     Lwt.return ()
 
@@ -644,6 +671,9 @@ module Make (S : S) = struct
           | [ dcs ] -> add_dynamic_cmis dcs
           | _ -> Lwt.return ()
         in
+#if defined OXCAML
+        Language_extension.(set_universe_and_enable_all Universe.Beta);
+#endif
         Clflags.no_check_prims := true;
 
         requires := init_libs.findlib_requires;
@@ -689,10 +719,17 @@ module Make (S : S) = struct
                   Persistent_env.report_error Format.err_formatter e;
                   let err = Format.asprintf "%a" Persistent_env.report_error e in
                   failwith ("Error: " ^ err)
+#if defined OXCAML
+              | Env.Error e ->
+                  Env.report_error ~level:0 Format.err_formatter e;
+                  let err = Format.asprintf "%a" (Env.report_error ~level:0) e in
+                  failwith ("Error: " ^ err))
+#else
               | Env.Error _ as exn ->
                   Location.report_exception Format.err_formatter exn;
                   let err = Format.asprintf "%a" Location.report_exception exn in
                   failwith ("Error: " ^ err))
+#endif
           in
 
           let* dcs =
@@ -986,7 +1023,12 @@ module Make (S : S) = struct
     Printf.fprintf oc "%s" source;
     close_out oc;
     (try Sys.remove (prefix ^ ".cmi") with Sys_error _ -> ());
+#if defined OXCAML
+    let unit_info = Unit_info.make ~source_file:filename Impl prefix
+        ~for_pack_prefix:Compilation_unit.Prefix.empty in
+#else
     let unit_info = Unit_info.make ~source_file:filename Impl prefix in
+#endif
     try
       let store = Local_store.fresh () in
       Local_store.with_store store (fun () ->
@@ -998,16 +1040,28 @@ module Make (S : S) = struct
           let lexbuf = Lexing.from_string source in
           let ast = Parse.implementation lexbuf in
           Logs.info (fun m -> m "About to type_implementation");
+#if defined OXCAML
+          let _ = Typemod.type_implementation unit_info
+              (Compilation_unit.of_string (modname_of_id id)) env ast in
+#else
           let _ = Typemod.type_implementation unit_info env ast in
+#endif
           let b = Sys.file_exists (prefix ^ ".cmi") in
           Environment.remove_failed_cell execution_env id;
           Logs.info (fun m -> m "file_exists: %s = %b" (prefix ^ ".cmi") b));
       Ocaml_typing.Cmi_cache.clear ()
     with
+#if defined OXCAML
+    | Env.Error e ->
+        Logs.err (fun m -> m "Env.Error: %a" (Env.report_error ~level:0) e);
+        Environment.add_failed_cell execution_env id;
+        ()
+#else
     | Env.Error _ as exn ->
         Logs.err (fun m -> m "Env.Error: %a" Location.report_exception exn);
         Environment.add_failed_cell execution_env id;
         ()
+#endif
     | exn ->
         let s = Printexc.to_string exn in
         Logs.err (fun m -> m "Error in add_cmi: %s" s);

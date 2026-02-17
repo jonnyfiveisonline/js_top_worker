@@ -1,7 +1,8 @@
-; Worker library
+; Worker library -- upstream OCaml
 
 (library
  (public_name js_top_worker)
+ (enabled_if (not %{ocaml-config:ox}))
  (modules toplexer ocamltop impl environment)
  (libraries
   logs
@@ -26,15 +27,69 @@
   (per_module
    ((action
      (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file}))
-    uTop_complete
-    uTop_compat
-    uTop))))
+    impl))))
+
+; Worker library -- OxCaml
+
+(library
+ (public_name js_top_worker)
+ (enabled_if %{ocaml-config:ox})
+ (modules toplexer ocamltop impl environment)
+ (libraries
+  logs
+  js_top_worker-rpc
+  rpclib-lwt
+  js_of_ocaml-compiler
+  js_of_ocaml-ppx
+  astring
+  mime_printer
+  compiler-libs.common
+  compiler-libs.toplevel
+  merlin-lib.kernel
+  merlin-lib.utils
+  merlin-lib.query_protocol
+  merlin-lib.query_commands
+  merlin-lib.ocaml_parsing
+  ppxlib
+  ppx_deriving.api)
+ (js_of_ocaml
+  (javascript_files stubs.js))
+ (preprocess
+  (per_module
+   ((action
+     (run %{bin:cppo} -V OCAML:%{ocaml_version} -D "OXCAML" %{input-file}))
+    impl))))
 
 (ocamllex toplexer)
+
+; Web worker library -- upstream OCaml
 
 (library
  (public_name js_top_worker-web)
  (name js_top_worker_web)
+ (enabled_if (not %{ocaml-config:ox}))
+ (modules worker findlibish jslib)
+ (preprocess
+  (pps js_of_ocaml-ppx))
+ (libraries
+  js_top_worker
+  js_top_worker-rpc.message
+  js_of_ocaml-ppx
+  js_of_ocaml-toplevel
+  js_of_ocaml-lwt
+  logs.browser
+  uri
+  angstrom
+  findlib
+  fpath
+  rpclib.json))
+
+; Web worker library -- OxCaml
+
+(library
+ (public_name js_top_worker-web)
+ (name js_top_worker_web)
+ (enabled_if %{ocaml-config:ox})
  (modules worker findlibish jslib)
  (preprocess
   (pps js_of_ocaml-ppx))
