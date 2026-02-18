@@ -1,0 +1,26 @@
+version: "0.0.1"
+opam-version: "2.0"
+maintainer: "jon@recoil.org"
+authors: "various"
+license: "ISC"
+homepage: "https://github.com/jonludlam/js_top_worker"
+bug-reports: "https://github.com/jonludlam/js_top_worker/issues"
+depends: [
+  "ocaml"
+  "dune" {>= "2.9.1"}
+  "js_top_worker" {= version}
+  "rpclib"
+  "logs"
+  "fmt"
+  "lwt"
+  "findlib"
+  "unix"
+]
+build : [
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+]
+synopsis: "JS Toplevel worker unix"
+description: """
+Unix socket backend for js_top_worker, used for testing outside the browser
+"""
