@@ -25,7 +25,8 @@ let envCount = 0;
 function getWorkerURL(baseUrl) {
   // Convert relative URL to absolute - importScripts in blob workers needs absolute URLs
   const absoluteBase = new URL(baseUrl, window.location.href).href;
-  const content = `globalThis.__global_rel_url="${absoluteBase}"\nimportScripts("${absoluteBase}/worker.js");`;
+  const workerScript = new URL("rpc_worker.bc.js", window.location.href).href;
+  const content = `globalThis.__global_rel_url="${absoluteBase}"\nimportScripts("${workerScript}");`;
   return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
 }
 

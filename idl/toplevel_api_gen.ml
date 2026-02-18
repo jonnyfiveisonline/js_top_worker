@@ -2218,8 +2218,7 @@ module Make(R:RPC) =
     let implementation = implement description
     let unit_p = Param.mk Types.unit
     let phrase_p =
-      Param.mk ~name:"string" ~description:["The OCaml phrase to execute"]
-        Types.string
+      Param.mk ~description:["The OCaml phrase to execute"] Types.string
     let id_p = Param.mk opt_id
     let env_id_p =
       Param.mk ~name:"env_id"

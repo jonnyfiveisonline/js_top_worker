@@ -229,7 +229,7 @@ module Make (R : RPC) = struct
 
   let implementation = implement description
   let unit_p = Param.mk Types.unit
-  let phrase_p = Param.mk ~name:"string" ~description:["The OCaml phrase to execute"] Types.string
+  let phrase_p = Param.mk ~description:["The OCaml phrase to execute"] Types.string
   let id_p = Param.mk opt_id
   let env_id_p = Param.mk ~name:"env_id" ~description:["Environment ID (empty string for default)"] env_id
   let env_id_list_p = Param.mk env_id_list
